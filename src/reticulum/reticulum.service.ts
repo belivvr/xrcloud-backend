@@ -169,7 +169,9 @@ export class ReticulumService {
         })
 
         if (response.length === 0) {
-            throw new InternalServerErrorException(`Reticulumn: Thumbnail file with ID "${screenshotFileId}" not found`)
+            throw new InternalServerErrorException(
+                `Reticulumn: Thumbnail file with ID "${screenshotFileId}" not found`
+            )
         }
 
         return response[0].owned_file_uuid

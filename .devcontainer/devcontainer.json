@@ -20,10 +20,10 @@
             ]
         }
     },
-    "initializeCommand": "docker network create ${containerWorkspaceFolderBasename} || true",
+    "initializeCommand": "docker network create xrcloud || true",
     "runArgs": [
         "--network",
-        "${containerWorkspaceFolderBasename}",
+        "xrcloud",
         "--name",
         "vscode-${containerWorkspaceFolderBasename}"
     ],
@@ -31,6 +31,5 @@
         "WORKSPACE_ROOT": "${containerWorkspaceFolder}",
         "HOST_PATH": "${localWorkspaceFolder}",
         "NODE_ENV": "development"
-    },
-    "postCreateCommand": "sh postCreateCommand.sh"
+    }
 }

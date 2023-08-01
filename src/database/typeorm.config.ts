@@ -13,14 +13,14 @@ import { Mig1688005419317 } from './migrations/1688005419317-mig'
 import { Mig1688633058918 } from './migrations/1688633058918-mig'
 import { Mig1689745093072 } from './migrations/1689745093072-mig'
 
+dotenv.config()
+
 const entities = [Admin, User, Project, Scene, Room]
 const migrations = [Mig1687757321854, Mig1687933860267, Mig1688005419317, Mig1688633058918, Mig1689745093072]
 
 type SupportedConnectionOptions = PostgresConnectionOptions
 
 export const typeormOptions = (): SupportedConnectionOptions => {
-    dotenv.config()
-
     const database = process.env.TYPEORM_DATABASE
     const host = process.env.TYPEORM_HOST
     const port = parseInt(process.env.TYPEORM_PORT ?? 'NaN')
@@ -46,7 +46,12 @@ export const typeormOptions = (): SupportedConnectionOptions => {
 }
 
 const getPoolSize = () => {
+    console.log(process.env.TYPEORM_POOL_SIZE)
+
     const poolSize = parseInt(process.env.TYPEORM_POOL_SIZE ?? 'NaN')
+
+    console.log(poolSize)
+    console.log(typeof poolSize)
 
     if (Number.isNaN(poolSize)) {
         throw new ConfigException('TYPEORM_POOL_SIZE is not a number')
@@ -56,24 +61,24 @@ const getPoolSize = () => {
 }
 
 const devModeOptions = () => {
-    const devMode = Path.isExistsSync('@DEV_TYPEORM_AUTO_RESET')
+    // const devMode = Path.isExistsSync('@DEV_TYPEORM_AUTO_RESET')
 
-    if (devMode) {
-        if (isProduction()) {
-            throw new ConfigException(
-                'The @DEV_TYPEORM_AUTO_RESET option should not be set to true in a production environment.'
-            )
-        }
+    // if (devMode) {
+    //     if (isProduction()) {
+    //         throw new ConfigException(
+    //             'The @DEV_TYPEORM_AUTO_RESET option should not be set to true in a production environment.'
+    //         )
+    //     }
 
-        return {
-            dropSchema: true,
-            synchronize: true
-        }
-    } else if (isDevelopment()) {
-        throw new ConfigException(
-            'The @DEV_TYPEORM_AUTO_RESET option should be set to true in a development environment.'
-        )
-    }
+    //     return {
+    //         dropSchema: true,
+    //         synchronize: true
+    //     }
+    // } else if (isDevelopment()) {
+    //     throw new ConfigException(
+    //         'The @DEV_TYPEORM_AUTO_RESET option should be set to true in a development environment.'
+    //     )
+    // }
 
     return {}
 }
@@ -82,7 +87,6 @@ export const databaseModuleConfig = (): SupportedConnectionOptions => {
     const logger = new TypeormLogger()
     const poolSize = getPoolSize()
 
-    // devModeOptions가 기존 설정을 덮어쓸 수 있도록 마지막에 와야 한다.
     let options = {
         ...typeormOptions(),
         logger,
@@ -91,7 +95,6 @@ export const databaseModuleConfig = (): SupportedConnectionOptions => {
     }
 
     if (options.type === 'postgres') {
-        // 설정은 했는데 동작하는 것을 못봤다.
         options = {
             ...options,
             poolErrorHandler: (err: any) => Logger.error('poolErrorHandler', err),

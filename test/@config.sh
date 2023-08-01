@@ -1,12 +1,9 @@
 #!/bin/bash
 
 clear
-echo "🚀 Starting infra..."
-res=$(bash ../scripts/infra.sh up)
-echo ""
 
 CURL() {
-    HOST="http://localhost:3000"
+    HOST="http://localhost:3001"
     METHOD=$1
     ENDPOINT=$2
     shift 2
