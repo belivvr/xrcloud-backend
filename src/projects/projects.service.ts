@@ -6,28 +6,35 @@ import {
 } from '@nestjs/common'
 import { generateUUID, makeProjectKey, updateIntersection } from 'src/common'
 import { FileStorageService } from 'src/file-storage'
+import { ScenesService } from 'src/scenes'
+import { UsersService } from 'src/users'
 import { CreateProjectDto, ProjectDto, QueryDto, UpdateProjectDto } from './dto'
 import { Project } from './entities'
 import { FILE_TYPES } from './interfaces'
 import { ProjectsRepository } from './projects.repository'
 import { UploadedFilesType } from './types'
 
+const FAVICON = 'favicon'
+const LOGO = 'logo'
+
 @Injectable()
 export class ProjectsService {
     constructor(
         private readonly projectsRepository: ProjectsRepository,
-        private readonly fileStorageService: FileStorageService
+        private readonly fileStorageService: FileStorageService,
+        private readonly usersService: UsersService,
+        private readonly scenesService: ScenesService
     ) {}
 
-    async create(createProjectDto: CreateProjectDto, files: UploadedFilesType, adminId: string) {
-        const faviconFile = files['favicon'][0]
-        const logoFile = files['logo'][0]
+    async createProject(createProjectDto: CreateProjectDto, files: UploadedFilesType, adminId: string) {
+        const faviconFile = files[FAVICON][0]
+        const logoFile = files[LOGO][0]
 
         const faviconId = generateUUID()
         const logoId = generateUUID()
 
-        const faviconKey = this.generateFileKey(faviconId, 'favicon')
-        const logoKey = this.generateFileKey(logoId, 'logo')
+        const faviconKey = this.generateFileKey(faviconId, FAVICON)
+        const logoKey = this.generateFileKey(logoId, LOGO)
 
         let uploadedFavicon
 
@@ -43,6 +50,7 @@ export class ProjectsService {
             throw new InternalServerErrorException(`Failed to upload files: ${error.message}`)
         }
 
+        // TODO: transaction
         const createProject = {
             ...createProjectDto,
             faviconId: faviconId,
@@ -51,6 +59,13 @@ export class ProjectsService {
         }
 
         const project = await this.projectsRepository.create(createProject)
+
+        const createUser = {
+            personalId: `admin@${project.id}`,
+            projectId: project.id
+        }
+
+        await this.usersService.createUser(createUser)
 
         return project
     }
@@ -61,18 +76,18 @@ export class ProjectsService {
         return projects
     }
 
-    async update(projectId: string, updateProjectDto: UpdateProjectDto, files: UploadedFilesType) {
+    async updateProject(projectId: string, updateProjectDto: UpdateProjectDto, files: UploadedFilesType) {
         const project = await this.getProject(projectId)
 
-        for (const fieldName of ['favicon', 'logo'] as const) {
+        for (const fieldName of [FAVICON, LOGO] as const) {
             if (files[fieldName] && files[fieldName][0]) {
                 const file = files[fieldName][0]
 
                 let fileKey
 
-                if (fieldName === 'favicon') {
+                if (fieldName === FAVICON) {
                     fileKey = this.generateFileKey(project.faviconId, fieldName)
-                } else if (fieldName === 'logo') {
+                } else if (fieldName === LOGO) {
                     fileKey = this.generateFileKey(project.logoId, fieldName)
                 }
 
@@ -105,7 +120,7 @@ export class ProjectsService {
         return { projectKey: projectKey }
     }
 
-    async remove(projectId: string) {
+    async removeProject(projectId: string) {
         const project = await this.getProject(projectId)
 
         await this.projectsRepository.remove(project)
@@ -126,10 +141,12 @@ export class ProjectsService {
 
         const faviconUrl = this.fileStorageService.getFileUrl(project.faviconId, 'favicon')
         const logoUrl = this.fileStorageService.getFileUrl(project.logoId, 'logo')
+        const sceneCreationUrl = await this.scenesService.getSceneCreationUrl(projectId)
 
         const dto = new ProjectDto(project)
         dto.faviconUrl = `${faviconUrl}.ico`
         dto.logoUrl = `${logoUrl}.jpg`
+        dto.sceneCreationUrl = sceneCreationUrl
 
         return dto
     }

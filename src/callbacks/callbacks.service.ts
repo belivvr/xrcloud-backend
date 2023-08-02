@@ -16,7 +16,7 @@ export class CallbacksService {
                     sceneId: infraSceneId
                 }
 
-                await this.scenesService.create(createData)
+                await this.scenesService.createScene(createData)
 
                 break
             }
@@ -25,7 +25,7 @@ export class CallbacksService {
                     sceneId: infraSceneId
                 }
 
-                await this.scenesService.update(updateData)
+                await this.scenesService.updateScene(updateData)
 
                 break
             }

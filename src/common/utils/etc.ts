@@ -124,8 +124,8 @@ export function equalsIgnoreCase(str1: any, str2: any): boolean {
     return false
 }
 
-export function makeHashedId(projectId: string, personalId: string) {
-    const data = projectId + personalId
+export function makeHashedId(personalId: string, projectId: string) {
+    const data = personalId + projectId
 
     const id: string = crypto.createHash('sha256').update(data).digest('hex')
 
@@ -133,7 +133,9 @@ export function makeHashedId(projectId: string, personalId: string) {
 }
 
 export function makeProjectKey(projectId: string, projectName: string) {
-    const data = projectId + projectName
+    const salt = crypto.randomBytes(16).toString('hex')
+
+    const data = projectId + projectName + salt
 
     const projectKey: string = crypto.createHash('sha256').update(data).digest('hex')
 

@@ -27,50 +27,50 @@ export class AdminsService {
         return await this.adminsRepository.create(createAdmin)
     }
 
-    async getSceneCreationUrl(projectId: string) {
-        const personalId = `admin@${projectId}`
+    // async getSceneCreationUrl(projectId: string) {
+    //     const personalId = `admin@${projectId}`
 
-        return await this.scenesService.getSceneCreationUrl({ projectId: projectId, personalId: personalId })
-    }
+    //     return await this.scenesService.getSceneCreationUrl({ personalId: personalId, projectId: projectId })
+    // }
 
-    async getSceneModificationUrl(projectId: string, getModifySceneUrlDto: AdminGetModifySceneUrlDto) {
-        const { sceneId } = getModifySceneUrlDto
+    // async getSceneModificationUrl(projectId: string, getModifySceneUrlDto: AdminGetModifySceneUrlDto) {
+    //     const { sceneId } = getModifySceneUrlDto
 
-        const personalId = `admin@${projectId}`
+    //     const personalId = `admin@${projectId}`
 
-        return await this.scenesService.getSceneModificationUrl({
-            projectId: projectId,
-            personalId: personalId,
-            sceneId: sceneId
-        })
-    }
+    //     return await this.scenesService.getSceneModificationUrl({
+    //         projectId: projectId,
+    //         personalId: personalId,
+    //         sceneId: sceneId
+    //     })
+    // }
 
-    async createRoom(projectId: string, createRoomDto: AdminCreateRoomDto) {
-        const { sceneId, ...data } = createRoomDto
+    // async createRoom(projectId: string, createRoomDto: AdminCreateRoomDto) {
+    //     const { sceneId, ...data } = createRoomDto
 
-        const personalId = `admin@${projectId}`
+    //     const personalId = `admin@${projectId}`
 
-        const createRoomData = {
-            personalId: personalId,
-            sceneId: sceneId,
-            ...data
-        }
+    //     const createRoomData = {
+    //         personalId: personalId,
+    //         sceneId: sceneId,
+    //         ...data
+    //     }
 
-        return await this.roomsService.create(projectId, createRoomData)
-    }
+    //     return await this.roomsService.create(projectId, createRoomData)
+    // }
 
-    async updateRoom(projectId: string, roomId: string, updateRoomDto: AdminUpdateRoomDto) {
-        const { ...data } = updateRoomDto
+    // async updateRoom(projectId: string, roomId: string, updateRoomDto: AdminUpdateRoomDto) {
+    //     const { ...data } = updateRoomDto
 
-        const personalId = `admin@${projectId}`
+    //     const personalId = `admin@${projectId}`
 
-        const updateRoomData = {
-            personalId: personalId,
-            ...data
-        }
+    //     const updateRoomData = {
+    //         personalId: personalId,
+    //         ...data
+    //     }
 
-        return await this.roomsService.update(projectId, roomId, updateRoomData)
-    }
+    //     return await this.roomsService.update(projectId, roomId, updateRoomData)
+    // }
 
     async getAdmin(adminId: string): Promise<Admin> {
         const admin = await this.adminsRepository.findById(adminId)

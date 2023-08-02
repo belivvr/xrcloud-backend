@@ -5,14 +5,6 @@ export class UpdateRoomDto {
     @IsString()
     personalId: string
 
-    @IsNotEmpty()
-    @IsString()
-    projectId: string
-
-    @IsNotEmpty()
-    @IsString()
-    roomId: string
-
     @IsOptional()
     @IsString()
     name: string

@@ -11,7 +11,7 @@ export class RoomsRepository extends BaseRepository<Room> {
         super(typeorm)
     }
 
-    async findAll(queryDto: QueryDto): Promise<PaginationResult<Room>> {
+    async find(queryDto: QueryDto): Promise<PaginationResult<Room>> {
         const qb = this.createQueryBuilder(queryDto)
 
         qb.where('entity.sceneId = :sceneId', { sceneId: queryDto.sceneId })

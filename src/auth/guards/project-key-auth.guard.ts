@@ -3,19 +3,23 @@ import {
     CanActivate,
     ExecutionContext,
     UnauthorizedException,
-    BadRequestException
+    BadRequestException,
+    Inject,
+    forwardRef
 } from '@nestjs/common'
 import { Request } from 'express'
 import { ProjectsService } from 'src/projects'
 
 @Injectable()
 export class ProjectKeyAuthGuard implements CanActivate {
-    constructor(private readonly projectsService: ProjectsService) {}
+    constructor(
+        @Inject(forwardRef(() => ProjectsService))
+        private readonly projectsService: ProjectsService
+    ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest<Request>()
         const authHeader = request.header('Authorization')
-        // TODO
         const projectId = request.params.projectId
 
         if (!authHeader) {

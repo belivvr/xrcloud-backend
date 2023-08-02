@@ -1,13 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import {
-    CacheService,
-    convertTimeToSeconds,
-    makeHashedId,
-    validatePassword
-} from 'src/common'
-import { UsersRepository } from './users.repository'
+import { CacheService, convertTimeToSeconds, makeHashedId, validatePassword } from 'src/common'
 import { ReticulumService } from 'src/reticulum'
+import { CreateUserDto } from './dto'
 import { UserConfigService } from './services'
+import { UsersRepository } from './users.repository'
 
 @Injectable()
 export class UsersService {
@@ -18,22 +14,24 @@ export class UsersService {
         private readonly configService: UserConfigService
     ) {}
 
-    async create(projectId: string, personalId: string) {
+    async createUser(createUserDto: CreateUserDto) {
+        const { personalId, projectId } = createUserDto
+
         const { account_id: infraUserId } = await this.reticulumService.login(personalId)
 
-        const hashedId = makeHashedId(projectId, personalId)
+        const hashedId = makeHashedId(personalId, projectId)
 
-        const createDto = {
+        const createUser = {
             personalId: hashedId,
             infraUserId: infraUserId,
             projectId: projectId
         }
 
-        return await this.usersRepository.create(createDto)
+        return await this.usersRepository.create(createUser)
     }
 
-    async getUser(projectId: string, personalId: string) {
-        const hashedId = makeHashedId(projectId, personalId)
+    async getUser(personalId: string, projectId: string) {
+        const hashedId = makeHashedId(personalId, projectId)
 
         const user = await this.usersRepository.findByPersonalId(hashedId)
 
@@ -54,8 +52,8 @@ export class UsersService {
         return user
     }
 
-    async userExists(projectId: string, personalId: string): Promise<boolean> {
-        const hashedId = makeHashedId(projectId, personalId)
+    async userExists(personalId: string, projectId: string): Promise<boolean> {
+        const hashedId = makeHashedId(personalId, projectId)
 
         return this.usersRepository.userExists(hashedId)
     }
@@ -64,15 +62,15 @@ export class UsersService {
         return validatePassword(plainPassword, hashedPassword)
     }
 
-    async getUserToken(projectId: string, personalId: string) {
-        const userExists = await this.userExists(projectId, personalId)
+    async getUserToken(personalId: string, projectId: string) {
+        const userExists = await this.userExists(personalId, projectId)
 
         let user
 
         if (!userExists) {
-            user = await this.create(projectId, personalId)
+            user = await this.createUser({ personalId: personalId, projectId: projectId })
         } else {
-            user = await this.getUser(projectId, personalId)
+            user = await this.getUser(personalId, projectId)
         }
 
         const key = `userAccessToken:${user.id}`

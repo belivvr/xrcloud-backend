@@ -6,18 +6,6 @@ cd "$(dirname "$0")"
 . ./@config.sh
 . ./login.sh
 
-# getSceneCreationUrl
-res=$(
-    GET "/projects/$PROJECT_ID/scenes/create-url?personalId=$PERSONAL_ID" \
-        -H "Authorization: Bearer $PROJECT_KEY"
-)
-
-# getSceneModificationUrl
-res=$(
-    GET "/projects/$PROJECT_ID/scenes/$SCENE_ID/modify-url?personalId=$PERSONAL_ID" \
-        -H "Authorization: Bearer $PROJECT_KEY"
-)
-
 # findScenes
 res=$(
     GET "/projects/$PROJECT_ID/scenes?$PAGE_OPT" \

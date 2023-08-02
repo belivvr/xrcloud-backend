@@ -25,33 +25,33 @@ export class AdminsController {
         return new AdminDto(admin)
     }
 
-    @Get('scenes/new')
-    async getSceneCreationUrl(@Headers('X-Xrcloud-Project-Id') projectId: string) {
-        return await this.adminsService.getSceneCreationUrl(projectId)
-    }
+    // @Get('scenes/new')
+    // async getSceneCreationUrl(@Headers('X-Xrcloud-Project-Id') projectId: string) {
+    //     return await this.adminsService.getSceneCreationUrl(projectId)
+    // }
 
-    @Get('scenes/modify')
-    async getSceneModificationUrl(
-        @Headers('X-Xrcloud-Project-Id') projectId: string,
-        @Query() getModifySceneUrlDto: AdminGetModifySceneUrlDto
-    ) {
-        return await this.adminsService.getSceneModificationUrl(projectId, getModifySceneUrlDto)
-    }
+    // @Get('scenes/modify')
+    // async getSceneModificationUrl(
+    //     @Headers('X-Xrcloud-Project-Id') projectId: string,
+    //     @Query() getModifySceneUrlDto: AdminGetModifySceneUrlDto
+    // ) {
+    //     return await this.adminsService.getSceneModificationUrl(projectId, getModifySceneUrlDto)
+    // }
 
-    @Post('rooms')
-    async createRoom(
-        @Headers('X-Xrcloud-Project-Id') projectId: string,
-        @Body() createRoomDto: AdminCreateRoomDto
-    ) {
-        return await this.adminsService.createRoom(projectId, createRoomDto)
-    }
+    // @Post('rooms')
+    // async createRoom(
+    //     @Headers('X-Xrcloud-Project-Id') projectId: string,
+    //     @Body() createRoomDto: AdminCreateRoomDto
+    // ) {
+    //     return await this.adminsService.createRoom(projectId, createRoomDto)
+    // }
 
-    @Patch('rooms/:id')
-    async updateRoom(
-        @Headers('X-Xrcloud-Project-Id') projectId: string,
-        @Param('id') roomId: string,
-        @Body() updateRoomDto: AdminUpdateRoomDto
-    ) {
-        return await this.adminsService.updateRoom(projectId, roomId, updateRoomDto)
-    }
+    // @Patch('rooms/:id')
+    // async updateRoom(
+    //     @Headers('X-Xrcloud-Project-Id') projectId: string,
+    //     @Param('id') roomId: string,
+    //     @Body() updateRoomDto: AdminUpdateRoomDto
+    // ) {
+    //     return await this.adminsService.updateRoom(projectId, roomId, updateRoomDto)
+    // }
 }

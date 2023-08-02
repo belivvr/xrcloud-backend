@@ -15,7 +15,9 @@ export class RoomsService {
         private readonly reticulumService: ReticulumService
     ) {}
 
-    async create(projectId: string, createRoomDto: CreateRoomDto) {
+    async createRoom(createRoomDto: CreateRoomDto) {
+        const { personalId, projectId, sceneId, ...data } = createRoomDto
+
         const count = await this.restrictRoomCreation(projectId)
 
         if (count >= 3) {
@@ -24,15 +26,13 @@ export class RoomsService {
             )
         }
 
-        const { personalId, sceneId, ...data } = createRoomDto
-
         const scene = await this.scenesService.getScene(sceneId)
 
-        const token = await this.usersService.getUserToken(projectId, personalId)
+        const token = await this.usersService.getUserToken(personalId, projectId)
 
         const infraRoom = await this.reticulumService.createRoom(scene.infraSceneId, data.name, token)
 
-        const user = await this.usersService.getUser(projectId, personalId)
+        const user = await this.usersService.getUser(personalId, projectId)
 
         const createRoom = {
             ...data,
@@ -46,30 +46,28 @@ export class RoomsService {
         return await this.roomsRepository.create(createRoom)
     }
 
-    async findAll(queryDto: QueryDto) {
-        const rooms = await this.roomsRepository.findAll(queryDto)
+    async findRooms(queryDto: QueryDto) {
+        const rooms = await this.roomsRepository.find(queryDto)
 
         return rooms
     }
 
-    async update(projectId: string, roomId: string, updateRoomDto: UpdateRoomDto) {
-        const { personalId, name, size } = updateRoomDto
+    async updateRoom(updateRoomDto: UpdateRoomDto) {
+        const { personalId, projectId, roomId, ...data } = updateRoomDto
 
         const room = await this.getRoom(roomId)
 
-        const token = await this.usersService.getUserToken(projectId, personalId)
+        const token = await this.usersService.getUserToken(personalId, projectId)
 
         const updateRoomArgs = {
-            name: name,
-            size: size,
+            ...data,
             token: token
         }
 
         await this.reticulumService.updateRoom(room.infraRoomId, updateRoomArgs)
 
         const updateRoom = {
-            name: name,
-            size: size
+            ...data
         }
 
         const updatedRoom = updateIntersection(room, updateRoom)
@@ -77,7 +75,7 @@ export class RoomsService {
         return await this.roomsRepository.update(updatedRoom)
     }
 
-    async remove(roomId: string) {
+    async removeRoom(roomId: string) {
         const room = await this.getRoom(roomId)
 
         await this.roomsRepository.remove(room)

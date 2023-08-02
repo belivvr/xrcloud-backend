@@ -17,7 +17,4 @@ export class Scene extends AggregateRoot {
 
     @Column()
     projectId: string
-
-    @Column()
-    ownerId: string
 }

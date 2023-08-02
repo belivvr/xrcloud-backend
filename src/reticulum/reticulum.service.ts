@@ -88,16 +88,6 @@ export class ReticulumService {
 
         const url = `${this.apiHost}/spoke/projects/${infraProjectId}?token=${token}&event-callback=${encodedCallbackUrl}`
 
-        try {
-            const response = await fetch(url, { method: 'GET' })
-
-            if (!response.ok) {
-                return false
-            }
-        } catch (error) {
-            return false
-        }
-
         return url
     }
 
