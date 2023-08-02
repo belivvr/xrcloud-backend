@@ -17,14 +17,14 @@ import {
     UseInterceptors
 } from '@nestjs/common'
 import { FileFieldsInterceptor } from '@nestjs/platform-express'
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard'
+import { AdminAuthGuard } from 'src/auth'
 import { multerOptions } from 'src/middleware'
 import { CreateProjectDto, QueryDto, UpdateProjectDto } from './dto'
 import { ProjectsService } from './projects.service'
 import { UploadedFilesType } from './types'
 
 @Controller('projects')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AdminAuthGuard)
 export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService) {}
 
