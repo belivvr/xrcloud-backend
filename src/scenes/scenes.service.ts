@@ -4,13 +4,14 @@ import { ReticulumService } from 'src/reticulum'
 import { UsersService } from 'src/users'
 import {
     CreateSceneDto,
-    GetModifySceneUrlDto,
-    GetSceneUrlDto,
+    GetSceneCreationUrlDto,
+    GetSceneModificationUrlDto,
     QueryDto,
     SceneDto,
     UpdateSceneDto
 } from './dto'
 import { ScenesRepository } from './scenes.repository'
+import { Scene } from './entities'
 
 @Injectable()
 export class ScenesService {
@@ -23,7 +24,7 @@ export class ScenesService {
     async create(createSceneDto: CreateSceneDto) {
         const { projectId: infraProjectId, sceneId: infraSceneId } = createSceneDto
 
-        if (await this.sceneExists(infraSceneId)) {
+        if (await this.infraSceneExists(infraSceneId)) {
             throw new ConflictException(`Scene with ID "${infraSceneId}" already exists`)
         }
 
@@ -45,32 +46,42 @@ export class ScenesService {
         await this.scenesRepository.create(createScene)
     }
 
-    async getNewSceneUrl(projectId: string, getSceneUrlDto: GetSceneUrlDto) {
-        const { personalId } = getSceneUrlDto
+    async getSceneCreationUrl(getSceneCreationUrlDto: GetSceneCreationUrlDto) {
+        const { personalId, projectId } = getSceneCreationUrlDto
 
         const token = await this.usersService.getUserToken(projectId, personalId)
 
-        const url = await this.reticulumService.getNewScene(token)
+        const url = await this.reticulumService.getSceneCreationUrl(token)
 
-        return { newSceneUrl: url }
+        return { sceneCreationUrl: url }
     }
 
-    async getModifySceneUrl(projectId: string, getModifySceneUrlDto: GetModifySceneUrlDto) {
-        const { personalId, sceneId } = getModifySceneUrlDto
+    async getSceneModificationUrl(getSceneModificationUrlDto: GetSceneModificationUrlDto) {
+        const { personalId, projectId, sceneId } = getSceneModificationUrlDto
 
         const scene = await this.getScene(sceneId)
 
         const token = await this.usersService.getUserToken(projectId, personalId)
 
-        const url = await this.reticulumService.getModifyScene(scene.infraProjectId, token)
+        const url = await this.reticulumService.getSceneModificationUrl(scene.infraProjectId, token)
 
-        return { modifySceneUrl: url }
+        return { sceneModificationUrl: url }
     }
 
-    async findAll(projectId: string, queryDto: QueryDto) {
-        const scenes = await this.scenesRepository.findAll(projectId, queryDto)
+    async findScenes(projectId: string, queryDto: QueryDto) {
+        const scenes = await this.scenesRepository.find(projectId, queryDto)
 
         return scenes
+    }
+
+    async getScene(sceneId: string): Promise<Scene> {
+        const scene = await this.scenesRepository.findById(sceneId)
+
+        if (!scene) {
+            throw new NotFoundException(`Scene with ID "${sceneId}" not found`)
+        }
+
+        return scene
     }
 
     async update(updateSceneDto: UpdateSceneDto) {
@@ -90,16 +101,6 @@ export class ScenesService {
         const updatedScene = updateIntersection(scene, updateScene)
 
         await this.scenesRepository.update(updatedScene)
-    }
-
-    async getScene(sceneId: string) {
-        const scene = await this.scenesRepository.findById(sceneId)
-
-        if (!scene) {
-            throw new NotFoundException(`Scene with ID "${sceneId}" not found`)
-        }
-
-        return scene
     }
 
     async getSceneDto(sceneId: string) {
@@ -123,7 +124,11 @@ export class ScenesService {
         return scene
     }
 
-    async sceneExists(infraSceneId: string): Promise<boolean> {
+    async sceneExists(sceneId: string): Promise<boolean> {
+        return this.scenesRepository.exist(sceneId)
+    }
+
+    async infraSceneExists(infraSceneId: string): Promise<boolean> {
         return this.scenesRepository.sceneExists(infraSceneId)
     }
 }

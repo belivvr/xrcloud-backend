@@ -49,7 +49,7 @@ export class ReticulumService {
         return response
     }
 
-    async getNewScene(token: string | undefined) {
+    async getSceneCreationUrl(token: string | undefined) {
         if (!token) {
             throw new InternalServerErrorException('Reticulumn: Token is required')
         }
@@ -78,7 +78,7 @@ export class ReticulumService {
         return response[0]
     }
 
-    async getModifyScene(infraProjectId: string, token: string | undefined) {
+    async getSceneModificationUrl(infraProjectId: string, token: string | undefined) {
         if (!token) {
             throw new InternalServerErrorException('Reticulumn: Token is required')
         }

@@ -27,18 +27,19 @@ export class AdminsService {
         return await this.adminsRepository.create(createAdmin)
     }
 
-    async getNewSceneUrl(projectId: string) {
+    async getSceneCreationUrl(projectId: string) {
         const personalId = `admin@${projectId}`
 
-        return await this.scenesService.getNewSceneUrl(projectId, { personalId: personalId })
+        return await this.scenesService.getSceneCreationUrl({ projectId: projectId, personalId: personalId })
     }
 
-    async getModifySceneUrl(projectId: string, getModifySceneUrlDto: AdminGetModifySceneUrlDto) {
+    async getSceneModificationUrl(projectId: string, getModifySceneUrlDto: AdminGetModifySceneUrlDto) {
         const { sceneId } = getModifySceneUrlDto
 
         const personalId = `admin@${projectId}`
 
-        return await this.scenesService.getModifySceneUrl(projectId, {
+        return await this.scenesService.getSceneModificationUrl({
+            projectId: projectId,
             personalId: personalId,
             sceneId: sceneId
         })

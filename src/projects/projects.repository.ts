@@ -11,7 +11,7 @@ export class ProjectsRepository extends BaseRepository<Project> {
         super(typeorm)
     }
 
-    async findAll(queryDto: QueryDto, adminId: string): Promise<PaginationResult<Project>> {
+    async find(queryDto: QueryDto, adminId: string): Promise<PaginationResult<Project>> {
         const qb = this.createQueryBuilder(queryDto)
 
         qb.where('entity.adminId = :adminId', {

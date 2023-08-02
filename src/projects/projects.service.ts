@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import {
-    generateUUID,
-    makeProjectKey,
-    updateIntersection
-} from 'src/common'
+    BadRequestException,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException
+} from '@nestjs/common'
+import { generateUUID, makeProjectKey, updateIntersection } from 'src/common'
 import { FileStorageService } from 'src/file-storage'
 import { CreateProjectDto, ProjectDto, QueryDto, UpdateProjectDto } from './dto'
 import { Project } from './entities'
@@ -54,8 +55,8 @@ export class ProjectsService {
         return project
     }
 
-    async findAll(queryDto: QueryDto, adminId: string) {
-        const projects = await this.projectsRepository.findAll(queryDto, adminId)
+    async findProjects(queryDto: QueryDto, adminId: string) {
+        const projects = await this.projectsRepository.find(queryDto, adminId)
 
         return projects
     }
@@ -88,7 +89,7 @@ export class ProjectsService {
         return await this.projectsRepository.update(updatedProject)
     }
 
-    async issueKey(projectId: string) {
+    async generateKey(projectId: string) {
         const project = await this.getProject(projectId)
 
         const projectKey = makeProjectKey(project.id, project.name)

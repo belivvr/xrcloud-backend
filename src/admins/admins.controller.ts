@@ -1,16 +1,4 @@
-import {
-    Body,
-    ConflictException,
-    Controller,
-    Get,
-    Headers,
-    Param,
-    Patch,
-    Post,
-    Query,
-    UseGuards
-} from '@nestjs/common'
-import { ProjectKeyAuthGuard } from 'src/auth'
+import { Body, ConflictException, Controller, Get, Headers, Param, Patch, Post, Query } from '@nestjs/common'
 import { AdminsService } from './admins.service'
 import {
     AdminCreateRoomDto,
@@ -20,7 +8,6 @@ import {
     CreateAdminDto
 } from './dto'
 
-// TODO: move to projects?
 @Controller('admins')
 export class AdminsController {
     constructor(private readonly adminsService: AdminsService) {}
@@ -39,22 +26,19 @@ export class AdminsController {
     }
 
     @Get('scenes/new')
-    @UseGuards(ProjectKeyAuthGuard)
-    async getNewSceneUrl(@Headers('X-Xrcloud-Project-Id') projectId: string) {
-        return await this.adminsService.getNewSceneUrl(projectId)
+    async getSceneCreationUrl(@Headers('X-Xrcloud-Project-Id') projectId: string) {
+        return await this.adminsService.getSceneCreationUrl(projectId)
     }
 
     @Get('scenes/modify')
-    @UseGuards(ProjectKeyAuthGuard)
-    async getModifySceneUrl(
+    async getSceneModificationUrl(
         @Headers('X-Xrcloud-Project-Id') projectId: string,
         @Query() getModifySceneUrlDto: AdminGetModifySceneUrlDto
     ) {
-        return await this.adminsService.getModifySceneUrl(projectId, getModifySceneUrlDto)
+        return await this.adminsService.getSceneModificationUrl(projectId, getModifySceneUrlDto)
     }
 
     @Post('rooms')
-    @UseGuards(ProjectKeyAuthGuard)
     async createRoom(
         @Headers('X-Xrcloud-Project-Id') projectId: string,
         @Body() createRoomDto: AdminCreateRoomDto
@@ -63,7 +47,6 @@ export class AdminsController {
     }
 
     @Patch('rooms/:id')
-    @UseGuards(ProjectKeyAuthGuard)
     async updateRoom(
         @Headers('X-Xrcloud-Project-Id') projectId: string,
         @Param('id') roomId: string,

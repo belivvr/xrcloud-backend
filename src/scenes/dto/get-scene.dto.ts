@@ -3,16 +3,24 @@ import { PaginationOptions } from 'src/common'
 
 export class QueryDto extends PaginationOptions {}
 
-export class GetSceneUrlDto {
+export class GetSceneCreationUrlDto {
     @IsNotEmpty()
     @IsString()
     personalId: string
+
+    @IsNotEmpty()
+    @IsUUID()
+    projectId: string
 }
 
-export class GetModifySceneUrlDto {
+export class GetSceneModificationUrlDto {
     @IsNotEmpty()
     @IsString()
     personalId: string
+
+    @IsNotEmpty()
+    @IsUUID()
+    projectId: string
 
     @IsNotEmpty()
     @IsUUID()

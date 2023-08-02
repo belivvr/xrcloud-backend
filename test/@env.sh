@@ -1,0 +1,10 @@
+#!/bin/bash
+
+FILE_PATH='../public'
+PAGE_OPT='take=100&skip=0'
+
+PROJECT_KEY='df1245cc4cd49ef53ccb25d9667c585364d3a57b9b61e39b9682ef530984bc42'
+PERSONAL_ID='a5b23c2c-4318-4375-9dcc-d38e333294b4'
+
+PROJECT_ID='ce97c298-baec-4168-bded-98c269ca8229'
+SCENE_ID='8eee89ec-c4f7-4e5e-9e1e-6992c8dceb5f'

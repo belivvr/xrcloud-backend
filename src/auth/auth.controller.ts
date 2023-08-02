@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Req, UnauthorizedException, UseGuards } fr
 import { Admin } from 'src/admins'
 import { LogicException } from 'src/common'
 import { AuthService } from './auth.service'
-import { JwtAuthGuard, LocalAuthGuard } from './guards'
+import { AdminAuthGuard, LocalAuthGuard } from './guards'
 
 @Controller('auth')
 export class AuthController {
@@ -19,7 +19,7 @@ export class AuthController {
     }
 
     @Get('profile')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(AdminAuthGuard)
     getProfile(@Req() req: AuthRequest) {
         if (!req.user) {
             throw new LogicException('getProfile failed. req.user is null.')

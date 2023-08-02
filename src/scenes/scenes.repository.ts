@@ -11,7 +11,7 @@ export class ScenesRepository extends BaseRepository<Scene> {
         super(typeorm)
     }
 
-    async findAll(projectId: string, queryDto: QueryDto): Promise<PaginationResult<Scene>> {
+    async find(projectId: string, queryDto: QueryDto): Promise<PaginationResult<Scene>> {
         const qb = this.createQueryBuilder(queryDto)
 
         qb.where('entity.projectId = :projectId', { projectId })

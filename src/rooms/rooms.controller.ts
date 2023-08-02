@@ -1,10 +1,8 @@
-import { Body, Controller, Delete, Get, Headers, Param, Patch, Post, Query, UseGuards } from '@nestjs/common'
-import { ProjectKeyAuthGuard } from 'src/auth'
+import { Body, Controller, Delete, Get, Headers, Param, Patch, Post, Query } from '@nestjs/common'
 import { CreateRoomDto, QueryDto, UpdateRoomDto } from './dto'
 import { RoomsService } from './rooms.service'
 
 @Controller('rooms')
-@UseGuards(ProjectKeyAuthGuard)
 export class RoomsController {
     constructor(private readonly roomsService: RoomsService) {}
 

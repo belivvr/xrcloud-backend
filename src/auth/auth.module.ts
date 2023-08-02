@@ -18,9 +18,9 @@ import { LocalStrategy } from './strategies/local.strategy'
                 const config = new AuthConfigService(configsafe)
 
                 return {
-                    secret: config.refreshSecret,
+                    secret: config.accessSecret,
                     signOptions: {
-                        expiresIn: config.refreshTokenExpiration
+                        expiresIn: config.accessTokenExpiration
                     }
                 }
             },
@@ -31,9 +31,9 @@ import { LocalStrategy } from './strategies/local.strategy'
                 const config = new AuthConfigService(configsafe)
 
                 return {
-                    secret: config.accessSecret,
+                    secret: config.refreshSecret,
                     signOptions: {
-                        expiresIn: config.accessTokenExpiration
+                        expiresIn: config.refreshTokenExpiration
                     }
                 }
             },
