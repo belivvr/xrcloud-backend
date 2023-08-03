@@ -23,17 +23,17 @@ export class ProjectKeyAuthGuard implements CanActivate {
         const projectId = request.params.projectId
 
         if (!authHeader) {
-            throw new UnauthorizedException('Authorization header is required')
+            throw new UnauthorizedException('Authorization header is required.')
         }
 
         if (!projectId) {
-            throw new BadRequestException('ProjectId is required')
+            throw new BadRequestException('ProjectId is required.')
         }
 
         const [bearer, ...tokenParts] = authHeader.split(' ')
 
         if (bearer.toLowerCase() !== 'bearer') {
-            throw new UnauthorizedException('Invalid authorization format')
+            throw new UnauthorizedException('Invalid authorization format.')
         }
 
         const projectKey = tokenParts.join(' ')
@@ -43,7 +43,7 @@ export class ProjectKeyAuthGuard implements CanActivate {
         const expectedProjectKey = project.projectKey
 
         if (projectKey !== expectedProjectKey) {
-            throw new UnauthorizedException('Invalid project key')
+            throw new UnauthorizedException('Invalid project key.')
         }
 
         return true

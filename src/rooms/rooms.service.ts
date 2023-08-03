@@ -22,7 +22,7 @@ export class RoomsService {
 
         if (count >= 3) {
             throw new ForbiddenException(
-                `Project with ID "${projectId}" exceeds the number of rooms that can be created`
+                `Project with ID "${projectId}" exceeds the number of rooms that can be created.`
             )
         }
 
@@ -85,7 +85,7 @@ export class RoomsService {
         const scene = await this.roomsRepository.findById(roomId)
 
         if (!scene) {
-            throw new NotFoundException(`Room with ID "${roomId}" not found`)
+            throw new NotFoundException(`Room with ID "${roomId}" not found.`)
         }
 
         return scene

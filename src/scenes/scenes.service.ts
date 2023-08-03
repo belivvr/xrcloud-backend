@@ -18,7 +18,7 @@ export class ScenesService {
         const { projectId: infraProjectId, sceneId: infraSceneId } = createSceneDto
 
         if (await this.infraSceneExists(infraSceneId)) {
-            throw new ConflictException(`Scene with ID "${infraSceneId}" already exists`)
+            throw new ConflictException(`Scene with ID "${infraSceneId}" already exists.`)
         }
 
         const infraScene = await this.reticulumService.getScene(infraSceneId)
@@ -70,7 +70,7 @@ export class ScenesService {
         const scene = await this.scenesRepository.findById(sceneId)
 
         if (!scene) {
-            throw new NotFoundException(`Scene with ID "${sceneId}" not found`)
+            throw new NotFoundException(`Scene with ID "${sceneId}" not found.`)
         }
 
         return scene
@@ -118,7 +118,7 @@ export class ScenesService {
         const scene = await this.scenesRepository.findByInfraUserId(infraSceneId)
 
         if (!scene) {
-            throw new NotFoundException(`Scene with ID "${infraSceneId}" not found`)
+            throw new NotFoundException(`Scene with ID "${infraSceneId}" not found.`)
         }
 
         return scene

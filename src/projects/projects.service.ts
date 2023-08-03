@@ -47,7 +47,7 @@ export class ProjectsService {
                 await this.fileStorageService.remove(faviconKey)
             }
 
-            throw new InternalServerErrorException(`Failed to upload files: ${error.message}`)
+            throw new InternalServerErrorException(`Failed to upload files: ${error.message}.`)
         }
 
         // TODO: transaction
@@ -130,7 +130,7 @@ export class ProjectsService {
         const project = await this.projectsRepository.findById(projectId)
 
         if (!project) {
-            throw new NotFoundException(`Project with ID "${projectId}" not found`)
+            throw new NotFoundException(`Project with ID "${projectId}" not found.`)
         }
 
         return project
@@ -161,7 +161,7 @@ export class ProjectsService {
         const typeDetails = FILE_TYPES.get(fileType)
 
         if (!typeDetails) {
-            throw new BadRequestException(`Unsupported file type: ${fileType}`)
+            throw new BadRequestException(`Unsupported file type: ${fileType}.`)
         }
 
         return `${typeDetails.type}/${prePath}/${fileId}.${typeDetails.extension}`

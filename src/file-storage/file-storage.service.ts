@@ -20,7 +20,7 @@ export class FileStorageService {
 
     async save(file: Buffer, key: string | undefined) {
         if (!key) {
-            throw new InternalServerErrorException('Key for deleting files is required')
+            throw new InternalServerErrorException('Key for deleting files is required.')
         }
 
         return await this.ncloudService.upload(file, key)
@@ -34,7 +34,7 @@ export class FileStorageService {
 
     async remove(key: string | undefined) {
         if (!key) {
-            throw new InternalServerErrorException('Key for deleting files is required')
+            throw new InternalServerErrorException('Key for deleting files is required.')
         }
 
         return await this.ncloudService.delete(key)

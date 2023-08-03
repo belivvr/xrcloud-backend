@@ -13,7 +13,7 @@ export class CallbacksController {
     @Post('event')
     async event(@Body() eventDto: EventDto) {
         if (!(await this.cacheService.get(eventDto.token))) {
-            throw new UnauthorizedException('Invalid token')
+            throw new UnauthorizedException('Invalid token.')
         }
 
         return await this.callbacksService.event(eventDto)

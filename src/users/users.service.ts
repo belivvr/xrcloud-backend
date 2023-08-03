@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { CacheService, convertTimeToSeconds, makeHashedId, validatePassword } from 'src/common'
 import { ReticulumService } from 'src/reticulum'
-import { CreateUserDto } from './dto'
+import { CreateUserDto, UserDto } from './dto'
 import { UserConfigService } from './services'
 import { UsersRepository } from './users.repository'
 
@@ -16,6 +16,10 @@ export class UsersService {
 
     async createUser(createUserDto: CreateUserDto) {
         const { personalId, projectId } = createUserDto
+
+        if (await this.userExists(personalId, projectId)) {
+            throw new ConflictException(`User with ID ${personalId} already exists in project.`)
+        }
 
         const { account_id: infraUserId } = await this.reticulumService.login(personalId)
 
@@ -36,7 +40,7 @@ export class UsersService {
         const user = await this.usersRepository.findByPersonalId(hashedId)
 
         if (!user) {
-            throw new NotFoundException(`User with ID "${personalId}" not found`)
+            throw new NotFoundException(`User with ID "${personalId}" not found.`)
         }
 
         return user
@@ -46,7 +50,7 @@ export class UsersService {
         const user = await this.usersRepository.findByInfraUserId(infraUserId)
 
         if (!user) {
-            throw new NotFoundException(`User with ID "${infraUserId}" not found`)
+            throw new NotFoundException(`User with ID "${infraUserId}" not found.`)
         }
 
         return user

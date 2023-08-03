@@ -35,7 +35,7 @@ export class PaginationOptions {
         const parts = value.split(':')
 
         if (parts.length !== 2) {
-            throw new BadRequestException('Invalid orderby format. It should be name:direction')
+            throw new BadRequestException('Invalid orderby format. It should be name:direction.')
         }
 
         const [name, direction] = parts

@@ -21,7 +21,7 @@ import { AdminAuthGuard, ProjectKeyAuthGuard } from 'src/auth'
 import { multerOptions } from 'src/middleware'
 import { RoomsService } from 'src/rooms'
 import { ScenesService } from 'src/scenes'
-import { UsersService } from 'src/users'
+import { UserDto, UsersService } from 'src/users'
 import {
     CreateProjectDto,
     CreateRoomDto,
@@ -67,17 +67,17 @@ export class ProjectsController {
         @Req() req: any
     ) {
         if (!req.user) {
-            throw new UnauthorizedException('Admin authentication failed')
+            throw new UnauthorizedException('Admin authentication failed.')
         }
 
         if (!(await this.projectsService.restrictProjectCreation(req.user.adminId))) {
             throw new ForbiddenException(
-                `Admin with ID "${req.user.adminId}" exceeds the number of projects that can be created`
+                `Admin with ID "${req.user.adminId}" exceeds the number of projects that can be created.`
             )
         }
 
         if (!files[FAVICON] || !files[LOGO]) {
-            throw new BadRequestException('Files is required')
+            throw new BadRequestException('Files is required.')
         }
 
         const project = await this.projectsService.createProject(createProjectDto, files, req.user.adminId)
@@ -89,7 +89,7 @@ export class ProjectsController {
     @UseGuards(AdminAuthGuard)
     async findProjects(@Query() queryDto: QueryDto, @Req() req: any) {
         if (!req.user) {
-            throw new UnauthorizedException('Admin authentication failed')
+            throw new UnauthorizedException('Admin authentication failed.')
         }
 
         const projects = await this.projectsService.findProjects(queryDto, req.user.adminId)
@@ -165,7 +165,9 @@ export class ProjectsController {
             projectId: projectId
         }
 
-        return await this.usersService.createUser(createUser)
+        const user = await this.usersService.createUser(createUser)
+
+        return new UserDto(user)
     }
 
     /**
@@ -295,7 +297,7 @@ export class ProjectsController {
         const projectExists = await this.projectsService.projectExists(projectId)
 
         if (!projectExists) {
-            throw new NotFoundException(`Project with ID "${projectId}" not found`)
+            throw new NotFoundException(`Project with ID "${projectId}" not found.`)
         }
     }
 
@@ -303,7 +305,7 @@ export class ProjectsController {
         const scene = await this.scenesService.getScene(sceneId)
 
         if (scene.projectId !== projectId) {
-            throw new BadRequestException(`Project with ID "${projectId}" is invalid`)
+            throw new BadRequestException(`Project with ID "${projectId}" is invalid.`)
         }
     }
 
@@ -311,11 +313,11 @@ export class ProjectsController {
         const room = await this.roomsService.getRoom(roomId)
 
         if (room.projectId !== projectId) {
-            throw new BadRequestException(`Project with ID "${projectId}" is invalid`)
+            throw new BadRequestException(`Project with ID "${projectId}" is invalid.`)
         }
 
         if (room.sceneId !== sceneId) {
-            throw new BadRequestException(`Scene with ID "${sceneId}" is invalid`)
+            throw new BadRequestException(`Scene with ID "${sceneId}" is invalid.`)
         }
     }
 }
