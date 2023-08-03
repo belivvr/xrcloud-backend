@@ -6,6 +6,9 @@ export class Room extends AggregateRoot {
     @Column()
     name: string
 
+    @Column()
+    slug: string
+
     @Column({ default: 10 })
     size: number
 

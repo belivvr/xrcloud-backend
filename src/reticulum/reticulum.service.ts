@@ -115,8 +115,8 @@ export class ReticulumService {
         return response
     }
 
-    getRoomUrl(infraRoomId: string) {
-        const url = `${this.apiHost}/${infraRoomId}`
+    getRoomUrl(infraRoomId: string, slug: string) {
+        const url = `${this.apiHost}/${infraRoomId}/${slug}`
 
         return url
     }

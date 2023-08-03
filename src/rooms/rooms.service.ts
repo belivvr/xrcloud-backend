@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
-import { updateIntersection } from 'src/common'
+import { getSlug, updateIntersection } from 'src/common'
 import { ReticulumService } from 'src/reticulum'
 import { ScenesService } from 'src/scenes'
 import { UsersService } from 'src/users'
@@ -32,10 +32,13 @@ export class RoomsService {
 
         const infraRoom = await this.reticulumService.createRoom(scene.infraSceneId, data.name, token)
 
+        const slug = getSlug(infraRoom.url)
+
         const user = await this.usersService.getUser(personalId, projectId)
 
         const createRoom = {
             ...data,
+            slug: slug,
             infraRoomId: infraRoom.hub_id,
             thumbnailId: scene.thumbnailId,
             projectId: projectId,
@@ -97,8 +100,7 @@ export class RoomsService {
         const scene = await this.scenesService.getScene(room.sceneId)
 
         const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
-
-        const roomUrl = this.reticulumService.getRoomUrl(room.infraRoomId)
+        const roomUrl = this.reticulumService.getRoomUrl(room.infraRoomId, room.slug)
 
         const dto = new RoomDto(room)
         dto.roomUrl = roomUrl
