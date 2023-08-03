@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common'
 import * as dotenv from 'dotenv'
 import { Admin } from 'src/admins'
-import { ConfigException, Path, TypeormLogger, isDevelopment, isProduction } from 'src/common'
+import { ConfigException, TypeormLogger } from 'src/common'
 import { Project } from 'src/projects'
 import { Room } from 'src/rooms'
 import { Scene } from 'src/scenes'
@@ -12,11 +12,19 @@ import { Mig1687933860267 } from './migrations/1687933860267-mig'
 import { Mig1688005419317 } from './migrations/1688005419317-mig'
 import { Mig1688633058918 } from './migrations/1688633058918-mig'
 import { Mig1689745093072 } from './migrations/1689745093072-mig'
+import { Mig1691028245783 } from './migrations/1691028245783-mig'
 
 dotenv.config()
 
 const entities = [Admin, User, Project, Scene, Room]
-const migrations = [Mig1687757321854, Mig1687933860267, Mig1688005419317, Mig1688633058918, Mig1689745093072]
+const migrations = [
+    Mig1687757321854,
+    Mig1687933860267,
+    Mig1688005419317,
+    Mig1688633058918,
+    Mig1689745093072,
+    Mig1691028245783
+]
 
 type SupportedConnectionOptions = PostgresConnectionOptions
 
@@ -46,12 +54,7 @@ export const typeormOptions = (): SupportedConnectionOptions => {
 }
 
 const getPoolSize = () => {
-    console.log(process.env.TYPEORM_POOL_SIZE)
-
     const poolSize = parseInt(process.env.TYPEORM_POOL_SIZE ?? 'NaN')
-
-    console.log(poolSize)
-    console.log(typeof poolSize)
 
     if (Number.isNaN(poolSize)) {
         throw new ConfigException('TYPEORM_POOL_SIZE is not a number')

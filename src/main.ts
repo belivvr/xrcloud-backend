@@ -1,10 +1,7 @@
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import { NestFactory } from '@nestjs/core'
+import * as express from 'express'
 import { AppLoggerService, isDevelopment, isProduction } from 'src/common'
 import { AppModule } from './app.module'
-import * as express from 'express'
-
-// config({ path: '.env.development' }); // .env.development 파일을 로드합니다.
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule)

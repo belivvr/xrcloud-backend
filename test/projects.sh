@@ -18,8 +18,9 @@ res=$(
 id=$(echo $res | jq -r '.id')
 
 # findProjects
-res=$(GET "/projects?$PAGE_OPT" \
-    -H "Authorization: Bearer $ACCESS_TOKEN"
+res=$(
+    GET "/projects?$PAGE_OPT" \
+        -H "Authorization: Bearer $ACCESS_TOKEN"
 )
 
 # getProject

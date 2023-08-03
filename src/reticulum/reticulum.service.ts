@@ -43,7 +43,7 @@ export class ReticulumService {
         })
 
         if (!response || !response.token) {
-            throw new InternalServerErrorException('Reticulumn: Failed to login')
+            throw new InternalServerErrorException('Reticulum: Failed to login')
         }
 
         return response
@@ -51,7 +51,7 @@ export class ReticulumService {
 
     async getSceneCreationUrl(token: string | undefined) {
         if (!token) {
-            throw new InternalServerErrorException('Reticulumn: Token is required')
+            throw new InternalServerErrorException('Reticulum: Token is required')
         }
 
         const callbackUrl = `${this.host}/callbacks/event`
@@ -72,7 +72,7 @@ export class ReticulumService {
         })
 
         if (response.length === 0) {
-            throw new InternalServerErrorException(`Reticulumn: Scene with ID "${infraSceneId}" not found`)
+            throw new InternalServerErrorException(`Reticulum: Scene with ID "${infraSceneId}" not found`)
         }
 
         return response[0]
@@ -80,7 +80,7 @@ export class ReticulumService {
 
     async getSceneModificationUrl(infraProjectId: string, token: string | undefined) {
         if (!token) {
-            throw new InternalServerErrorException('Reticulumn: Token is required')
+            throw new InternalServerErrorException('Reticulum: Token is required')
         }
 
         const callbackUrl = `${this.host}/callbacks/event`
@@ -109,7 +109,7 @@ export class ReticulumService {
         })
 
         if (!response) {
-            throw new InternalServerErrorException(`Reticulumn: Failed to create room`)
+            throw new InternalServerErrorException(`Reticulum: Failed to create room`)
         }
 
         return response
@@ -141,7 +141,7 @@ export class ReticulumService {
         })
 
         if (!response) {
-            throw new InternalServerErrorException(`Reticulumn: Failed to create room`)
+            throw new InternalServerErrorException(`Reticulum: Failed to update room`)
         }
 
         return response
@@ -160,7 +160,7 @@ export class ReticulumService {
 
         if (response.length === 0) {
             throw new InternalServerErrorException(
-                `Reticulumn: Thumbnail file with ID "${screenshotFileId}" not found`
+                `Reticulum: Thumbnail file with ID "${screenshotFileId}" not found`
             )
         }
 

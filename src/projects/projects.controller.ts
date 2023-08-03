@@ -147,7 +147,7 @@ export class ProjectsController {
     async removeProject(@Param('projectId') projectId: string) {
         await this.validateProject(projectId)
 
-        return this.projectsService.removeProject(projectId)
+        return await this.projectsService.removeProject(projectId)
     }
 
     /**
@@ -190,6 +190,15 @@ export class ProjectsController {
         await this.validateScene(projectId, sceneId)
 
         return await this.scenesService.getSceneDto(sceneId)
+    }
+
+    @Delete(':projectId/scenes/:sceneId')
+    @UseGuards(ProjectKeyAuthGuard)
+    async removeScene(@Param('projectId') projectId: string, @Param('sceneId') sceneId: string) {
+        await this.validateProject(projectId)
+        await this.validateScene(projectId, sceneId)
+
+        return await this.scenesService.removeScene(sceneId)
     }
 
     /**

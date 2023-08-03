@@ -17,3 +17,9 @@ res=$(
     GET "/projects/$PROJECT_ID/scenes/$SCENE_ID" \
         -H "Authorization: Bearer $PROJECT_KEY"
 )
+
+# removeScene
+res=$(
+    DELETE "/projects/$PROJECT_ID/scenes/$SCENE_ID" \
+        -H "Authorization: Bearer $PROJECT_KEY"
+)

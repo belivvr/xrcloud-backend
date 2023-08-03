@@ -95,6 +95,12 @@ export class ScenesService {
         await this.scenesRepository.update(updatedScene)
     }
 
+    async removeScene(sceneId: string) {
+        const scene = await this.getScene(sceneId)
+
+        await this.scenesRepository.remove(scene)
+    }
+
     async getSceneDto(sceneId: string) {
         const scene = await this.getScene(sceneId)
 
