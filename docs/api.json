@@ -12,7 +12,7 @@
         {
             "name": "authentication",
             "x-displayName": "Authentication",
-            "description": "This API uses three types of authentication tokens. The `AccessToken`, `ProjectId` and `ProjectKey`. \n\n - `AccessToken` is used when making calls to [Project APIs](#tag/project). It can be obtained by first registering an account [(create admin)](#tag/admin/operation/CreateAdmin), followed by logging into that account [(login)](#tag/authentication/operation/Login). \n\n `ProjectId` and `ProjectKey` are used simultaneously in almost all other API calls. \n\n - `ProjectId` can be obtained via [create](#tag/project/operation/CreateProject) or [get project](#tag/project/operation/GetProject). \n\n - `ProjectKey` can be obtained via [issue key](#tag/project/operation/IssueProjectKey). \n\n Please ensure that you have the necessary tokens and include them in the header of your requests as required."
+            "description": "This API uses three types of authentication tokens. The `AccessToken` and `ProjectKey`. \n\n - `AccessToken` can be obtained by first registering an account [(create admin)](#tag/admin/operation/CreateAdmin), followed by logging into that account [(login)](#tag/authentication/operation/Login). \n\n - `ProjectKey` can be generated via 'generate key' after creating a project on the web. \n\n Please ensure that you have the necessary tokens and include them in the header of your requests as required."
         },
         {
             "name": "admin",
@@ -23,6 +23,11 @@
             "name": "project",
             "x-displayName": "Project",
             "description": "*** Currently, only one project can be created per admin account."
+        },
+        {
+            "name": "user",
+            "x-displayName": "User",
+            "description": "A user in your projects, third-party apps. User registration is required before making any API calls, such as creating or modifying rooms."
         },
         {
             "name": "scene",
@@ -46,6 +51,7 @@
             "tags": [
                 "admin",
                 "project",
+                "user",
                 "scene",
                 "room"
             ]
@@ -60,7 +66,7 @@
                 ],
                 "operationId": "Login",
                 "summary": "Create an authentication token",
-                "description": "Creates and returns a bearer token in JWT format that you can use to \n authenticate with XRCLOUD Developers APIs. \n\n The returned token is used in the HTTP Authorization header like `Authorization: Bearer {TOKEN}`.",
+                "description": "Creates and returns a bearer token in JWT format that you can use to \n authenticate with XRCLOUD Developers APIs. \n\n The returned token is used in the HTTP Authorization header like `Authorization: Bearer {AccessToken}`.",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -179,50 +185,6 @@
             }
         },
         "/projects": {
-            "post": {
-                "tags": [
-                    "project"
-                ],
-                "operationId": "CreateProject",
-                "summary": "create project",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/AccessToken"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateProjectRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Project"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
             "get": {
                 "tags": [
                     "project"
@@ -301,139 +263,33 @@
                         }
                     }
                 }
-            },
-            "patch": {
+            }
+        },
+        "/projects/{projectId}/users": {
+            "post": {
                 "tags": [
-                    "project"
+                    "user"
                 ],
-                "operationId": "UpdateProject",
-                "summary": "update project",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/AccessToken"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectIdPathParam"
-                    }
-                ],
+                "operationId": "CreateUser",
+                "summary": "create user account",
+                "description": "Create (register) a user for your projects.",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CreateProjectRequest"
+                                "$ref": "#/components/schemas/CreateUserRequest"
                             }
                         }
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "OK",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Project"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "tags": [
-                    "project"
-                ],
-                "operationId": "RemoveProject",
-                "summary": "remove project",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/AccessToken"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectIdPathParam"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/projects/{id}/issue-key": {
-            "patch": {
-                "tags": [
-                    "project"
-                ],
-                "operationId": "IssueProjectKey",
-                "summary": "issue project key",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/AccessToken"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectIdPathParam"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/IssueProjectKeySuccessResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/scenes/new": {
-            "get": {
-                "tags": [
-                    "scene"
-                ],
-                "operationId": "GetNewScene",
-                "summary": "get url to create scene",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/ProjectKey"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectId"
-                    },
-                    {
-                        "$ref": "#/components/parameters/PersonalIdQueryParam"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetNewSceneSuccessResponse"
+                                    "$ref": "#/components/schemas/CreateUserSuccessResponse"
                                 }
                             }
                         }
@@ -451,49 +307,7 @@
                 }
             }
         },
-        "/scenes/modify": {
-            "get": {
-                "tags": [
-                    "scene"
-                ],
-                "operationId": "GetModifyScene",
-                "summary": "get url to modify scene",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/ProjectKey"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectId"
-                    },
-                    {
-                        "$ref": "#/components/parameters/PersonalIdQueryParam"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetModifySceneSuccessResponse"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/scenes": {
+        "/projects/{project_id}/scenes": {
             "get": {
                 "tags": [
                     "scene"
@@ -503,12 +317,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ProjectKey"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectId"
-                    },
-                    {
-                        "$ref": "#/components/parameters/PersonalIdQueryParam"
                     }
                 ],
                 "responses": {
@@ -535,7 +343,70 @@
                 }
             }
         },
-        "/rooms": {
+        "/projects/{project_id}/scenes/{scene_id}": {
+            "get": {
+                "tags": [
+                    "scene"
+                ],
+                "operationId": "GetScene",
+                "summary": "get scene",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ProjectKey"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Scene"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "scene"
+                ],
+                "operationId": "RemoveScene",
+                "summary": "remove scene",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ProjectKey"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "default": {
+                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/{project_id}/scenes/{scene_id}/rooms": {
             "post": {
                 "tags": [
                     "room"
@@ -545,9 +416,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ProjectKey"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectId"
                     }
                 ],
                 "requestBody": {
@@ -592,9 +460,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ProjectKey"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectId"
                     }
                 ],
                 "responses": {
@@ -621,7 +486,7 @@
                 }
             }
         },
-        "/rooms/{id}": {
+        "/projects/{project_id}/scenes/{scene_id}/rooms/{room_id}": {
             "get": {
                 "tags": [
                     "room"
@@ -631,12 +496,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ProjectKey"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectId"
-                    },
-                    {
-                        "$ref": "#/components/parameters/RoomIdPathParam"
                     }
                 ],
                 "responses": {
@@ -671,12 +530,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ProjectKey"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectId"
-                    },
-                    {
-                        "$ref": "#/components/parameters/RoomIdPathParam"
                     }
                 ],
                 "requestBody": {
@@ -721,12 +574,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ProjectKey"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectId"
-                    },
-                    {
-                        "$ref": "#/components/parameters/RoomIdPathParam"
                     }
                 ],
                 "responses": {
@@ -792,33 +639,6 @@
                 "description": "(pagination) number of rows to skip.",
                 "schema": {
                     "type": "number"
-                }
-            },
-            "ProjectIdPathParam": {
-                "required": true,
-                "name": "id",
-                "in": "path",
-                "description": "The project's ID (UUID).",
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "PersonalIdQueryParam": {
-                "required": true,
-                "name": "personalId",
-                "in": "query",
-                "description": "The app user's unique ID (e.g., UUID).",
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "RoomIdPathParam": {
-                "required": true,
-                "name": "id",
-                "in": "path",
-                "description": "The room's ID (UUID).",
-                "schema": {
-                    "type": "string"
                 }
             }
         },
@@ -1018,12 +838,38 @@
                     }
                 }
             },
+            "CreateUserRequest": {
+                "type": "object",
+                "required": [
+                    "personalId"
+                ],
+                "properties": {
+                    "personalId": {
+                        "description": "The app user's unique ID (e.g., UUID).",
+                        "type": "string",
+                        "example": "7f6ade40-5d48-466c-aea5-93dd05b59aad"
+                    }
+                }
+            },
+            "CreateUserSuccessResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "389f0854-231e-4f9e-a0dc-8f801a41fd6a"
+                    },
+                    "projectId": {
+                        "type": "string",
+                        "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
+                    }
+                }
+            },
             "Project": {
                 "type": "object",
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "The unique ID of the project.",
+                        "description": "(project_id) The unique ID of the project.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
@@ -1058,6 +904,11 @@
                         "type": "string",
                         "description": "The URL of the project's logo.",
                         "example": "https://kr.object.ncloudstorage.com/favicon/51d/51dc73cc-36db-4046-af8d-1e61e4b59c19.jpg"
+                    },
+                    "sceneCreationUrl": {
+                        "type": "string",
+                        "description": "The URL of the space to create the scene.",
+                        "example": "https://xrcloud.app:4000/spoke/projects/new?token=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
                     }
                 }
             },
@@ -1066,7 +917,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "The unique ID of the scene.",
+                        "description": "(scene_id) The unique ID of the scene.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
@@ -1078,6 +929,11 @@
                         "type": "string",
                         "description": "The URL of the scene's thumbnail.",
                         "example": "https://api.xrcloud.app/files/852a6f47-3978-4201-a637-9699d7845266.jpg"
+                    },
+                    "sceneModificationUrl": {
+                        "type": "string",
+                        "description": "The URL of the space to modify the scene.",
+                        "example": "https://xrcloud.app:4000/spoke/projects/ASJCJK1?token=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
                     }
                 }
             },
@@ -1086,7 +942,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "The unique ID of the room.",
+                        "description": "(room_id) The unique ID of the room.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
@@ -1128,32 +984,6 @@
                     }
                 }
             },
-            "CreateProjectRequest": {
-                "type": "object",
-                "required": [
-                    "name",
-                    "favicon",
-                    "logo"
-                ],
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Name of the project."
-                    },
-                    "favicon": {
-                        "type": "file",
-                        "format": "binary",
-                        "in": "formData",
-                        "description": "The favicon file to be displayed on the web, which should be square .ico file."
-                    },
-                    "logo": {
-                        "type": "file",
-                        "format": "binary",
-                        "in": "formData",
-                        "description": "The logo file to be displayed upon entering the space, which should be an image file."
-                    }
-                }
-            },
             "GetProjectsSuccessResponse": {
                 "type": "object",
                 "properties": {
@@ -1175,56 +1005,6 @@
                     "take": {
                         "type": "number",
                         "description": "The number of items to take for pagination."
-                    }
-                }
-            },
-            "UpdateProjectRequest": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "favicon": {
-                        "type": "file",
-                        "format": "binary",
-                        "in": "formData",
-                        "description": "The favicon file to be displayed on the web, which should be square .ico file."
-                    },
-                    "logo": {
-                        "type": "file",
-                        "format": "binary",
-                        "in": "formData",
-                        "description": "The logo file to be displayed upon entering the space, which should be an image file."
-                    }
-                }
-            },
-            "IssueProjectKeySuccessResponse": {
-                "type": "object",
-                "properties": {
-                    "projectKey": {
-                        "type": "string",
-                        "description": "The unique Key of the project.",
-                        "example": "912345cd4073471234fc71223a3a305dssaxc381ad982abbbsx96611c541sa767"
-                    }
-                }
-            },
-            "GetNewSceneSuccessResponse": {
-                "type": "object",
-                "properties": {
-                    "newSceneUrl": {
-                        "type": "string",
-                        "description": "URL to create a new scene.",
-                        "example": "https://xrcloud.app:4000/spoke/projects/new?token=..."
-                    }
-                }
-            },
-            "GetModifySceneSuccessResponse": {
-                "type": "object",
-                "properties": {
-                    "modifySceneUrl": {
-                        "type": "string",
-                        "description": "URL to update a scene.",
-                        "example": "https://xrcloud.app:4000/spoke/projects/1dAzA1T?token=..."
                     }
                 }
             },
@@ -1256,7 +1036,6 @@
                 "type": "object",
                 "required": [
                     "personalId",
-                    "sceneId",
                     "name"
                 ],
                 "properties": {
@@ -1264,11 +1043,6 @@
                         "type": "string",
                         "description": "The app user's unique ID (e.g., UUID).",
                         "example": "7f6ade40-5d48-466c-aea5-93dd05b59aad"
-                    },
-                    "sceneId": {
-                        "type": "string",
-                        "description": "Id (uuid) of the XRCLOUD Scene.",
-                        "example": "c322b49b-6e12-47d9-b293-b5ab3727459c"
                     },
                     "name": {
                         "type": "string",
