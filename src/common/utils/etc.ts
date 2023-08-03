@@ -142,6 +142,13 @@ export function makeProjectKey(projectId: string, projectName: string) {
     return projectKey
 }
 
+export function getSlug(url: string): string {
+    const splitUrl = url.split('/')
+    const slug = splitUrl[splitUrl.length - 1]
+
+    return slug
+}
+
 export function toBoolean(value: string): boolean {
     if (typeof value === 'boolean') {
         return value
