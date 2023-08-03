@@ -65,13 +65,11 @@ export class UsersService {
     async getUserToken(personalId: string, projectId: string) {
         const userExists = await this.userExists(personalId, projectId)
 
-        let user
-
         if (!userExists) {
-            user = await this.createUser({ personalId: personalId, projectId: projectId })
-        } else {
-            user = await this.getUser(personalId, projectId)
+            throw new NotFoundException(`User with ID "${personalId}" not found in project.`)
         }
+
+        const user = await this.getUser(personalId, projectId)
 
         const key = `userAccessToken:${user.id}`
 
