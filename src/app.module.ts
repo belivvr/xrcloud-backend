@@ -15,8 +15,8 @@ import { UsersModule } from './users'
 
 const appModules = [
     ServeStaticModule.forRoot({
-        rootPath: join(__dirname, '..', 'docs'),
-        serveRoot: '/docs'
+        rootPath: join(__dirname, '..', 'docs/en'),
+        serveRoot: '/docs/en'
     }),
     GlobalModule,
     AuthModule,

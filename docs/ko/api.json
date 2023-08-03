@@ -12,22 +12,22 @@
         {
             "name": "authentication",
             "x-displayName": "Authentication",
-            "description": "This API uses three types of authentication tokens. The `AccessToken` and `ProjectKey`. \n\n - `AccessToken` can be obtained by first registering an account [(create admin)](#tag/admin/operation/CreateAdmin), followed by logging into that account [(login)](#tag/authentication/operation/Login). \n\n - `ProjectKey` can be generated via 'generate key' after creating a project on the web. \n\n Please ensure that you have the necessary tokens and include them in the header of your requests as required."
+            "description": "이 API는 두 가지 유형의 인증 토큰을 사용합니다. `AccessToken`, `ProjectKey`입니다. \n\n - `AccessToken` 먼저 계정을 등록한 후 해당 계정에 로그인하여 얻을 수 있습니다. \n\n - `ProjectKey` 웹에서 프로젝트를 생성한 후 '키 생성'을 통해 를 생성할 수 있습니다. \n\n 필요한 토큰이 있는지 확인하고 필요에 따라 요청 헤더에 토큰을 포함하세요."
         },
         {
             "name": "admin",
             "x-displayName": "Admin",
-            "description": "A user in XRCLOUD Developers with full access to the project."
+            "description": "프로젝트에 대한 전체 액세스 권한이 있는 XRCLOUD Developers의 사용자입니다."
         },
         {
             "name": "project",
             "x-displayName": "Project",
-            "description": "*** Currently, only one project can be created per admin account."
+            "description": "*** 현재 관리자 계정당 하나의 프로젝트만 만들 수 있습니다."
         },
         {
             "name": "user",
             "x-displayName": "User",
-            "description": "A user in your projects, third-party apps. User registration is required before making any API calls, such as creating or modifying rooms."
+            "description": "프로젝트, 앱의 사용자입니다. 방을 만들거나 수정하는 등의 API 호출을 하기 전에 사용자 등록이 필요합니다."
         },
         {
             "name": "scene",
@@ -36,7 +36,7 @@
         {
             "name": "room",
             "x-displayName": "Room",
-            "description": "*** Currently, can create 3 rooms per project."
+            "description": "*** 현재 프로젝트당 3개의 방을 만들 수 있습니다."
         }
     ],
     "x-tagGroups": [
@@ -66,7 +66,7 @@
                 ],
                 "operationId": "Login",
                 "summary": "Create an authentication token",
-                "description": "Creates and returns a bearer token in JWT format that you can use to \n authenticate with XRCLOUD Developers APIs. \n\n The returned token is used in the HTTP Authorization header like `Authorization: Bearer {AccessToken}`.",
+                "description": "XRCLOUD 개발자 API로 인증하는 데 사용할 수 있는 JWT 형식의 Bearer Token을 생성하고 반환합니다. \n\n 반환된 토큰은 HTTP 권한 부여 헤더에서 `Authorization: Bearer {AccessToken}`과 같이 사용됩니다.",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -79,7 +79,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Authentication successful",
+                        "description": "인증 성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -89,7 +89,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -120,7 +120,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Authentication successful",
+                        "description": "인증 성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -130,7 +130,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -149,7 +149,7 @@
                 ],
                 "operationId": "CreateAdmin",
                 "summary": "create admin account",
-                "description": "Create a user (admin) for XRCLOUD Developers.",
+                "description": "XRCLOUD Developers 사용자(관리자)를 생성합니다.",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -162,7 +162,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "OK",
+                        "description": "성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -172,7 +172,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -204,7 +204,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -214,7 +214,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -236,14 +236,11 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/AccessToken"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectIdPathParam"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -253,7 +250,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -272,7 +269,7 @@
                 ],
                 "operationId": "CreateUser",
                 "summary": "create user account",
-                "description": "Create (register) a user for your projects.",
+                "description": "프로젝트에 사용자를 생성(등록)합니다.",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -285,7 +282,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "OK",
+                        "description": "성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -295,7 +292,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -321,7 +318,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -331,7 +328,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -357,7 +354,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -367,7 +364,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -391,10 +388,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "성공"
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -430,7 +427,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "OK",
+                        "description": "성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -440,7 +437,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -464,7 +461,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -474,7 +471,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -500,7 +497,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -510,7 +507,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -544,7 +541,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -554,7 +551,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -578,10 +575,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "성공"
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -603,7 +600,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "The header must contain the following `Authorization: Bearer {AccessToken}`"
+                "description": "헤더에 다음과 같은 인증 토큰이 반드시 포함되어야합니다. `Authorization: Bearer {AccessToken}`."
             },
             "ProjectKey": {
                 "required": true,
