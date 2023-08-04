@@ -53,7 +53,7 @@
     ],
     
     "paths": {
-        "/projects/{project_id}": {
+        "/api/projects/{project_id}": {
             "get": {
                 "tags": [
                     "project"
@@ -89,7 +89,7 @@
                 }
             }
         },
-        "/projects/{projectId}/users": {
+        "/api/projects/{projectId}/users": {
             "post": {
                 "tags": [
                     "user"
@@ -136,7 +136,7 @@
                 }
             }
         },
-        "/projects/{project_id}/scenes": {
+        "/api/projects/{project_id}/scenes": {
             "get": {
                 "tags": [
                     "scene"
@@ -172,7 +172,7 @@
                 }
             }
         },
-        "/projects/{project_id}/scenes/{scene_id}": {
+        "/api/projects/{project_id}/scenes/{scene_id}": {
             "get": {
                 "tags": [
                     "scene"
@@ -235,7 +235,7 @@
                 }
             }
         },
-        "/projects/{project_id}/scenes/{scene_id}/rooms": {
+        "/api/projects/{project_id}/scenes/{scene_id}/rooms": {
             "post": {
                 "tags": [
                     "room"
@@ -315,7 +315,7 @@
                 }
             }
         },
-        "/projects/{project_id}/scenes/{scene_id}/rooms/{room_id}": {
+        "/api/projects/{project_id}/scenes/{scene_id}/rooms/{room_id}": {
             "get": {
                 "tags": [
                     "room"
