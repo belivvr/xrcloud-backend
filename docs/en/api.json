@@ -12,12 +12,7 @@
         {
             "name": "authentication",
             "x-displayName": "Authentication",
-            "description": "This API uses two types of authentication tokens. The `AccessToken` and `ProjectKey`. \n\n - `AccessToken` can be obtained by first registering an account [(create admin)](#tag/admin/operation/CreateAdmin), followed by logging into that account [(login)](#tag/authentication/operation/Login). \n\n - `ProjectKey` can be generated via 'generate key' after creating a project on the web. \n\n Please ensure that you have the necessary tokens and include them in the header of your requests as required."
-        },
-        {
-            "name": "admin",
-            "x-displayName": "Admin",
-            "description": "A user in XRCLOUD Developers with full access to the project."
+            "description": "All API calls in this document require an `ApiKey`. `ApiKey` can be obtained on the web."
         },
         {
             "name": "project",
@@ -49,7 +44,6 @@
         {
             "name": "API",
             "tags": [
-                "admin",
                 "project",
                 "user",
                 "scene",
@@ -59,174 +53,7 @@
     ],
     
     "paths": {
-        "/auth/login": {
-            "post": {
-                "tags": [
-                    "authentication"
-                ],
-                "operationId": "Login",
-                "summary": "Create an authentication token",
-                "description": "Creates and returns a bearer token in JWT format that you can use to \n authenticate with XRCLOUD Developers APIs. \n\n The returned token is used in the HTTP Authorization header like `Authorization: Bearer {AccessToken}`.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/LoginRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Authentication successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/LoginSuccessResponse"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/refresh": {
-            "post": {
-                "tags": [
-                    "authentication"
-                ],
-                "operationId": "RefreshAccessToken",
-                "summary": "Refresh an authentication token",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RefreshAccessTokenRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Authentication successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/RefreshAccessTokenSuccessResponse"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admins": {
-            "post": {
-                "tags": [
-                    "admin"
-                ],
-                "operationId": "CreateAdmin",
-                "summary": "create admin account",
-                "description": "Create a user (admin) for XRCLOUD Developers.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateAdminRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CreateAdminSuccessResponse"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/projects": {
-            "get": {
-                "tags": [
-                    "project"
-                ],
-                "operationId": "GetProjects",
-                "summary": "get projects",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/AccessToken"
-                    },
-                    {
-                        "$ref": "#/components/parameters/PaginationTake"
-                    },
-                    {
-                        "$ref": "#/components/parameters/PaginationSkip"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetProjectsSuccessResponse"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/projects/{id}": {
+        "/projects/{project_id}": {
             "get": {
                 "tags": [
                     "project"
@@ -235,10 +62,7 @@
                 "summary": "get project",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/AccessToken"
-                    },
-                    {
-                        "$ref": "#/components/parameters/ProjectIdPathParam"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -273,6 +97,11 @@
                 "operationId": "CreateUser",
                 "summary": "create user account",
                 "description": "Create (register) a user for your projects.",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ApiKey"
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -316,7 +145,7 @@
                 "summary": "get scenes",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -352,7 +181,7 @@
                 "summary": "get scene",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -386,7 +215,7 @@
                 "summary": "remove scene",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -415,7 +244,7 @@
                 "summary": "create room",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "requestBody": {
@@ -459,7 +288,7 @@
                 "summary": "get rooms",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -495,7 +324,7 @@
                 "summary": "get room",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -529,7 +358,7 @@
                 "summary": "update room",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "requestBody": {
@@ -573,7 +402,7 @@
                 "summary": "remove room",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -596,32 +425,14 @@
     },
     "components": {
         "parameters": {
-            "AccessToken": {
+            "ApiKey": {
                 "required": true,
                 "name": "Authorization",
                 "in": "header",
                 "schema": {
                     "type": "string"
                 },
-                "description": "The header must contain the following `Authorization: Bearer {AccessToken}`"
-            },
-            "ProjectKey": {
-                "required": true,
-                "name": "Authorization",
-                "in": "header",
-                "schema": {
-                    "type": "string"
-                },
-                "description": "The header must contain the following `Authorization: Bearer {ProjectKey}`"
-            },
-            "ProjectId": {
-                "required": true,
-                "name": "X-Xrcloud-Project-Id",
-                "in": "header",
-                "schema": {
-                    "type": "string"
-                },
-                "description": "The header must contain the following `X-Xrcloud-Project-Id: {ProjectId}`"
+                "description": "The header must contain the following `Authorization: Bearer {ApiKey}`."
             },
             "PaginationTake": {
                 "required": false,
@@ -673,171 +484,6 @@
                     }
                 }
             },
-            "CreateAdminRequest": {
-                "type": "object",
-                "required": [
-                    "email",
-                    "password"
-                ],
-                "properties": {
-                    "email": {
-                        "description": "The email of the XRCLOUD Developers account to authenticate with.",
-                        "type": "string",
-                        "example": "xrcloud@belivvr.com"
-                    },
-                    "password": {
-                        "description": "The password XRCLOUD Developers account to authenticate with.",
-                        "type": "string",
-                        "example": "examPassword12!"
-                    }
-                }
-            },
-            "CreateAdminSuccessResponse": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "example": "389f0854-231e-4f9e-a0dc-8f801a41fd6a"
-                    },
-                    "email": {
-                        "type": "string",
-                        "example": "xrcloud@belivvr.com"
-                    }
-                }
-            },
-            "CreateAdminErrorResponse": {
-                "type": "object",
-                "properties": {
-                    "statusCode": {
-                        "type": "number",
-                        "example": "409"
-                    },
-                    "method": {
-                        "type": "string",
-                        "example": "POST"
-                    },
-                    "url": {
-                        "type": "string",
-                        "example": "/admins"
-                    },
-                    "body": {
-                        "type": "object",
-                        "example": {}
-                    },
-                    "message": {
-                        "type": "string",
-                        "example": "Admin with email xrcloud@belivvr.com already exists"
-                    }
-                }
-            },
-            "LoginRequest": {
-                "type": "object",
-                "required": [
-                    "email",
-                    "password"
-                ],
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "description": "The email of the XRCLOUD Developers account to authenticate with.",
-                        "example": "xrcloud@belivvr.com"
-                    },
-                    "password": {
-                        "type": "string",
-                        "description": "The password XRCLOUD Developers account to authenticate with.",
-                        "example": "examPassword12!"
-                    }
-                }
-            },
-            "LoginSuccessResponse": {
-                "type": "object",
-                "properties": {
-                    "accessToken": {
-                        "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.66jdjBjjKZlsiUuNlMZ20W_zl2ADyT49USZiiENwDCw"
-                    },
-                    "refreshToken": {
-                        "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.vH8jp9p1RJF5lalQ8dCNatVXFbUfPZQByOs20HUwlFw"
-                    }
-                }
-            },
-            "LoginErrorResponse": {
-                "type": "object",
-                "properties": {
-                    "statusCode": {
-                        "type": "number",
-                        "example": "401"
-                    },
-                    "method": {
-                        "type": "string",
-                        "example": "POST"
-                    },
-                    "url": {
-                        "type": "string",
-                        "example": "/auth/login"
-                    },
-                    "body": {
-                        "type": "object",
-                        "example": {}
-                    },
-                    "message": {
-                        "type": "string",
-                        "example": "Unauthorized"
-                    }
-                }
-            },
-            "RefreshAccessTokenRequest": {
-                "type": "object",
-                "required": [
-                    "refreshToken"
-                ],
-                "properties": {
-                    "refreshToken": {
-                        "description": "Token issued with the accessToken at login.",
-                        "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.7YlBlmZz5v66QaUEidurmkT254FCvFlbdxSjI9u9u4g"
-                    }
-                }
-            },
-            "RefreshAccessTokenSuccessResponse": {
-                "type": "object",
-                "properties": {
-                    "accessToken": {
-                        "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.66jdjBjjKZlsiUuNlMZ20W_zl2ADyT49USZiiENwDCw"
-                    },
-                    "refreshToken": {
-                        "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.vH8jp9p1RJF5lalQ8dCNatVXFbUfPZQByOs20HUwlFw"
-                    }
-                }
-            },
-            "RefreshAccessTokenErrorResponse": {
-                "type": "object",
-                "properties": {
-                    "statusCode": {
-                        "type": "number",
-                        "example": "401"
-                    },
-                    "method": {
-                        "type": "string",
-                        "example": "POST"
-                    },
-                    "url": {
-                        "type": "string",
-                        "example": "/auth/refresh"
-                    },
-                    "body": {
-                        "type": "object",
-                        "example": {}
-                    },
-                    "message": {
-                        "type": "string",
-                        "example": "Unauthorized"
-                    }
-                }
-            },
             "CreateUserRequest": {
                 "type": "object",
                 "required": [
@@ -876,12 +522,6 @@
                         "type": "string",
                         "description": "The name of the project.",
                         "example": "example project name"
-                    },
-                    "projectKey": {
-                        "type": "string",
-                        "description": "The unique project key.",
-                        "example": "901bb5cd4073479419fc77873a305d7cf0dc3817d982ce8d3e96611c518a8767",
-                        "nullable": true
                     },
                     "createdAt": {
                         "type": "string",
@@ -981,30 +621,6 @@
                         "type": "string",
                         "description": "The URL of the room's thumbnail.",
                         "example": "https://api.xrcloud.app/files/852a6f47-3978-4201-a637-9699d7845266.jpg"
-                    }
-                }
-            },
-            "GetProjectsSuccessResponse": {
-                "type": "object",
-                "properties": {
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Project"
-                        },
-                        "description": "The list of projects."
-                    },
-                    "total": {
-                        "type": "number",
-                        "description": "The total number of projects."
-                    },
-                    "skip": {
-                        "type": "number",
-                        "description": "The number of skipped items for pagination."
-                    },
-                    "take": {
-                        "type": "number",
-                        "description": "The number of items to take for pagination."
                     }
                 }
             },

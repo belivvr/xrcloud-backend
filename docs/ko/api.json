@@ -12,12 +12,7 @@
         {
             "name": "authentication",
             "x-displayName": "Authentication",
-            "description": "이 API는 두 가지 유형(`AccessToken`, `ProjectKey`)의 인증 토큰을 사용합니다. \n\n - `AccessToken` [계정 생성](#tag/admin/operation/CreateAdmin) 이후 해당 계정에 [로그인](#tag/authentication/operation/Login)하여 얻을 수 있습니다. \n\n - `ProjectKey` 웹에서 Project를 생성한 후 '키 생성'을 통해 를 생성할 수 있습니다. \n\n 필요한 토큰이 있는지 확인하고 필요에 따라 요청 헤더에 토큰을 포함하세요."
-        },
-        {
-            "name": "admin",
-            "x-displayName": "Admin",
-            "description": "Project에 대한 전체 액세스 권한이 있는 XRCLOUD Developers의 사용자입니다."
+            "description": "해당 문서의 모든 API의 호출에는 `ApiKey`를 필요로 합니다. `ApiKey`는 웹 상에서 발급 받을 수 있습니다."
         },
         {
             "name": "project",
@@ -49,7 +44,6 @@
         {
             "name": "API",
             "tags": [
-                "admin",
                 "project",
                 "user",
                 "scene",
@@ -59,173 +53,6 @@
     ],
     
     "paths": {
-        "/auth/login": {
-            "post": {
-                "tags": [
-                    "authentication"
-                ],
-                "operationId": "Login",
-                "summary": "Create an authentication token",
-                "description": "XRCLOUD 개발자 API로 인증하는 데 사용할 수 있는 JWT 형식의 Bearer Token을 생성하고 반환합니다. \n\n 반환된 토큰은 HTTP 권한 부여 헤더에서 `Authorization: Bearer {AccessToken}`과 같이 사용됩니다.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/LoginRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "인증 성공",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/LoginSuccessResponse"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/refresh": {
-            "post": {
-                "tags": [
-                    "authentication"
-                ],
-                "operationId": "RefreshAccessToken",
-                "summary": "Refresh an authentication token",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/RefreshAccessTokenRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "인증 성공",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/RefreshAccessTokenSuccessResponse"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admins": {
-            "post": {
-                "tags": [
-                    "admin"
-                ],
-                "operationId": "CreateAdmin",
-                "summary": "create admin account",
-                "description": "XRCLOUD Developers 사용자(관리자)를 생성합니다.",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateAdminRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "성공",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CreateAdminSuccessResponse"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/projects": {
-            "get": {
-                "tags": [
-                    "project"
-                ],
-                "operationId": "GetProjects",
-                "summary": "get projects",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/AccessToken"
-                    },
-                    {
-                        "$ref": "#/components/parameters/PaginationTake"
-                    },
-                    {
-                        "$ref": "#/components/parameters/PaginationSkip"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "성공",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetProjectsSuccessResponse"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/projects/{id}": {
             "get": {
                 "tags": [
@@ -235,7 +62,7 @@
                 "summary": "get project",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/AccessToken"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -270,6 +97,11 @@
                 "operationId": "CreateUser",
                 "summary": "create user account",
                 "description": "Project에 사용자를 생성(등록)합니다.",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ApiKey"
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -313,7 +145,7 @@
                 "summary": "get scenes",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -349,7 +181,7 @@
                 "summary": "get scene",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -383,7 +215,7 @@
                 "summary": "remove scene",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -412,7 +244,7 @@
                 "summary": "create room",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "requestBody": {
@@ -456,7 +288,7 @@
                 "summary": "get rooms",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -492,7 +324,7 @@
                 "summary": "get room",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -526,7 +358,7 @@
                 "summary": "update room",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "requestBody": {
@@ -570,7 +402,7 @@
                 "summary": "remove room",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/ProjectKey"
+                        "$ref": "#/components/parameters/ApiKey"
                     }
                 ],
                 "responses": {
@@ -593,23 +425,14 @@
     },
     "components": {
         "parameters": {
-            "AccessToken": {
+            "ApiKey": {
                 "required": true,
                 "name": "Authorization",
                 "in": "header",
                 "schema": {
                     "type": "string"
                 },
-                "description": "헤더에 다음과 같은 인증 토큰이 반드시 포함되어야합니다. `Authorization: Bearer {AccessToken}`."
-            },
-            "ProjectKey": {
-                "required": true,
-                "name": "Authorization",
-                "in": "header",
-                "schema": {
-                    "type": "string"
-                },
-                "description": "헤더에 다음과 같은 인증 토큰이 반드시 포함되어야합니다.  `Authorization: Bearer {ProjectKey}`"
+                "description": "헤더에 다음과 같은 형태로 인증 키를 포함시켜야합니다. `Authorization: Bearer {ApiKey}`."
             },
             "PaginationTake": {
                 "required": false,
@@ -864,12 +687,6 @@
                         "type": "string",
                         "description": "Project의 이름입니다.",
                         "example": "example project name"
-                    },
-                    "projectKey": {
-                        "type": "string",
-                        "description": "고유한 Project 키입니다.",
-                        "example": "901bb5cd4073479419fc77873a305d7cf0dc3817d982ce8d3e96611c518a8767",
-                        "nullable": true
                     },
                     "createdAt": {
                         "type": "string",

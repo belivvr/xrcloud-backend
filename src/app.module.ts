@@ -18,6 +18,10 @@ const appModules = [
         rootPath: join(__dirname, '..', 'docs/en'),
         serveRoot: '/docs/en'
     }),
+    ServeStaticModule.forRoot({
+        rootPath: join(__dirname, '..', 'docs/ko'),
+        serveRoot: '/docs/ko'
+    }),
     GlobalModule,
     AuthModule,
     AdminsModule,
