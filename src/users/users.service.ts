@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { CacheService, convertTimeToSeconds, makeHashedId, validatePassword } from 'src/common'
 import { ReticulumService } from 'src/reticulum'
-import { CreateUserDto, UserDto } from './dto'
+import { CreateUserDto } from './dto'
 import { UserConfigService } from './services'
 import { UsersRepository } from './users.repository'
 

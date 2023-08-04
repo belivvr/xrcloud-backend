@@ -67,10 +67,14 @@ export class RoomsService {
             token: token
         }
 
-        await this.reticulumService.updateRoom(room.infraRoomId, updateRoomArgs)
+        const { hubs: updatedInfraRoom } = await this.reticulumService.updateRoom(
+            room.infraRoomId,
+            updateRoomArgs
+        )
 
         const updateRoom = {
-            ...data
+            ...data,
+            slug: updatedInfraRoom[0].slug
         }
 
         const updatedRoom = updateIntersection(room, updateRoom)

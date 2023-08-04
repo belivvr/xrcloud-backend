@@ -3,7 +3,6 @@ import { Project } from '../entities'
 export class ProjectDto {
     id: string
     name: string
-    projectKey: string
     createdAt: Date
     updatedAt: Date
     faviconUrl: string
@@ -11,8 +10,8 @@ export class ProjectDto {
     sceneCreationUrl: string
 
     constructor(project: Project) {
-        const { id, name, projectKey, createdAt, updatedAt } = project
+        const { id, name, createdAt, updatedAt } = project
 
-        Object.assign(this, { id, name, projectKey, createdAt, updatedAt })
+        Object.assign(this, { id, name, createdAt, updatedAt })
     }
 }

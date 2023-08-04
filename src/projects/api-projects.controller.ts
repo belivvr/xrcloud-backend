@@ -3,36 +3,27 @@ import {
     Body,
     Controller,
     Delete,
-    ForbiddenException,
     Get,
     NotFoundException,
     Param,
     Patch,
     Post,
     Query,
-    Req,
-    UnauthorizedException,
-    UploadedFiles,
-    UseGuards,
-    UseInterceptors
+    UseGuards
 } from '@nestjs/common'
-import { FileFieldsInterceptor } from '@nestjs/platform-express'
-import { AdminAuthGuard } from 'src/auth'
-import { multerOptions } from 'src/middleware'
+import { ApiKeyAuthGuard } from 'src/auth'
 import { RoomsService } from 'src/rooms'
 import { ScenesService } from 'src/scenes'
-import { AdminCreateRoomDto, CreateProjectDto, QueryDto, UpdateProjectDto } from './dto'
+import { UserDto, UsersService } from 'src/users'
+import { CreateRoomDto, CreateUserDto, QueryDto, UpdateRoomDto } from './dto'
 import { ProjectsService } from './projects.service'
-import { UploadedFilesType } from './types'
 
-const FAVICON = 'favicon'
-const LOGO = 'logo'
-
-@Controller('console/projects')
-@UseGuards(AdminAuthGuard)
-export class ProjectsController {
+@Controller('api/projects')
+@UseGuards(ApiKeyAuthGuard)
+export class ApiProjectsController {
     constructor(
         private readonly projectsService: ProjectsService,
+        private readonly usersService: UsersService,
         private readonly scenesService: ScenesService,
         private readonly roomsService: RoomsService
     ) {}
@@ -40,57 +31,6 @@ export class ProjectsController {
     /**
      * Projects
      */
-    @Post()
-    @UseInterceptors(
-        FileFieldsInterceptor(
-            [
-                { name: FAVICON, maxCount: 1 },
-                { name: LOGO, maxCount: 1 }
-            ],
-            {
-                fileFilter: multerOptions.imageFilter
-            }
-        )
-    )
-    async createProject(
-        @Body() createProjectDto: CreateProjectDto,
-        @UploadedFiles() files: UploadedFilesType,
-        @Req() req: any
-    ) {
-        if (!req.user) {
-            throw new UnauthorizedException('Admin authentication failed.')
-        }
-
-        if (!(await this.projectsService.restrictProjectCreation(req.user.adminId))) {
-            throw new ForbiddenException(
-                `Admin with ID "${req.user.adminId}" exceeds the number of projects that can be created.`
-            )
-        }
-
-        if (!files[FAVICON] || !files[LOGO]) {
-            throw new BadRequestException('Files is required.')
-        }
-
-        const project = await this.projectsService.createProject(createProjectDto, files, req.user.adminId)
-
-        return await this.projectsService.getProjectDto(project.id)
-    }
-
-    @Get()
-    async findProjects(@Query() queryDto: QueryDto, @Req() req: any) {
-        if (!req.user) {
-            throw new UnauthorizedException('Admin authentication failed.')
-        }
-
-        const projects = await this.projectsService.findProjects(queryDto, req.user.adminId)
-
-        const dtos = await Promise.all(
-            projects.items.map((project) => this.projectsService.getProjectDto(project.id))
-        )
-
-        return { ...projects, items: dtos }
-    }
-
     @Get(':projectId')
     async getProject(@Param('projectId') projectId: string) {
         await this.validateProject(projectId)
@@ -98,35 +38,23 @@ export class ProjectsController {
         return await this.projectsService.getProjectDto(projectId)
     }
 
-    @Patch(':projectId')
-    @UseInterceptors(
-        FileFieldsInterceptor(
-            [
-                { name: FAVICON, maxCount: 1 },
-                { name: LOGO, maxCount: 1 }
-            ],
-            {
-                fileFilter: multerOptions.imageFilter
-            }
-        )
-    )
-    async updateProject(
-        @Param('projectId') projectId: string,
-        @Body() updateProjectDto: UpdateProjectDto,
-        @UploadedFiles() files: UploadedFilesType
-    ) {
+    /**
+     * Users
+     */
+    @Post(':projectId/users')
+    async createUser(@Param('projectId') projectId: string, @Body() createUserDto: CreateUserDto) {
         await this.validateProject(projectId)
 
-        const project = await this.projectsService.updateProject(projectId, updateProjectDto, files)
+        const { personalId } = createUserDto
 
-        return await this.projectsService.getProjectDto(project.id)
-    }
+        const createUser = {
+            personalId: personalId,
+            projectId: projectId
+        }
 
-    @Delete(':projectId')
-    async removeProject(@Param('projectId') projectId: string) {
-        await this.validateProject(projectId)
+        const user = await this.usersService.createUser(createUser)
 
-        return await this.projectsService.removeProject(projectId)
+        return new UserDto(user)
     }
 
     /**
@@ -151,6 +79,14 @@ export class ProjectsController {
         return await this.scenesService.getSceneDto(sceneId)
     }
 
+    @Delete(':projectId/scenes/:sceneId')
+    async removeScene(@Param('projectId') projectId: string, @Param('sceneId') sceneId: string) {
+        await this.validateProject(projectId)
+        await this.validateScene(projectId, sceneId)
+
+        return await this.scenesService.removeScene(sceneId)
+    }
+
     /**
      * Rooms
      */
@@ -158,15 +94,12 @@ export class ProjectsController {
     async createRoom(
         @Param('projectId') projectId: string,
         @Param('sceneId') sceneId: string,
-        @Body() createRoomDto: AdminCreateRoomDto
+        @Body() createRoomDto: CreateRoomDto
     ) {
         await this.validateProject(projectId)
         await this.validateScene(projectId, sceneId)
 
-        const personalId = `admin@${projectId}`
-
         const createRoom = {
-            personalId: personalId,
             projectId: projectId,
             sceneId: sceneId,
             ...createRoomDto
@@ -204,6 +137,42 @@ export class ProjectsController {
         return await this.roomsService.getRoomDto(roomId)
     }
 
+    @Patch(':projectId/scenes/:sceneId/rooms/:roomId')
+    async updateRoom(
+        @Param('projectId') projectId: string,
+        @Param('sceneId') sceneId: string,
+        @Param('roomId') roomId: string,
+        @Body() updateRoomDto: UpdateRoomDto
+    ) {
+        await this.validateProject(projectId)
+        await this.validateScene(projectId, sceneId)
+        await this.validateRoom(projectId, sceneId, roomId)
+
+        const updateRoom = {
+            projectId: projectId,
+            roomId: roomId,
+            ...updateRoomDto
+        }
+
+        const room = await this.roomsService.updateRoom(updateRoom)
+
+        return await this.roomsService.getRoomDto(room.id)
+    }
+
+    @Delete(':projectId/scenes/:sceneId/rooms/:roomId')
+    async removeRoom(
+        @Param('projectId') projectId: string,
+        @Param('sceneId') sceneId: string,
+        @Param('roomId') roomId: string
+    ) {
+        await this.validateProject(projectId)
+        await this.validateScene(projectId, sceneId)
+        await this.validateRoom(projectId, sceneId, roomId)
+
+        return await this.roomsService.removeRoom(roomId)
+    }
+
+    // TODO
     private async validateProject(projectId: string) {
         const projectExists = await this.projectsService.projectExists(projectId)
 

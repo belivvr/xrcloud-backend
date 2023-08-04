@@ -1,16 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { hashPassword, validatePassword } from 'src/common'
+import { hashPassword, makeApikey, updateIntersection, validatePassword } from 'src/common'
 import { AdminsRepository } from './admins.repository'
 import { CreateAdminDto } from './dto'
 import { Admin } from './entities'
 
 @Injectable()
 export class AdminsService {
-    constructor(
-        private readonly adminsRepository: AdminsRepository
-    ) {}
+    constructor(private readonly adminsRepository: AdminsRepository) {}
 
-    async create(createAdminDto: CreateAdminDto) {
+    async createAdmin(createAdminDto: CreateAdminDto) {
         const { password } = createAdminDto
 
         const hashedPassword = await hashPassword(password)
@@ -21,6 +19,20 @@ export class AdminsService {
         }
 
         return await this.adminsRepository.create(createAdmin)
+    }
+
+    async generateApiKey(adminId: string) {
+        const admin = await this.getAdmin(adminId)
+
+        const apiKey = makeApikey(adminId)
+
+        const updateAdmin = {
+            apiKey: apiKey
+        }
+
+        const updatedScene = updateIntersection(admin, updateAdmin)
+
+        return await this.adminsRepository.update(updatedScene)
     }
 
     async getAdmin(adminId: string): Promise<Admin> {
@@ -35,6 +47,12 @@ export class AdminsService {
 
     async findAdminByEmail(email: string): Promise<Admin | null> {
         const admin = await this.adminsRepository.findByEmail(email)
+
+        return admin
+    }
+
+    async findByApiKey(apiKey: string): Promise<Admin | null> {
+        const admin = await this.adminsRepository.findByApiKey(apiKey)
 
         return admin
     }

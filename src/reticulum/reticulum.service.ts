@@ -127,7 +127,7 @@ export class ReticulumService {
         const body = JSON.stringify({
             hub: {
                 name: name,
-                size: size
+                room_size: size
             }
         })
 

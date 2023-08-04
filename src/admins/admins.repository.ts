@@ -14,6 +14,10 @@ export class AdminsRepository extends BaseRepository<Admin> {
         return this.typeorm.findOneBy({ email: email })
     }
 
+    async findByApiKey(apiKey: string): Promise<Admin | null> {
+        return this.typeorm.findOneBy({ apiKey: apiKey })
+    }
+
     async emailExists(email: string): Promise<boolean> {
         return this.typeorm.exist({
             where: { email } as FindOptionsWhere<Admin>

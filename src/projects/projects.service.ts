@@ -4,7 +4,7 @@ import {
     InternalServerErrorException,
     NotFoundException
 } from '@nestjs/common'
-import { generateUUID, makeProjectKey, updateIntersection } from 'src/common'
+import { generateUUID, updateIntersection } from 'src/common'
 import { FileStorageService } from 'src/file-storage'
 import { ScenesService } from 'src/scenes'
 import { UsersService } from 'src/users'
@@ -102,22 +102,6 @@ export class ProjectsService {
         const updatedProject = updateIntersection(project, updateProject)
 
         return await this.projectsRepository.update(updatedProject)
-    }
-
-    async generateKey(projectId: string) {
-        const project = await this.getProject(projectId)
-
-        const projectKey = makeProjectKey(project.id, project.name)
-
-        const updateProject = {
-            projectKey: projectKey
-        }
-
-        const updatedProject = updateIntersection(project, updateProject)
-
-        await this.projectsRepository.update(updatedProject)
-
-        return { projectKey: projectKey }
     }
 
     async removeProject(projectId: string) {

@@ -4,7 +4,7 @@ cd "$(dirname "$0")"
 #
 . ./@config.sh
 
-# create
+# createAdmin
 res=$(
     POST /admins \
         -H "Content-Type: application/json" \
@@ -12,4 +12,10 @@ res=$(
                 "email": "zizi2717@belivvr.com",
                 "password": "123123"
             }'
+)
+
+# generateApiKey
+res=$(
+    PATCH /admins/api-key \
+        -H "Authorization: Bearer $ACCESS_TOKEN"
 )

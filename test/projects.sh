@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 
 # create
 res=$(
-    POST /projects \
+    POST /console/projects \
         -H "Authorization: Bearer $ACCESS_TOKEN" \
         -H 'Content-Type: multipart/form-data' \
         -F "favicon=@$FILE_PATH/favicon.ico" \
@@ -19,19 +19,19 @@ id=$(echo $res | jq -r '.id')
 
 # findProjects
 res=$(
-    GET "/projects?$PAGE_OPT" \
+    GET "/console/projects?$PAGE_OPT" \
         -H "Authorization: Bearer $ACCESS_TOKEN"
 )
 
 # getProject
 res=$(
-    GET "/projects/$id" \
+    GET "/console/projects/$id" \
         -H "Authorization: Bearer $ACCESS_TOKEN"
 )
 
 # updateProject
 res=$(
-    PATCH "/projects/$id" \
+    PATCH "/console/projects/$id" \
         -H "Authorization: Bearer $ACCESS_TOKEN" \
         -H 'Content-Type: multipart/form-data' \
         -F "favicon=@$FILE_PATH/favicon.ico" \
@@ -39,14 +39,8 @@ res=$(
         -F "name=testName"
 )
 
-# generateKey
-res=$(
-    PATCH "/projects/$id/generate-key" \
-        -H "Authorization: Bearer $ACCESS_TOKEN"
-)
-
 # removeProject
 res=$(
-    DELETE "/projects/$id" \
+    DELETE "/console/projects/$id" \
         -H "Authorization: Bearer $ACCESS_TOKEN"
 )

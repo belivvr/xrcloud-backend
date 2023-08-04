@@ -8,4 +8,7 @@ export class Admin extends AggregateRoot {
 
     @Column()
     password: string
+
+    @Column({ nullable: true })
+    apiKey: string
 }

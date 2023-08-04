@@ -124,22 +124,22 @@ export function equalsIgnoreCase(str1: any, str2: any): boolean {
     return false
 }
 
+export function makeApikey(adminid: string) {
+    const salt = crypto.randomBytes(16).toString('hex')
+
+    const data = adminid + salt
+
+    const apiKey: string = crypto.createHash('sha256').update(data).digest('hex')
+
+    return apiKey
+}
+
 export function makeHashedId(personalId: string, projectId: string) {
     const data = personalId + projectId
 
     const id: string = crypto.createHash('sha256').update(data).digest('hex')
 
     return id
-}
-
-export function makeProjectKey(projectId: string, projectName: string) {
-    const salt = crypto.randomBytes(16).toString('hex')
-
-    const data = projectId + projectName + salt
-
-    const projectKey: string = crypto.createHash('sha256').update(data).digest('hex')
-
-    return projectKey
 }
 
 export function getSlug(url: string): string {

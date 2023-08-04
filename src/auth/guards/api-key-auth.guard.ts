@@ -1,33 +1,27 @@
 import {
-    Injectable,
     CanActivate,
     ExecutionContext,
-    UnauthorizedException,
-    BadRequestException,
     Inject,
+    Injectable,
+    UnauthorizedException,
     forwardRef
 } from '@nestjs/common'
 import { Request } from 'express'
-import { ProjectsService } from 'src/projects'
+import { AdminsService } from 'src/admins'
 
 @Injectable()
-export class ProjectKeyAuthGuard implements CanActivate {
+export class ApiKeyAuthGuard implements CanActivate {
     constructor(
-        @Inject(forwardRef(() => ProjectsService))
-        private readonly projectsService: ProjectsService
+        @Inject(forwardRef(() => AdminsService))
+        private readonly adminsService: AdminsService
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest<Request>()
         const authHeader = request.header('Authorization')
-        const projectId = request.params.projectId
 
         if (!authHeader) {
             throw new UnauthorizedException('Authorization header is required.')
-        }
-
-        if (!projectId) {
-            throw new BadRequestException('ProjectId is required.')
         }
 
         const [bearer, ...tokenParts] = authHeader.split(' ')
@@ -36,14 +30,12 @@ export class ProjectKeyAuthGuard implements CanActivate {
             throw new UnauthorizedException('Invalid authorization format.')
         }
 
-        const projectKey = tokenParts.join(' ')
+        const apiKey = tokenParts.join(' ')
 
-        const project = await this.projectsService.getProject(projectId)
+        const admin = await this.adminsService.findByApiKey(apiKey)
 
-        const expectedProjectKey = project.projectKey
-
-        if (projectKey !== expectedProjectKey) {
-            throw new UnauthorizedException('Invalid project key.')
+        if (!admin) {
+            throw new UnauthorizedException('Invalid api key.')
         }
 
         return true

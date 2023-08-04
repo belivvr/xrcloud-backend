@@ -7,8 +7,8 @@ cd "$(dirname "$0")"
 
 # createUser
 res=$(
-    POST /projects/$PROJECT_ID/users \
-        -H "Authorization: Bearer $PROJECT_KEY" \
+    POST "/api/projects/$PROJECT_ID/users" \
+        -H "Authorization: Bearer $API_KEY" \
         -H "Content-Type: application/json" \
         -d '{
                 "personalId": "'$PERSONAL_ID'"

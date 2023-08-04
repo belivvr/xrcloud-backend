@@ -8,18 +8,12 @@ cd "$(dirname "$0")"
 
 # findScenes
 res=$(
-    GET "/projects/$PROJECT_ID/scenes?$PAGE_OPT" \
-        -H "Authorization: Bearer $PROJECT_KEY"
+    GET "/console/projects/$PROJECT_ID/scenes?$PAGE_OPT" \
+        -H "Authorization: Bearer $ACCESS_TOKEN"
 )
 
 # getScene
 res=$(
-    GET "/projects/$PROJECT_ID/scenes/$SCENE_ID" \
-        -H "Authorization: Bearer $PROJECT_KEY"
-)
-
-# removeScene
-res=$(
-    DELETE "/projects/$PROJECT_ID/scenes/$SCENE_ID" \
-        -H "Authorization: Bearer $PROJECT_KEY"
+    GET "/console/projects/$PROJECT_ID/scenes/$SCENE_ID" \
+        -H "Authorization: Bearer $ACCESS_TOKEN"
 )
