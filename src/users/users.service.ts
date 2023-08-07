@@ -41,9 +41,9 @@ export class UsersService {
             const userCandidate = this.usersRepository.createCandidate(createUser)
 
             return await transactionRepository.create(userCandidate)
+        } else {
+            return await this.usersRepository.create(createUser)
         }
-
-        return await this.usersRepository.create(createUser)
     }
 
     async getUser(personalId: string, projectId: string) {
