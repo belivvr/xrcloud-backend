@@ -8,25 +8,7 @@ export async function sleep(timeout: number): Promise<void> {
 }
 
 export function generateUUID() {
-    // Public Domain/MIT
-    let d = new Date().getTime() // Timestamp
-    let d2 = (typeof performance !== 'undefined' && performance.now && performance.now() * 1000) || 0 //Time in microseconds since page-load or 0 if unsupported
-
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        let r = Math.random() * 16 // random number between 0 and 16
-
-        if (d > 0) {
-            // Use timestamp until depleted
-            r = (d + r) % 16 | 0
-            d = Math.floor(d / 16)
-        } else {
-            // Use microseconds since page-load if supported
-            r = (d2 + r) % 16 | 0
-            d2 = Math.floor(d2 / 16)
-        }
-
-        return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
-    })
+    return crypto.randomUUID()
 }
 
 export function updateIntersection<T extends object>(obj1: T, obj2: any): T {
@@ -37,7 +19,7 @@ export function updateIntersection<T extends object>(obj1: T, obj2: any): T {
             }
             return updated
         },
-        { ...obj1 } // obj1의 사본을 만듭니다
+        { ...obj1 }
     )
 
     return updatedObject
@@ -124,10 +106,8 @@ export function equalsIgnoreCase(str1: any, str2: any): boolean {
     return false
 }
 
-export function makeApikey(adminid: string) {
-    const salt = crypto.randomBytes(16).toString('hex')
-
-    const data = adminid + salt
+export function makeApikey() {
+    const data = this.generateUUID()
 
     const apiKey: string = crypto.createHash('sha256').update(data).digest('hex')
 

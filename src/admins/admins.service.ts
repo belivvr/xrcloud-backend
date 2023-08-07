@@ -24,7 +24,7 @@ export class AdminsService {
     async generateApiKey(adminId: string) {
         const admin = await this.getAdmin(adminId)
 
-        const apiKey = makeApikey(adminId)
+        const apiKey = makeApikey()
 
         const updateAdmin = {
             apiKey: apiKey

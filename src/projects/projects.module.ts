@@ -10,6 +10,7 @@ import { ProjectsController } from './projects.controller'
 import { ProjectsRepository } from './projects.repository'
 import { ProjectsService } from './projects.service'
 import { AdminsModule } from 'src/admins'
+import { TransactionService } from 'src/common'
 
 @Module({
     imports: [
@@ -21,7 +22,7 @@ import { AdminsModule } from 'src/admins'
         RoomsModule
     ],
     controllers: [ProjectsController, ApiProjectsController],
-    providers: [ProjectsService, ProjectsRepository],
+    providers: [ProjectsService, ProjectsRepository, TransactionService],
     exports: [ProjectsService]
 })
 export class ProjectsModule {}

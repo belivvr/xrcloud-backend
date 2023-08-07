@@ -28,7 +28,7 @@ export class AdminsController {
             throw new LogicException('authentication failed. req.user is null.')
         }
 
-        const admin = await this.adminsService.generateApiKey(req.user.id)
+        const admin = await this.adminsService.generateApiKey(req.user.adminId)
 
         return new AdminDto(admin)
     }

@@ -1,5 +1,11 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
-import { CacheService, convertTimeToSeconds, makeHashedId, validatePassword } from 'src/common'
+import {
+    CacheService,
+    TransactionRepository,
+    convertTimeToSeconds,
+    makeHashedId,
+    validatePassword
+} from 'src/common'
 import { ReticulumService } from 'src/reticulum'
 import { CreateUserDto } from './dto'
 import { UserConfigService } from './services'
@@ -14,7 +20,7 @@ export class UsersService {
         private readonly configService: UserConfigService
     ) {}
 
-    async createUser(createUserDto: CreateUserDto) {
+    async createUser(createUserDto: CreateUserDto, transactionRepository?: TransactionRepository) {
         const { personalId, projectId } = createUserDto
 
         if (await this.userExists(personalId, projectId)) {
@@ -29,6 +35,12 @@ export class UsersService {
             personalId: hashedId,
             infraUserId: infraUserId,
             projectId: projectId
+        }
+
+        if (transactionRepository) {
+            const userCandidate = this.usersRepository.createCandidate(createUser)
+
+            return await transactionRepository.create(userCandidate)
         }
 
         return await this.usersRepository.create(createUser)
