@@ -1,5 +1,5 @@
 import { compare, hash } from 'bcrypt'
-import * as crypto from 'crypto'
+import { createHash, randomUUID } from 'crypto'
 import { LogicException } from '../exceptions'
 import { Coordinate } from '../types'
 
@@ -8,7 +8,7 @@ export async function sleep(timeout: number): Promise<void> {
 }
 
 export function generateUUID() {
-    return crypto.randomUUID()
+    return randomUUID()
 }
 
 export function updateIntersection<T extends object>(obj1: T, obj2: any): T {
@@ -107,9 +107,9 @@ export function equalsIgnoreCase(str1: any, str2: any): boolean {
 }
 
 export function makeApikey() {
-    const data = this.generateUUID()
+    const data = generateUUID()
 
-    const apiKey: string = crypto.createHash('sha256').update(data).digest('hex')
+    const apiKey: string = createHash('sha256').update(data).digest('hex')
 
     return apiKey
 }
@@ -117,7 +117,7 @@ export function makeApikey() {
 export function makeHashedId(personalId: string, projectId: string) {
     const data = personalId + projectId
 
-    const id: string = crypto.createHash('sha256').update(data).digest('hex')
+    const id: string = createHash('sha256').update(data).digest('hex')
 
     return id
 }
