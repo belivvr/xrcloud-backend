@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import {
     CacheService,
     TransactionRepository,
@@ -24,7 +24,7 @@ export class UsersService {
         const { personalId, projectId } = createUserDto
 
         if (await this.userExists(personalId, projectId)) {
-            throw new ConflictException(`User with ID ${personalId} already exists in project.`)
+            return await this.getUser(personalId, projectId)
         }
 
         const { account_id: infraUserId } = await this.reticulumService.login(personalId)
