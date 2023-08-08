@@ -172,7 +172,9 @@ export class ProjectsController {
             ...createRoomDto
         }
 
-        return await this.roomsService.createRoom(createRoom)
+        const room = await this.roomsService.createRoom(createRoom)
+
+        return await this.roomsService.getRoomDto(room.id)
     }
 
     @Get(':projectId/scenes/:sceneId/rooms')
