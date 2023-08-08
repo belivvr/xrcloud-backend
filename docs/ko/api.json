@@ -12,26 +12,27 @@
         {
             "name": "authentication",
             "x-displayName": "Authentication",
-            "description": "해당 문서의 모든 API의 호출에는 `ApiKey`를 필요로 합니다. `ApiKey`는 웹 상에서 발급 받을 수 있습니다."
+            "description": "해당 문서의 모든 API의 호출에는 `ApiKey`를 필요로 합니다. \n\n `ApiKey`는 XRCLOUD Developers에 로그인 한 후 페이지 우상단의 My page에서 발급 받을 수 있습니다."
         },
         {
             "name": "project",
             "x-displayName": "Project",
-            "description": "*** 현재 관리자 계정당 하나의 Project만 만들 수 있습니다."
+            "description": "개발자의 프로젝트, 플랫폼, 3rd-party app 등이 될 수 있는 XRCLOUD의 Project입니다. \n\n - **현재 관리자 계정당 하나의 Project만 생성할 수 있습니다.**"
         },
         {
             "name": "user",
             "x-displayName": "User",
-            "description": "Project(app)의 사용자입니다. Room을 만들거나 수정하는 등의 API 호출을 하기 전에 사용자 등록이 필요합니다."
+            "description": "Project(app)의 사용자입니다. \n\n Room을 생성하거나 수정하는 등의 API 호출을 하기 전에 사용자 등록이 필요합니다."
         },
         {
             "name": "scene",
-            "x-displayName": "Scene"
+            "x-displayName": "Scene",
+            "description": "Scene 생성: [get project api]([#tag/project/operation/GetProject)의 response json 필드 중 sceneCreationUrl을 사용하여 생성합니다. \n\n Scene 수정: [get scene api]([#tag/project/operation/GetScene)의 response json 필드 중 sceneModificationUrl을 사용하여 수정합니다. \n\n - 위 두 url에 포함되어있는 `event-callback` 값은 XRCLOUD에서 Scene의 생성 및 수정을 확인하기위한 callback url이므로 변형하여 사용하면 오류가 발생할 수 있습니다."
         },
         {
             "name": "room",
             "x-displayName": "Room",
-            "description": "*** 현재 Project당 3개의 Room을 만들 수 있습니다."
+            "description": "- **현재 Project당 3개의 Room을 생성할 수 있습니다.**"
         }
     ],
     "x-tagGroups": [
