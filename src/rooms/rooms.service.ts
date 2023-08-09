@@ -2,7 +2,6 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { getSlug, updateIntersection } from 'src/common'
 import { ReticulumService } from 'src/reticulum'
 import { ScenesService } from 'src/scenes'
-import { UsersService } from 'src/users'
 import { CreateRoomDto, QueryDto, RoomDto, UpdateRoomDto } from './dto'
 import { RoomsRepository } from './rooms.repository'
 
@@ -10,13 +9,12 @@ import { RoomsRepository } from './rooms.repository'
 export class RoomsService {
     constructor(
         private readonly roomsRepository: RoomsRepository,
-        private readonly usersService: UsersService,
         private readonly scenesService: ScenesService,
         private readonly reticulumService: ReticulumService
     ) {}
 
     async createRoom(createRoomDto: CreateRoomDto) {
-        const { personalId, projectId, sceneId, ...data } = createRoomDto
+        const { projectId, userId, sceneId, ...data } = createRoomDto
 
         const count = await this.restrictRoomCreation(projectId)
 
@@ -28,13 +26,11 @@ export class RoomsService {
 
         const scene = await this.scenesService.getScene(sceneId)
 
-        const token = await this.usersService.getUserToken(personalId, projectId)
+        const { token } = await this.reticulumService.login(userId)
 
         const infraRoom = await this.reticulumService.createRoom(scene.infraSceneId, data.name, token)
 
         const slug = getSlug(infraRoom.url)
-
-        const user = await this.usersService.getUser(personalId, projectId)
 
         const createRoom = {
             ...data,
@@ -42,8 +38,7 @@ export class RoomsService {
             infraRoomId: infraRoom.hub_id,
             thumbnailId: scene.thumbnailId,
             projectId: projectId,
-            sceneId: scene.id,
-            ownerId: user.id
+            sceneId: scene.id
         }
 
         return await this.roomsRepository.create(createRoom)
@@ -56,11 +51,11 @@ export class RoomsService {
     }
 
     async updateRoom(updateRoomDto: UpdateRoomDto) {
-        const { personalId, projectId, roomId, ...data } = updateRoomDto
+        const { userId, roomId, ...data } = updateRoomDto
 
         const room = await this.getRoom(roomId)
 
-        const token = await this.usersService.getUserToken(personalId, projectId)
+        const { token } = await this.reticulumService.login(userId)
 
         const updateRoomArgs = {
             ...data,
@@ -98,7 +93,7 @@ export class RoomsService {
         return scene
     }
 
-    async getRoomDto(roomId: string) {
+    async getRoomDto(roomId: string, token?: string) {
         const room = await this.getRoom(roomId)
 
         const scene = await this.scenesService.getScene(room.sceneId)
@@ -107,7 +102,7 @@ export class RoomsService {
         const roomUrl = this.reticulumService.getRoomUrl(room.infraRoomId, room.slug)
 
         const dto = new RoomDto(room)
-        dto.roomUrl = roomUrl
+        dto.roomUrl = token ? roomUrl + `?token=${token}` : roomUrl
         dto.thumbnailUrl = thumbnailUrl
 
         return dto

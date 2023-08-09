@@ -3,11 +3,11 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString, Max } from 'class-validator
 export class CreateRoomDto {
     @IsNotEmpty()
     @IsString()
-    personalId: string
+    projectId: string
 
     @IsNotEmpty()
     @IsString()
-    projectId: string
+    userId: string
 
     @IsNotEmpty()
     @IsString()

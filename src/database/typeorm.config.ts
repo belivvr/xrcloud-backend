@@ -5,7 +5,6 @@ import { ConfigException, TypeormLogger } from 'src/common'
 import { Project } from 'src/projects'
 import { Room } from 'src/rooms'
 import { Scene } from 'src/scenes'
-import { User } from 'src/users'
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions'
 import { Mig1687757321854 } from './migrations/1687757321854-mig'
 import { Mig1687933860267 } from './migrations/1687933860267-mig'
@@ -16,10 +15,12 @@ import { Mig1691028245783 } from './migrations/1691028245783-mig'
 import { Mig1691050755972 } from './migrations/1691050755972-mig'
 import { Mig1691123984351 } from './migrations/1691123984351-mig'
 import { Mig1691126254884 } from './migrations/1691126254884-mig'
+import { Mig1691560406939 } from './migrations/1691560406939-mig'
+import { Mig1691560685487 } from './migrations/1691560685487-mig'
 
 dotenv.config()
 
-const entities = [Admin, User, Project, Scene, Room]
+const entities = [Admin, Project, Scene, Room]
 const migrations = [
     Mig1687757321854,
     Mig1687933860267,
@@ -29,7 +30,9 @@ const migrations = [
     Mig1691028245783,
     Mig1691050755972,
     Mig1691123984351,
-    Mig1691126254884
+    Mig1691126254884,
+    Mig1691560406939,
+    Mig1691560685487
 ]
 
 type SupportedConnectionOptions = PostgresConnectionOptions

@@ -163,11 +163,11 @@ export class ProjectsController {
         await this.validateProject(projectId)
         await this.validateScene(projectId, sceneId)
 
-        const personalId = `admin@${projectId}`
+        const userId = `admin@${projectId}`
 
         const createRoom = {
-            personalId: personalId,
             projectId: projectId,
+            userId: userId,
             sceneId: sceneId,
             ...createRoomDto
         }

@@ -5,7 +5,7 @@ export enum EventName {
     SCENE_UPDATED = 'scene_updated'
 }
 
-export class EventDto {
+export class CreateEventDto {
     @IsNotEmpty()
     @IsString()
     token: string
@@ -13,6 +13,10 @@ export class EventDto {
     @IsNotEmpty()
     @IsEnum(EventName)
     eventName: string
+
+    @IsOptional()
+    @IsString()
+    extra: string
 
     @IsOptional()
     @IsString()

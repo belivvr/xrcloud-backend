@@ -23,7 +23,4 @@ export class Room extends AggregateRoot {
 
     @Column()
     sceneId: string
-
-    @Column()
-    ownerId: string
 }

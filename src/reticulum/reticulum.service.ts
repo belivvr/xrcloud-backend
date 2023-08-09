@@ -1,7 +1,7 @@
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common'
 import fetch from 'node-fetch'
 import { addQuotesToNumbers } from 'src/common'
-import { UpdateRoomArgs } from './interfaces'
+import { ExtraArgs, UpdateRoomArgs } from './interfaces'
 import { ReticulumConfigService } from './services'
 
 @Injectable()
@@ -31,8 +31,8 @@ export class ReticulumService {
         return JSON.parse(addQuotesToNumbers(responseToText))
     }
 
-    async login(personalId: string) {
-        const body = JSON.stringify({ email_id: personalId })
+    async login(userId: string) {
+        const body = JSON.stringify({ email_id: userId })
 
         const response = await this.request('api/v1/belivvr/account', {
             method: 'POST',
@@ -49,7 +49,7 @@ export class ReticulumService {
         return response
     }
 
-    async getSceneCreationUrl(token: string | undefined) {
+    async getSceneCreationUrl(token: string | undefined, extraArgs: ExtraArgs) {
         if (!token) {
             throw new InternalServerErrorException('Reticulum: Token is required')
         }
@@ -57,7 +57,9 @@ export class ReticulumService {
         const callbackUrl = `${this.host}/callbacks/event`
         const encodedCallbackUrl = encodeURIComponent(callbackUrl)
 
-        return `${this.apiHost}/spoke/projects/new?token=${token}&event-callback=${encodedCallbackUrl}`
+        const extra = `projectId:${extraArgs.projectId}`
+
+        return `${this.apiHost}/spoke/projects/new?token=${token}&event-callback=${encodedCallbackUrl}&extra=${extra}`
     }
 
     async getScene(infraSceneId: string) {

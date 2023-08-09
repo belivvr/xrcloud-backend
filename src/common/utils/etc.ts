@@ -114,14 +114,6 @@ export function makeApikey() {
     return apiKey
 }
 
-export function makeHashedId(personalId: string, projectId: string) {
-    const data = personalId + projectId
-
-    const id: string = createHash('sha256').update(data).digest('hex')
-
-    return id
-}
-
 export function getSlug(url: string): string {
     const splitUrl = url.split('/')
     const slug = splitUrl[splitUrl.length - 1]

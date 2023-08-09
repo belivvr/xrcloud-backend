@@ -12,10 +12,11 @@ import {
     UseGuards
 } from '@nestjs/common'
 import { ApiKeyAuthGuard } from 'src/auth'
+import { ReticulumService } from 'src/reticulum'
 import { RoomsService } from 'src/rooms'
 import { ScenesService } from 'src/scenes'
-import { UserDto, UsersService } from 'src/users'
-import { CreateRoomDto, CreateUserDto, QueryDto, UpdateRoomDto } from './dto'
+import { CreateRoomDto, QueryDto, UpdateRoomDto } from './dto'
+import { GetRoomQueryDto } from './dto/rooms/get-room-query.dto'
 import { ProjectsService } from './projects.service'
 
 @Controller('api/projects')
@@ -23,7 +24,7 @@ import { ProjectsService } from './projects.service'
 export class ApiProjectsController {
     constructor(
         private readonly projectsService: ProjectsService,
-        private readonly usersService: UsersService,
+        private readonly reticulumService: ReticulumService,
         private readonly scenesService: ScenesService,
         private readonly roomsService: RoomsService
     ) {}
@@ -36,25 +37,6 @@ export class ApiProjectsController {
         await this.validateProject(projectId)
 
         return await this.projectsService.getProjectDto(projectId)
-    }
-
-    /**
-     * Users
-     */
-    @Post(':projectId/users')
-    async createUser(@Param('projectId') projectId: string, @Body() createUserDto: CreateUserDto) {
-        await this.validateProject(projectId)
-
-        const { personalId } = createUserDto
-
-        const createUser = {
-            personalId: personalId,
-            projectId: projectId
-        }
-
-        const user = await this.usersService.createUser(createUser)
-
-        return new UserDto(user)
     }
 
     /**
@@ -99,6 +81,10 @@ export class ApiProjectsController {
         await this.validateProject(projectId)
         await this.validateScene(projectId, sceneId)
 
+        if (!createRoomDto.userId) {
+            createRoomDto.userId = `admin@${projectId}`
+        }
+
         const createRoom = {
             projectId: projectId,
             sceneId: sceneId,
@@ -107,21 +93,27 @@ export class ApiProjectsController {
 
         const room = await this.roomsService.createRoom(createRoom)
 
-        return await this.roomsService.getRoomDto(room.id)
+        const token = await this.getToken(projectId, createRoomDto.userId)
+
+        return await this.roomsService.getRoomDto(room.id, token)
     }
 
     @Get(':projectId/scenes/:sceneId/rooms')
     async findRooms(
         @Param('projectId') projectId: string,
         @Param('sceneId') sceneId: string,
-        @Query() queryDto: QueryDto
+        @Query() getRoomQueryDto: GetRoomQueryDto
     ) {
         await this.validateProject(projectId)
         await this.validateScene(projectId, sceneId)
 
-        const rooms = await this.roomsService.findRooms({ sceneId, ...queryDto })
+        const rooms = await this.roomsService.findRooms({ sceneId, ...getRoomQueryDto })
 
-        const items = await Promise.all(rooms.items.map((room) => this.roomsService.getRoomDto(room.id)))
+        const token = await this.getToken(projectId, getRoomQueryDto.userId)
+
+        const items = await Promise.all(
+            rooms.items.map((room) => this.roomsService.getRoomDto(room.id, token))
+        )
 
         return { ...rooms, items }
     }
@@ -130,13 +122,16 @@ export class ApiProjectsController {
     async getRoom(
         @Param('projectId') projectId: string,
         @Param('sceneId') sceneId: string,
-        @Param('roomId') roomId: string
+        @Param('roomId') roomId: string,
+        @Query() getRoomQueryDto: GetRoomQueryDto
     ) {
         await this.validateProject(projectId)
         await this.validateScene(projectId, sceneId)
         await this.validateRoom(projectId, sceneId, roomId)
 
-        return await this.roomsService.getRoomDto(roomId)
+        const token = await this.getToken(projectId, getRoomQueryDto.userId)
+
+        return await this.roomsService.getRoomDto(roomId, token)
     }
 
     @Patch(':projectId/scenes/:sceneId/rooms/:roomId')
@@ -150,15 +145,20 @@ export class ApiProjectsController {
         await this.validateScene(projectId, sceneId)
         await this.validateRoom(projectId, sceneId, roomId)
 
+        if (!updateRoomDto.userId) {
+            updateRoomDto.userId = `admin@${projectId}`
+        }
+
         const updateRoom = {
-            projectId: projectId,
             roomId: roomId,
             ...updateRoomDto
         }
 
         const room = await this.roomsService.updateRoom(updateRoom)
 
-        return await this.roomsService.getRoomDto(room.id)
+        const token = await this.getToken(projectId, updateRoomDto.userId)
+
+        return await this.roomsService.getRoomDto(room.id, token)
     }
 
     @Delete(':projectId/scenes/:sceneId/rooms/:roomId')
@@ -174,7 +174,6 @@ export class ApiProjectsController {
         return await this.roomsService.removeRoom(roomId)
     }
 
-    // TODO
     private async validateProject(projectId: string) {
         const projectExists = await this.projectsService.projectExists(projectId)
 
@@ -201,5 +200,15 @@ export class ApiProjectsController {
         if (room.sceneId !== sceneId) {
             throw new BadRequestException(`Scene with ID "${sceneId}" is invalid.`)
         }
+    }
+
+    private async getToken(projectId: string, userId?: string) {
+        if (!userId) {
+            userId = `admin@${projectId}`
+        }
+
+        const { token } = await this.reticulumService.login(userId)
+
+        return token
     }
 }

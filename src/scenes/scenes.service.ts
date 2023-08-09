@@ -1,7 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { updateIntersection } from 'src/common'
 import { ReticulumService } from 'src/reticulum'
-import { UsersService } from 'src/users'
 import { CreateSceneDto, QueryDto, SceneDto, UpdateSceneDto } from './dto'
 import { Scene } from './entities'
 import { ScenesRepository } from './scenes.repository'
@@ -10,12 +9,11 @@ import { ScenesRepository } from './scenes.repository'
 export class ScenesService {
     constructor(
         private readonly scenesRepository: ScenesRepository,
-        private readonly usersService: UsersService,
         private readonly reticulumService: ReticulumService
     ) {}
 
     async createScene(createSceneDto: CreateSceneDto) {
-        const { projectId: infraProjectId, sceneId: infraSceneId } = createSceneDto
+        const { projectId, infraProjectId, infraSceneId } = createSceneDto
 
         if (await this.infraSceneExists(infraSceneId)) {
             throw new ConflictException(`Scene with ID "${infraSceneId}" already exists.`)
@@ -25,25 +23,27 @@ export class ScenesService {
 
         const thumbnailId = await this.reticulumService.getThumbnailId(infraScene.screenshot_owned_file_id)
 
-        const user = await this.usersService.findByInfraUserId(infraScene.account_id)
-
         const createScene = {
             name: infraScene.name,
             infraSceneId: infraSceneId,
             infraProjectId: infraProjectId,
             thumbnailId: thumbnailId,
-            projectId: user.projectId
+            projectId: projectId
         }
 
         await this.scenesRepository.create(createScene)
     }
 
     async getSceneCreationUrl(projectId: string) {
-        const personalId = `admin@${projectId}`
+        const userId = `admin@${projectId}`
 
-        const token = await this.usersService.getUserToken(personalId, projectId)
+        const { token } = await this.reticulumService.login(userId)
 
-        const url = await this.reticulumService.getSceneCreationUrl(token)
+        const extraArgs = {
+            projectId: projectId
+        }
+
+        const url = await this.reticulumService.getSceneCreationUrl(token, extraArgs)
 
         return url
     }
@@ -51,9 +51,9 @@ export class ScenesService {
     async getSceneModificationUrl(projectId: string, sceneId: string) {
         const scene = await this.getScene(sceneId)
 
-        const personalId = `admin@${projectId}`
+        const userId = `admin@${projectId}`
 
-        const token = await this.usersService.getUserToken(personalId, projectId)
+        const { token } = await this.reticulumService.login(userId)
 
         const url = await this.reticulumService.getSceneModificationUrl(scene.infraProjectId, token)
 
@@ -77,7 +77,7 @@ export class ScenesService {
     }
 
     async updateScene(updateSceneDto: UpdateSceneDto) {
-        const { sceneId: infraSceneId } = updateSceneDto
+        const { infraSceneId } = updateSceneDto
 
         const scene = await this.findByInfraSceneId(infraSceneId)
 

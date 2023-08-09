@@ -11,7 +11,6 @@ import { ProjectsModule } from './projects'
 import { ReticulumModule } from './reticulum'
 import { RoomsModule } from './rooms'
 import { ScenesModule } from './scenes'
-import { UsersModule } from './users'
 
 const appModules = [
     ServeStaticModule.forRoot({
@@ -25,7 +24,6 @@ const appModules = [
     GlobalModule,
     AuthModule,
     AdminsModule,
-    UsersModule,
     ReticulumModule,
     ProjectsModule,
     ScenesModule,

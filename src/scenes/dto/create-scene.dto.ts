@@ -7,5 +7,9 @@ export class CreateSceneDto {
 
     @IsNotEmpty()
     @IsString()
-    sceneId: string
+    infraProjectId: string
+
+    @IsNotEmpty()
+    @IsString()
+    infraSceneId: string
 }

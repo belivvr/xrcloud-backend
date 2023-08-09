@@ -1,9 +1,9 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString, Max } from 'class-validator'
 
 export class CreateRoomDto {
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
-    personalId: string
+    userId: string
 
     @IsNotEmpty()
     @IsString()

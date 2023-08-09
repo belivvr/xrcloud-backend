@@ -4,10 +4,9 @@ import {
     InternalServerErrorException,
     NotFoundException
 } from '@nestjs/common'
-import { TransactionService, generateUUID, updateIntersection } from 'src/common'
+import { generateUUID, updateIntersection } from 'src/common'
 import { FileStorageService } from 'src/file-storage'
 import { ScenesService } from 'src/scenes'
-import { UsersService } from 'src/users'
 import { CreateProjectDto, ProjectDto, QueryDto, UpdateProjectDto } from './dto'
 import { Project } from './entities'
 import { FILE_TYPES } from './interfaces'
@@ -22,9 +21,7 @@ export class ProjectsService {
     constructor(
         private readonly projectsRepository: ProjectsRepository,
         private readonly fileStorageService: FileStorageService,
-        private readonly usersService: UsersService,
-        private readonly scenesService: ScenesService,
-        private readonly transactionService: TransactionService
+        private readonly scenesService: ScenesService
     ) {}
 
     async createProject(createProjectDto: CreateProjectDto, files: UploadedFilesType, adminId: string) {
@@ -51,33 +48,14 @@ export class ProjectsService {
             throw new InternalServerErrorException(`Failed to upload files: ${error.message}.`)
         }
 
-        return await this.transactionService.execute(async (transactionRepository) => {
-            try {
-                const createProject = {
-                    ...createProjectDto,
-                    faviconId: faviconId,
-                    logoId: logoId,
-                    adminId: adminId
-                }
+        const createProject = {
+            ...createProjectDto,
+            faviconId: faviconId,
+            logoId: logoId,
+            adminId: adminId
+        }
 
-                const projectCandidate = this.projectsRepository.createCandidate(createProject)
-
-                const project = await transactionRepository.create(projectCandidate)
-
-                const createUser = {
-                    personalId: `admin@${project.id}`,
-                    projectId: project.id
-                }
-
-                await this.usersService.createUser(createUser, transactionRepository)
-
-                return project
-            } catch (error) {
-                transactionRepository.rollback()
-
-                throw new InternalServerErrorException(`Failed to create project: ${error.message}.`)
-            }
-        })
+        return await this.projectsRepository.create(createProject)
     }
 
     async findProjects(queryDto: QueryDto, adminId: string) {
