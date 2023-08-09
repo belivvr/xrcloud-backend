@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common'
+import { Body, Controller, Post } from '@nestjs/common'
 import { CacheService } from 'src/common'
 import { CallbacksService } from './callbacks.service'
 import { CreateEventDto } from './dto'
@@ -12,11 +12,6 @@ export class CallbacksController {
 
     @Post('event')
     async createEvent(@Body() createEventDto: CreateEventDto) {
-        // // TODO
-        // if (!(await this.cacheService.get(createEventDto.token))) {
-        //     throw new UnauthorizedException('Invalid token.')
-        // }
-
         return await this.callbacksService.createEvent(createEventDto)
     }
 }

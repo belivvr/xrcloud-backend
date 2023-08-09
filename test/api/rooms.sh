@@ -25,7 +25,7 @@ res=$(
 
 # getRoom
 res=$(
-    GET "/api/projects/$PROJECT_ID/scenes/$SCENE_ID/rooms/$id" \
+    GET "/api/projects/$PROJECT_ID/scenes/$SCENE_ID/rooms/$id?userId=$USER_ID" \
         -H "Authorization: Bearer $API_KEY"
 )
 
