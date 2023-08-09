@@ -20,14 +20,9 @@
             "description": "개발자의 프로젝트, 플랫폼, 3rd-party app 등이 될 수 있는 XRCLOUD의 Project입니다. \n\n - **현재 관리자 계정당 하나의 Project만 생성할 수 있습니다.**"
         },
         {
-            "name": "user",
-            "x-displayName": "User",
-            "description": "Project(app)의 사용자입니다. \n\n Room을 생성하거나 수정하는 등의 API 호출을 하기 전에 사용자 등록이 필요합니다."
-        },
-        {
             "name": "scene",
             "x-displayName": "Scene",
-            "description": "Scene 생성: [get project api]([#tag/project/operation/GetProject)의 response json 필드 중 sceneCreationUrl을 사용하여 생성합니다. \n\n Scene 수정: [get scene api]([#tag/project/operation/GetScene)의 response json 필드 중 sceneModificationUrl을 사용하여 수정합니다. \n\n - 위 두 url에 포함되어있는 `event-callback` 값은 XRCLOUD에서 Scene의 생성 및 수정을 확인하기위한 callback url이므로 변형하여 사용하면 오류가 발생할 수 있습니다."
+            "description": "Scene 생성: [get project api]([#tag/project/operation/GetProject)의 response json 필드 중 sceneCreationUrl을 사용하여 생성합니다. \n\n Scene 수정: [get scene api]([#tag/project/operation/GetScene)의 response json 필드 중 sceneModificationUrl을 사용하여 수정합니다. \n\n - `event-callback`, `extra` 값은 XRCLOUD에서 Scene의 생성 및 수정을 확인하기위한 callback value 입니다. 변형하여 사용하면 오류가 발생할 수 있습니다."
         },
         {
             "name": "room",
@@ -46,7 +41,6 @@
             "name": "API",
             "tags": [
                 "project",
-                "user",
                 "scene",
                 "room"
             ]
@@ -73,53 +67,6 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/Project"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/projects/{projectId}/users": {
-            "post": {
-                "tags": [
-                    "user"
-                ],
-                "operationId": "CreateUser",
-                "summary": "create user account",
-                "description": "Project에 사용자를 생성(등록)합니다.",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/ApiKey"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateUserRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "성공",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CreateUserSuccessResponse"
                                 }
                             }
                         }
@@ -246,6 +193,9 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "requestBody": {
@@ -290,6 +240,9 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "responses": {
@@ -326,6 +279,9 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "responses": {
@@ -360,6 +316,9 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "requestBody": {
@@ -428,7 +387,7 @@
         "parameters": {
             "ApiKey": {
                 "required": true,
-                "name": "Authorization",
+                "name": "authorization",
                 "in": "header",
                 "schema": {
                     "type": "string"
@@ -439,19 +398,28 @@
                 "required": false,
                 "name": "take",
                 "in": "query",
-                "description": "(pagination) 가져올 데이터의 갯수.",
                 "schema": {
                     "type": "number"
-                }
+                },
+                "description": "(pagination) 가져올 데이터의 갯수."
             },
             "PaginationSkip": {
                 "required": false,
                 "name": "skip",
                 "in": "query",
-                "description": "(pagination) 건너뛸 데이터의 갯수.",
                 "schema": {
                     "type": "number"
-                }
+                },
+                "description": "(pagination) 건너뛸 데이터의 갯수."
+            },
+            "UserId": {
+                "required": false,
+                "name": "userId",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "Project(app)의 사용자입니다. Room에 접근하는 사용자를 구분하기 위해 사용됩니다."
             }
         },
         "schemas": {
@@ -781,7 +749,7 @@
                     "roomUrl": {
                         "type": "string",
                         "description": "Room에 입장할 URL입니다.",
-                        "example": "https://xrcloud.app:4000/7UizZDL/example-room-name-1"
+                        "example": "https://xrcloud.app:4000/7UizZDL/example-room-name?token=WRlNDAtNWQ0OC00NjZjLWFlYTUtOTNkZDA1Yj..."
                     },
                     "thumbnailUrl": {
                         "type": "string",

@@ -20,14 +20,9 @@
             "description": "Project in XRCLOUD, which can be a developer's project, platform, 3rd-party app, etc. \n\n - **Currently, only one project can be created per admin account.**"
         },
         {
-            "name": "user",
-            "x-displayName": "User",
-            "description": "A user in your projects, third-party apps. \n\n User registration is required before making any API calls, such as creating or modifying rooms."
-        },
-        {
             "name": "scene",
             "x-displayName": "Scene",
-            "description": "Scene Creation: Use the sceneCreationUrl field from the response json of [get project api](#tag/project/operation/GetProject) to create the scene. \n\n Scene Modification: Use the sceneModificationUrl field from the response json of [get scene api](#tag/project/operation/GetScene) to modify the scene. \n\n - The `event-callback` value included in the above two URLs is a callback URL used by XRCLOUD to verify the creation and modification of Scenes. Modifying and calling this could lead to errors."
+            "description": "Scene Creation: Use the sceneCreationUrl field from the response json of [get project api](#tag/project/operation/GetProject) to create the scene. \n\n Scene Modification: Use the sceneModificationUrl field from the response json of [get scene api](#tag/project/operation/GetScene) to modify the scene. \n\n - The `event-callback`, `extra` values are callback values for checking the creation and modification of the Scene in XRCLOUD. Using them with variations may cause errors."
         },
         {
             "name": "room",
@@ -46,7 +41,6 @@
             "name": "API",
             "tags": [
                 "project",
-                "user",
                 "scene",
                 "room"
             ]
@@ -73,53 +67,6 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/Project"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ErrorResponse"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/projects/{projectId}/users": {
-            "post": {
-                "tags": [
-                    "user"
-                ],
-                "operationId": "CreateUser",
-                "summary": "create user account",
-                "description": "Create (register) a user for your projects.",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/ApiKey"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateUserRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CreateUserSuccessResponse"
                                 }
                             }
                         }
@@ -246,6 +193,9 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "requestBody": {
@@ -290,6 +240,9 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "responses": {
@@ -326,6 +279,9 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "responses": {
@@ -360,6 +316,9 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "requestBody": {
@@ -428,7 +387,7 @@
         "parameters": {
             "ApiKey": {
                 "required": true,
-                "name": "Authorization",
+                "name": "authorization",
                 "in": "header",
                 "schema": {
                     "type": "string"
@@ -452,6 +411,15 @@
                 "schema": {
                     "type": "number"
                 }
+            },
+            "UserId": {
+                "required": false,
+                "name": "userId",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "The user of the project (app). Used to differentiate between users accessing Room."
             }
         },
         "schemas": {
@@ -616,7 +584,7 @@
                     "roomUrl": {
                         "type": "string",
                         "description": "The URL to enter the room.",
-                        "example": "https://xrcloud.app:4000/7UizZDL/example-room-name-1"
+                        "example": "https://xrcloud.app:4000/7UizZDL/example-room-name"
                     },
                     "thumbnailUrl": {
                         "type": "string",
