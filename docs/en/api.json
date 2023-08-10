@@ -459,32 +459,6 @@
                     }
                 }
             },
-            "CreateUserRequest": {
-                "type": "object",
-                "required": [
-                    "personalId"
-                ],
-                "properties": {
-                    "personalId": {
-                        "description": "The app user's unique ID (e.g., UUID).",
-                        "type": "string",
-                        "example": "7f6ade40-5d48-466c-aea5-93dd05b59aad"
-                    }
-                }
-            },
-            "CreateUserSuccessResponse": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "example": "389f0854-231e-4f9e-a0dc-8f801a41fd6a"
-                    },
-                    "projectId": {
-                        "type": "string",
-                        "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
-                    }
-                }
-            },
             "Project": {
                 "type": "object",
                 "properties": {
@@ -626,15 +600,9 @@
             "CreateRoomRequest": {
                 "type": "object",
                 "required": [
-                    "personalId",
                     "name"
                 ],
                 "properties": {
-                    "personalId": {
-                        "type": "string",
-                        "description": "The app user's unique ID (e.g., UUID).",
-                        "example": "7f6ade40-5d48-466c-aea5-93dd05b59aad"
-                    },
                     "name": {
                         "type": "string",
                         "description": "The name of the room.",
@@ -674,15 +642,7 @@
             },
             "UpdateRoomRequest": {
                 "type": "object",
-                "required": [
-                    "personalId"
-                ],
                 "properties": {
-                    "personalId": {
-                        "type": "string",
-                        "description": "The app user's unique ID (e.g., UUID).",
-                        "example": "7f6ade40-5d48-466c-aea5-93dd05b59aad"
-                    },
                     "name": {
                         "type": "string",
                         "description": "The name of the room.",
