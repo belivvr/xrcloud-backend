@@ -5,7 +5,7 @@
         "version": "1.0",
         "x-logo": {
             "url": "https://kr.object.ncloudstorage.com/xrcloud-prod-backend/belivvr.png",
-            "href": "https://developers.xrcloud.app"
+            "href": "https://xrcloud.app"
         }
     },
     "tags": [
