@@ -94,6 +94,12 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PaginationTake"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PaginationSkip"
                     }
                 ],
                 "responses": {
@@ -193,9 +199,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
-                    },
-                    {
-                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "requestBody": {
@@ -240,6 +243,12 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PaginationTake"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PaginationSkip"
                     },
                     {
                         "$ref": "#/components/parameters/UserId"
@@ -316,9 +325,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
-                    },
-                    {
-                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "requestBody": {
@@ -419,7 +425,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "Project(app)의 사용자입니다. Room에 접근하는 사용자를 구분하기 위해 사용됩니다."
+                "description": "Project(app)의 사용자입니다. Room에 입장하는 사용자를 구분하기 위해 사용됩니다."
             }
         },
         "schemas": {

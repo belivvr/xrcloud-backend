@@ -94,6 +94,12 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PaginationTake"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PaginationSkip"
                     }
                 ],
                 "responses": {
@@ -193,9 +199,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
-                    },
-                    {
-                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "requestBody": {
@@ -240,6 +243,12 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PaginationTake"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PaginationSkip"
                     },
                     {
                         "$ref": "#/components/parameters/UserId"
@@ -316,9 +325,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
-                    },
-                    {
-                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "requestBody": {
