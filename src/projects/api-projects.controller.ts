@@ -81,19 +81,18 @@ export class ApiProjectsController {
         await this.validateProject(projectId)
         await this.validateScene(projectId, sceneId)
 
-        if (!createRoomDto.userId) {
-            createRoomDto.userId = `admin@${projectId}`
-        }
+        const userId = `admin@${projectId}`
 
         const createRoom = {
             projectId: projectId,
+            userId: userId,
             sceneId: sceneId,
             ...createRoomDto
         }
 
         const room = await this.roomsService.createRoom(createRoom)
 
-        const token = await this.getToken(projectId, createRoomDto.userId)
+        const token = await this.getToken(projectId)
 
         return await this.roomsService.getRoomDto(room.id, token)
     }
@@ -145,18 +144,17 @@ export class ApiProjectsController {
         await this.validateScene(projectId, sceneId)
         await this.validateRoom(projectId, sceneId, roomId)
 
-        if (!updateRoomDto.userId) {
-            updateRoomDto.userId = `admin@${projectId}`
-        }
+        const userId = `admin@${projectId}`
 
         const updateRoom = {
+            userId: userId,
             roomId: roomId,
             ...updateRoomDto
         }
 
         const room = await this.roomsService.updateRoom(updateRoom)
 
-        const token = await this.getToken(projectId, updateRoomDto.userId)
+        const token = await this.getToken(projectId)
 
         return await this.roomsService.getRoomDto(room.id, token)
     }

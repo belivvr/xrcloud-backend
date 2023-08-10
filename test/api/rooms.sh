@@ -11,7 +11,6 @@ res=$(
         -H "Authorization: Bearer $API_KEY" \
         -H "Content-Type: application/json" \
         -d '{
-                "userId": "'$USER_ID'",
                 "name": "Test Room Name"
             }'
 )
@@ -35,7 +34,6 @@ res=$(
         -H "Authorization: Bearer $API_KEY" \
         -H "Content-Type: application/json" \
         -d '{
-                "userId": "'$USER_ID'",
                 "name": "Updated Test Room Name",
                 "size": 5
             }'
