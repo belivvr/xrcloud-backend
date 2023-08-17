@@ -18,6 +18,7 @@ import { ScenesService } from 'src/scenes'
 import { CreateRoomDto, QueryDto, UpdateRoomDto } from './dto'
 import { GetRoomQueryDto } from './dto/rooms/get-room-query.dto'
 import { ProjectsService } from './projects.service'
+import { ProjectConfigService } from './services'
 
 @Controller('api/projects')
 @UseGuards(ApiKeyAuthGuard)
@@ -26,7 +27,8 @@ export class ApiProjectsController {
         private readonly projectsService: ProjectsService,
         private readonly reticulumService: ReticulumService,
         private readonly scenesService: ScenesService,
-        private readonly roomsService: RoomsService
+        private readonly roomsService: RoomsService,
+        private readonly configService: ProjectConfigService
     ) {}
 
     /**
@@ -81,18 +83,18 @@ export class ApiProjectsController {
         await this.validateProject(projectId)
         await this.validateScene(projectId, sceneId)
 
-        const userId = `admin@${projectId}`
-
         const createRoom = {
             projectId: projectId,
-            userId: userId,
             sceneId: sceneId,
             ...createRoomDto
         }
 
         const room = await this.roomsService.createRoom(createRoom)
 
-        const token = await this.getToken(projectId)
+        const token = await this.reticulumService.getToken(
+            projectId,
+            this.configService.userAccessTokenExpiration
+        )
 
         return await this.roomsService.getRoomDto(room.id, token)
     }
@@ -108,7 +110,11 @@ export class ApiProjectsController {
 
         const rooms = await this.roomsService.findRooms({ sceneId, ...getRoomQueryDto })
 
-        const token = await this.getToken(projectId, getRoomQueryDto.userId)
+        const token = await this.reticulumService.getToken(
+            projectId,
+            this.configService.userAccessTokenExpiration,
+            getRoomQueryDto.userId
+        )
 
         const items = await Promise.all(
             rooms.items.map((room) => this.roomsService.getRoomDto(room.id, token))
@@ -128,7 +134,11 @@ export class ApiProjectsController {
         await this.validateScene(projectId, sceneId)
         await this.validateRoom(projectId, sceneId, roomId)
 
-        const token = await this.getToken(projectId, getRoomQueryDto.userId)
+        const token = await this.reticulumService.getToken(
+            projectId,
+            this.configService.userAccessTokenExpiration,
+            getRoomQueryDto.userId
+        )
 
         return await this.roomsService.getRoomDto(roomId, token)
     }
@@ -144,17 +154,17 @@ export class ApiProjectsController {
         await this.validateScene(projectId, sceneId)
         await this.validateRoom(projectId, sceneId, roomId)
 
-        const userId = `admin@${projectId}`
-
         const updateRoom = {
-            userId: userId,
             roomId: roomId,
             ...updateRoomDto
         }
 
         const room = await this.roomsService.updateRoom(updateRoom)
 
-        const token = await this.getToken(projectId)
+        const token = await this.reticulumService.getToken(
+            projectId,
+            this.configService.userAccessTokenExpiration
+        )
 
         return await this.roomsService.getRoomDto(room.id, token)
     }
@@ -198,15 +208,5 @@ export class ApiProjectsController {
         if (room.sceneId !== sceneId) {
             throw new BadRequestException(`Scene with ID "${sceneId}" is invalid.`)
         }
-    }
-
-    private async getToken(projectId: string, userId?: string) {
-        if (!userId) {
-            userId = `admin@${projectId}`
-        }
-
-        const { token } = await this.reticulumService.login(userId)
-
-        return token
     }
 }

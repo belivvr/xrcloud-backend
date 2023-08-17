@@ -7,10 +7,6 @@ export class CreateRoomDto {
 
     @IsNotEmpty()
     @IsString()
-    userId: string
-
-    @IsNotEmpty()
-    @IsString()
     sceneId: string
 
     @IsNotEmpty()

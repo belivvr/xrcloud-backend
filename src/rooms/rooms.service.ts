@@ -1,20 +1,23 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
-import { getSlug, updateIntersection } from 'src/common'
+import { CacheService, convertTimeToSeconds, generateUUID, getSlug, updateIntersection } from 'src/common'
 import { ReticulumService } from 'src/reticulum'
 import { ScenesService } from 'src/scenes'
 import { CreateRoomDto, QueryDto, RoomDto, UpdateRoomDto } from './dto'
 import { RoomsRepository } from './rooms.repository'
+import { RoomConfigService } from './services/room-config.service'
 
 @Injectable()
 export class RoomsService {
     constructor(
         private readonly roomsRepository: RoomsRepository,
         private readonly scenesService: ScenesService,
-        private readonly reticulumService: ReticulumService
+        private readonly reticulumService: ReticulumService,
+        private readonly configService: RoomConfigService,
+        private readonly cacheService: CacheService
     ) {}
 
     async createRoom(createRoomDto: CreateRoomDto) {
-        const { projectId, userId, sceneId, ...data } = createRoomDto
+        const { projectId, sceneId, ...data } = createRoomDto
 
         const count = await this.restrictRoomCreation(projectId)
 
@@ -26,7 +29,7 @@ export class RoomsService {
 
         const scene = await this.scenesService.getScene(sceneId)
 
-        const { token } = await this.reticulumService.login(userId)
+        const token = await this.reticulumService.getToken(projectId, this.configService.roomOptionExpiration)
 
         const infraRoom = await this.reticulumService.createRoom(scene.infraSceneId, data.name, token)
 
@@ -51,11 +54,14 @@ export class RoomsService {
     }
 
     async updateRoom(updateRoomDto: UpdateRoomDto) {
-        const { userId, roomId, ...data } = updateRoomDto
+        const { roomId, ...data } = updateRoomDto
 
         const room = await this.getRoom(roomId)
 
-        const { token } = await this.reticulumService.login(userId)
+        const token = await this.reticulumService.getToken(
+            room.projectId,
+            this.configService.roomOptionExpiration
+        )
 
         const updateRoomArgs = {
             ...data,
@@ -99,10 +105,22 @@ export class RoomsService {
         const scene = await this.scenesService.getScene(room.sceneId)
 
         const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
-        const roomUrl = this.reticulumService.getRoomUrl(room.infraRoomId, room.slug)
+        const { url, options } = this.reticulumService.getRoomInfo(room.infraRoomId, room.slug, token)
+
+        let roomUrl = url
+
+        if (options) {
+            const optionId = generateUUID()
+
+            const expireTime = convertTimeToSeconds(this.configService.roomOptionExpiration)
+
+            await this.cacheService.set(optionId, JSON.stringify(options), expireTime)
+
+            roomUrl = `${url}?optId=${optionId}`
+        }
 
         const dto = new RoomDto(room)
-        dto.roomUrl = token ? roomUrl + `?token=${token}` : roomUrl
+        dto.roomUrl = roomUrl
         dto.thumbnailUrl = thumbnailUrl
 
         return dto

@@ -1,15 +1,18 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
-import { updateIntersection } from 'src/common'
+import { CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
 import { ReticulumService } from 'src/reticulum'
 import { CreateSceneDto, QueryDto, SceneDto, UpdateSceneDto } from './dto'
 import { Scene } from './entities'
 import { ScenesRepository } from './scenes.repository'
+import { SceneConfigService } from './services/scene-config.service'
 
 @Injectable()
 export class ScenesService {
     constructor(
         private readonly scenesRepository: ScenesRepository,
-        private readonly reticulumService: ReticulumService
+        private readonly reticulumService: ReticulumService,
+        private readonly cacheService: CacheService,
+        private readonly configService: SceneConfigService
     ) {}
 
     async createScene(createSceneDto: CreateSceneDto) {
@@ -35,29 +38,50 @@ export class ScenesService {
     }
 
     async getSceneCreationUrl(projectId: string) {
-        const userId = `admin@${projectId}`
-
-        const { token } = await this.reticulumService.login(userId)
+        const token = await this.reticulumService.getToken(
+            projectId,
+            this.configService.sceneOptionExpiration
+        )
 
         const extraArgs = {
             projectId: projectId
         }
 
-        const url = await this.reticulumService.getSceneCreationUrl(token, extraArgs)
+        const { url, options } = await this.reticulumService.getSceneCreationInfo(token, extraArgs)
 
-        return url
+        const optionId = generateUUID()
+
+        const expireTime = convertTimeToSeconds(this.configService.sceneOptionExpiration)
+
+        await this.cacheService.set(optionId, JSON.stringify(options), expireTime)
+
+        const sceneCreationUrl = `${url}?optId=${optionId}`
+
+        return sceneCreationUrl
     }
 
     async getSceneModificationUrl(projectId: string, sceneId: string) {
         const scene = await this.getScene(sceneId)
 
-        const userId = `admin@${projectId}`
+        const token = await this.reticulumService.getToken(
+            projectId,
+            this.configService.sceneOptionExpiration
+        )
 
-        const { token } = await this.reticulumService.login(userId)
+        const { url, options } = await this.reticulumService.getSceneModificationInfo(
+            scene.infraProjectId,
+            token
+        )
 
-        const url = await this.reticulumService.getSceneModificationUrl(scene.infraProjectId, token)
+        const optionId = generateUUID()
 
-        return url
+        const expireTime = convertTimeToSeconds(this.configService.sceneOptionExpiration)
+
+        await this.cacheService.set(optionId, JSON.stringify(options), expireTime)
+
+        const sceneModificationUrl = `${url}?${optionId}`
+
+        return sceneModificationUrl
     }
 
     async findScenes(projectId: string, queryDto: QueryDto) {
@@ -113,6 +137,8 @@ export class ScenesService {
 
         return dto
     }
+
+    async getSceneOption() {}
 
     async findByInfraSceneId(infraSceneId: string) {
         const scene = await this.scenesRepository.findByInfraUserId(infraSceneId)

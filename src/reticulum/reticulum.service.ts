@@ -1,6 +1,6 @@
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common'
 import fetch from 'node-fetch'
-import { addQuotesToNumbers } from 'src/common'
+import { CacheService, addQuotesToNumbers, convertTimeToSeconds } from 'src/common'
 import { ExtraArgs, UpdateRoomArgs } from './interfaces'
 import { ReticulumConfigService } from './services'
 
@@ -10,10 +10,13 @@ export class ReticulumService {
     private apiHost
     private adminId
 
-    constructor(private readonly config: ReticulumConfigService) {
-        this.host = this.config.host
-        this.apiHost = this.config.apiHost
-        this.adminId = this.config.adminId
+    constructor(
+        private readonly configService: ReticulumConfigService,
+        private readonly cacheService: CacheService
+    ) {
+        this.host = this.configService.host
+        this.apiHost = this.configService.apiHost
+        this.adminId = this.configService.adminId
     }
 
     private async request(url: string, options?: any) {
@@ -49,7 +52,7 @@ export class ReticulumService {
         return response
     }
 
-    async getSceneCreationUrl(token: string | undefined, extraArgs: ExtraArgs) {
+    async getSceneCreationInfo(token: string | undefined, extraArgs: ExtraArgs) {
         if (!token) {
             throw new InternalServerErrorException('Reticulum: Token is required')
         }
@@ -59,7 +62,16 @@ export class ReticulumService {
 
         const extra = `projectId:${extraArgs.projectId}`
 
-        return `${this.apiHost}/spoke/projects/new?token=${token}&event-callback=${encodedCallbackUrl}&extra=${extra}`
+        const returnValue = {
+            url: `${this.apiHost}/spoke/projects/new`,
+            options: {
+                token,
+                eventCallback: encodedCallbackUrl,
+                extra
+            }
+        }
+
+        return returnValue
     }
 
     async getScene(infraSceneId: string) {
@@ -80,7 +92,7 @@ export class ReticulumService {
         return response[0]
     }
 
-    async getSceneModificationUrl(infraProjectId: string, token: string | undefined) {
+    async getSceneModificationInfo(infraProjectId: string, token: string | undefined) {
         if (!token) {
             throw new InternalServerErrorException('Reticulum: Token is required')
         }
@@ -88,9 +100,15 @@ export class ReticulumService {
         const callbackUrl = `${this.host}/callbacks/event`
         const encodedCallbackUrl = encodeURIComponent(callbackUrl)
 
-        const url = `${this.apiHost}/spoke/projects/${infraProjectId}?token=${token}&event-callback=${encodedCallbackUrl}`
+        const returnValue = {
+            url: `${this.apiHost}/spoke/projects/${infraProjectId}`,
+            options: {
+                token,
+                eventCallback: encodedCallbackUrl
+            }
+        }
 
-        return url
+        return returnValue
     }
 
     async createRoom(infraSceneId: string, name: string, token: string | undefined) {
@@ -117,10 +135,13 @@ export class ReticulumService {
         return response
     }
 
-    getRoomUrl(infraRoomId: string, slug: string) {
-        const url = `${this.apiHost}/${infraRoomId}/${slug}`
+    getRoomInfo(infraRoomId: string, slug: string, token?: string) {
+        const returnValue = {
+            url: `${this.apiHost}/${infraRoomId}/${slug}`,
+            options: token ? { token } : undefined
+        }
 
-        return url
+        return returnValue
     }
 
     async updateRoom(infraRoomId: string, updateRoomArgs: UpdateRoomArgs) {
@@ -173,5 +194,28 @@ export class ReticulumService {
         const url = `${this.apiHost}/files/${screenshotFileId}.jpg`
 
         return url
+    }
+
+    async getToken(projectId: string, expireTime: string, userId?: string) {
+        if (!userId) {
+            userId = `admin@${projectId}`
+        }
+
+        const key = `${projectId}:${userId}`
+
+        let savedToken = await this.cacheService.get(key)
+
+        if (!savedToken) {
+            const { token } = await this.login(userId)
+
+            const convertExpireTime = convertTimeToSeconds(expireTime)
+
+            await this.cacheService.set(key, token, convertExpireTime)
+            await this.cacheService.set(token, `${userId}`, convertExpireTime)
+
+            savedToken = token
+        }
+
+        return savedToken
     }
 }
