@@ -99,13 +99,8 @@ export class RoomsService {
         return scene
     }
 
-    async getRoomDto(roomId: string, token?: string) {
-        const room = await this.getRoom(roomId)
-
-        const scene = await this.scenesService.getScene(room.sceneId)
-
-        const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
-        const { url, options } = this.reticulumService.getRoomInfo(room.infraRoomId, room.slug, token)
+    async getRoomUrl(infraRoomId: string, slug: string, token?: string) {
+        const { url, options } = this.reticulumService.getRoomInfo(infraRoomId, slug, token)
 
         let roomUrl = url
 
@@ -118,6 +113,17 @@ export class RoomsService {
 
             roomUrl = `${url}?optId=${optionId}`
         }
+
+        return roomUrl
+    }
+
+    async getRoomDto(roomId: string, token?: string) {
+        const room = await this.getRoom(roomId)
+
+        const scene = await this.scenesService.getScene(room.sceneId)
+
+        const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
+        const roomUrl = await this.getRoomUrl(room.infraRoomId, room.slug, token)
 
         const dto = new RoomDto(room)
         dto.roomUrl = roomUrl

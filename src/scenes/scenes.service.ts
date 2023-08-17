@@ -79,7 +79,7 @@ export class ScenesService {
 
         await this.cacheService.set(optionId, JSON.stringify(options), expireTime)
 
-        const sceneModificationUrl = `${url}?${optionId}`
+        const sceneModificationUrl = `${url}?optId=${optionId}`
 
         return sceneModificationUrl
     }
@@ -137,8 +137,6 @@ export class ScenesService {
 
         return dto
     }
-
-    async getSceneOption() {}
 
     async findByInfraSceneId(infraSceneId: string) {
         const scene = await this.scenesRepository.findByInfraUserId(infraSceneId)
