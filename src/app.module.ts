@@ -6,7 +6,7 @@ import { AdminsModule } from './admins'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
-import { Callbacksmodule } from './callbacks'
+import { OutdoorModule } from './outdoor'
 import { ProjectsModule } from './projects'
 import { ReticulumModule } from './reticulum'
 import { RoomsModule } from './rooms'
@@ -28,7 +28,7 @@ const appModules = [
     ProjectsModule,
     ScenesModule,
     RoomsModule,
-    Callbacksmodule
+    OutdoorModule
 ]
 
 @Module({

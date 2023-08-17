@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { CacheService } from 'src/common'
 import { ScenesService } from 'src/scenes'
 import { CreateEventDto, EventName } from './dto'
 
 @Injectable()
-export class CallbacksService {
-    constructor(private readonly scenesService: ScenesService) {}
+export class OutdoorService {
+    constructor(private readonly scenesService: ScenesService, private readonly cacheService: CacheService) {}
 
     async createEvent(createEventDto: CreateEventDto) {
         const {
@@ -53,5 +54,15 @@ export class CallbacksService {
                 break
             }
         }
+    }
+
+    async getOption(optionId: string) {
+        const option = await this.cacheService.get(optionId)
+
+        if (!option) {
+            throw new UnauthorizedException('Invalid optionId.')
+        }
+
+        return JSON.parse(option)
     }
 }
