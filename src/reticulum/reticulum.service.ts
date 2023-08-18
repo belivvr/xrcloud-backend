@@ -211,7 +211,6 @@ export class ReticulumService {
             const convertExpireTime = convertTimeToSeconds(expireTime)
 
             await this.cacheService.set(key, token, convertExpireTime)
-            await this.cacheService.set(token, `${userId}`, convertExpireTime)
 
             savedToken = token
         }
