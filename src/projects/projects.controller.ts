@@ -21,10 +21,12 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express'
 import { AdminAuthGuard } from 'src/auth'
 import { multerOptions } from 'src/middleware'
+import { ReticulumService } from 'src/reticulum'
 import { RoomsService } from 'src/rooms'
 import { ScenesService } from 'src/scenes'
 import { AdminCreateRoomDto, CreateProjectDto, QueryDto, UpdateProjectDto } from './dto'
 import { ProjectsService } from './projects.service'
+import { ProjectConfigService } from './services'
 import { UploadedFilesType } from './types'
 
 const FAVICON = 'favicon'
@@ -37,7 +39,9 @@ export class ProjectsController {
         private readonly projectsService: ProjectsService,
         private readonly scenesService: ScenesService,
         @Inject(forwardRef(() => RoomsService))
-        private readonly roomsService: RoomsService
+        private readonly roomsService: RoomsService,
+        private readonly reticulumService: ReticulumService,
+        private readonly configService: ProjectConfigService
     ) {}
 
     /**
@@ -188,7 +192,14 @@ export class ProjectsController {
 
         const rooms = await this.roomsService.findRooms({ sceneId, ...queryDto })
 
-        const items = await Promise.all(rooms.items.map((room) => this.roomsService.getRoomDto(room.id)))
+        const token = await this.reticulumService.getToken(
+            projectId,
+            this.configService.userAccessTokenExpiration
+        )
+
+        const items = await Promise.all(
+            rooms.items.map((room) => this.roomsService.getRoomDto(room.id, token))
+        )
 
         return { ...rooms, items }
     }
@@ -203,7 +214,12 @@ export class ProjectsController {
         await this.validateScene(projectId, sceneId)
         await this.validateRoom(projectId, sceneId, roomId)
 
-        return await this.roomsService.getRoomDto(roomId)
+        const token = await this.reticulumService.getToken(
+            projectId,
+            this.configService.userAccessTokenExpiration
+        )
+
+        return await this.roomsService.getRoomDto(roomId, token)
     }
 
     private async validateProject(projectId: string) {
