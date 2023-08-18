@@ -5,6 +5,7 @@ import {
     Delete,
     ForbiddenException,
     Get,
+    Inject,
     NotFoundException,
     Param,
     Patch,
@@ -14,7 +15,8 @@ import {
     UnauthorizedException,
     UploadedFiles,
     UseGuards,
-    UseInterceptors
+    UseInterceptors,
+    forwardRef
 } from '@nestjs/common'
 import { FileFieldsInterceptor } from '@nestjs/platform-express'
 import { AdminAuthGuard } from 'src/auth'
@@ -34,6 +36,7 @@ export class ProjectsController {
     constructor(
         private readonly projectsService: ProjectsService,
         private readonly scenesService: ScenesService,
+        @Inject(forwardRef(() => RoomsService))
         private readonly roomsService: RoomsService
     ) {}
 

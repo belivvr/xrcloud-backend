@@ -19,7 +19,7 @@ import { ProjectConfigService } from './services'
         FileStorageModule,
         ReticulumModule,
         ScenesModule,
-        RoomsModule
+        forwardRef(() => RoomsModule)
     ],
     controllers: [ProjectsController, ApiProjectsController],
     providers: [ProjectsService, ProjectsRepository, ProjectConfigService],

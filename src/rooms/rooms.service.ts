@@ -1,5 +1,7 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
+import { ForbiddenException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common'
 import { CacheService, convertTimeToSeconds, generateUUID, getSlug, updateIntersection } from 'src/common'
+import { FileStorageService } from 'src/file-storage'
+import { ProjectsService } from 'src/projects'
 import { ReticulumService } from 'src/reticulum'
 import { ScenesService } from 'src/scenes'
 import { CreateRoomDto, QueryDto, RoomDto, UpdateRoomDto } from './dto'
@@ -13,7 +15,10 @@ export class RoomsService {
         private readonly scenesService: ScenesService,
         private readonly reticulumService: ReticulumService,
         private readonly configService: RoomConfigService,
-        private readonly cacheService: CacheService
+        private readonly cacheService: CacheService,
+        private readonly fileStorageService: FileStorageService,
+        @Inject(forwardRef(() => ProjectsService))
+        private readonly projectsService: ProjectsService
     ) {}
 
     async createRoom(createRoomDto: CreateRoomDto) {
@@ -99,17 +104,30 @@ export class RoomsService {
         return scene
     }
 
-    async getRoomUrl(infraRoomId: string, slug: string, token?: string) {
-        const { url, options } = this.reticulumService.getRoomInfo(infraRoomId, slug, token)
+    async getRoomUrl(roomId: string, token?: string) {
+        const room = await this.getRoom(roomId)
+
+        const project = await this.projectsService.getProject(room.projectId)
+
+        const { url, options } = this.reticulumService.getRoomInfo(room.infraRoomId, room.slug, token)
 
         let roomUrl = url
 
-        if (options) {
+        const faviconUrl = this.fileStorageService.getFileUrl(project.faviconId, 'favicon')
+        const logoUrl = this.fileStorageService.getFileUrl(project.logoId, 'logo')
+
+        if (options?.token) {
             const optionId = generateUUID()
+
+            const extendedOptions = {
+                ...options,
+                faviconUrl: `${faviconUrl}.ico`,
+                logoUrl: `${logoUrl}.jpg`
+            }
 
             const expireTime = convertTimeToSeconds(this.configService.roomOptionExpiration)
 
-            await this.cacheService.set(optionId, JSON.stringify(options), expireTime)
+            await this.cacheService.set(optionId, JSON.stringify(extendedOptions), expireTime)
 
             roomUrl = `${url}?optId=${optionId}`
         }
@@ -123,7 +141,7 @@ export class RoomsService {
         const scene = await this.scenesService.getScene(room.sceneId)
 
         const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
-        const roomUrl = await this.getRoomUrl(room.infraRoomId, room.slug, token)
+        const roomUrl = await this.getRoomUrl(roomId, token)
 
         const dto = new RoomDto(room)
         dto.roomUrl = roomUrl
