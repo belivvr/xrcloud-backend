@@ -14,12 +14,14 @@ import { CacheService, ConfigException, SafeConfigService } from 'src/common'
                 if (type === 'redis') {
                     const host = config.getString('CACHE_HOST')
                     const port = config.getNumber('CACHE_PORT')
+                    const password = config.getString('REDIS_PASSWORD')
 
                     return {
                         store: redisStore,
                         host,
                         port,
-                        ttl: 0 //기본값이 5라서 반드시 지정해야 한다.
+                        password,
+                        ttl: 0
                     }
                 } else if (type === 'memory') {
                     return { ttl: 0 }
