@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { APP_FILTER } from '@nestjs/core'
 import { ErrorFilter, HttpExceptionFilter } from 'src/common'
+import { FatalExceptionFilter } from 'src/common/filters/fatal-exception.filter'
 
 @Module({
     providers: [
@@ -11,6 +12,10 @@ import { ErrorFilter, HttpExceptionFilter } from 'src/common'
         {
             provide: APP_FILTER,
             useClass: HttpExceptionFilter
+        },
+        {
+            provide: APP_FILTER,
+            useClass: FatalExceptionFilter
         }
     ]
 })
