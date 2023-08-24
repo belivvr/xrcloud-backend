@@ -10,7 +10,7 @@ import { Project } from './entities'
 import { ProjectsController } from './projects.controller'
 import { ProjectsRepository } from './projects.repository'
 import { ProjectsService } from './projects.service'
-import { ProjectConfigService } from './services'
+import { ProjectConfigService, ValidationService } from './services'
 
 @Module({
     imports: [
@@ -22,7 +22,7 @@ import { ProjectConfigService } from './services'
         forwardRef(() => RoomsModule)
     ],
     controllers: [ProjectsController, ApiProjectsController],
-    providers: [ProjectsService, ProjectsRepository, ProjectConfigService],
+    providers: [ProjectsService, ProjectsRepository, ProjectConfigService, ValidationService],
     exports: [ProjectsService]
 })
 export class ProjectsModule {}

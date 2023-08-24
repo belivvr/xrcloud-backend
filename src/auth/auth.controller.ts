@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common'
 import { AdminsService } from 'src/admins'
 import { AdminDto } from 'src/admins/dto'
-import { LogicException } from 'src/common'
+import { Assert } from 'src/common'
 import { AuthService } from './auth.service'
 import { AdminAuthGuard, LocalAuthGuard } from './guards'
 
@@ -26,9 +26,7 @@ export class AuthController {
     @Post('login')
     @UseGuards(LocalAuthGuard)
     async login(@Req() req: any) {
-        if (!req.user) {
-            throw new LogicException('login failed. req.user is null.')
-        }
+        Assert.defined(req.user, 'Login failed. req.user is null.')
 
         return this.authService.login(req.user)
     }
@@ -36,9 +34,7 @@ export class AuthController {
     @Get('profile')
     @UseGuards(AdminAuthGuard)
     async getProfile(@Req() req: any) {
-        if (!req.user) {
-            throw new LogicException('getProfile failed. req.user is null.')
-        }
+        Assert.defined(req.user, 'GetProfile failed. req.user is null.')
 
         const admin = await this.adminsService.getAdmin(req.user.adminId)
 
@@ -50,7 +46,7 @@ export class AuthController {
         const payload = await this.authService.refreshTokenPair(refreshToken)
 
         if (!payload) {
-            throw new UnauthorizedException('refresh failed.')
+            throw new UnauthorizedException('Refresh failed.')
         }
 
         return payload

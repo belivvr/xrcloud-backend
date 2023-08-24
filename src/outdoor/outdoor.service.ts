@@ -57,7 +57,9 @@ export class OutdoorService {
     }
 
     async getOption(optionId: string) {
-        const option = await this.cacheService.get(optionId)
+        const key = `option:${optionId}`
+
+        const option = await this.cacheService.get(key)
 
         if (!option) {
             throw new UnauthorizedException('Invalid optionId.')

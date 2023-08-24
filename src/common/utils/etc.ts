@@ -132,3 +132,9 @@ export function toBoolean(value: string): boolean {
 
     throw new Error('Value must be a boolean or a string representing a boolean')
 }
+
+export function getServerDate() {
+    const serverDate = new Date()
+
+    return serverDate.toISOString().replace('T', ' ').substring(0, 19)
+}

@@ -1,10 +1,5 @@
-import {
-    BadRequestException,
-    Injectable,
-    InternalServerErrorException,
-    NotFoundException
-} from '@nestjs/common'
-import { generateUUID, updateIntersection } from 'src/common'
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common'
+import { Assert, generateUUID, updateIntersection } from 'src/common'
 import { FileStorageService } from 'src/file-storage'
 import { ScenesService } from 'src/scenes'
 import { CreateProjectDto, ProjectDto, QueryDto, UpdateProjectDto } from './dto'
@@ -64,6 +59,14 @@ export class ProjectsService {
         return projects
     }
 
+    async getProject(projectId: string): Promise<Project> {
+        const project = await this.projectsRepository.findById(projectId)
+
+        Assert.defined(project, `Project with ID "${projectId}" not found.`)
+
+        return project as Project
+    }
+
     async updateProject(projectId: string, updateProjectDto: UpdateProjectDto, files: UploadedFilesType) {
         const project = await this.getProject(projectId)
 
@@ -89,23 +92,17 @@ export class ProjectsService {
 
         const updatedProject = updateIntersection(project, updateProject)
 
-        return await this.projectsRepository.update(updatedProject)
+        const savedProject = await this.projectsRepository.update(updatedProject)
+
+        Assert.deepEquals(savedProject, updatedProject, 'The result is different from the update request')
+
+        return savedProject
     }
 
     async removeProject(projectId: string) {
         const project = await this.getProject(projectId)
 
         await this.projectsRepository.remove(project)
-    }
-
-    async getProject(projectId: string): Promise<Project> {
-        const project = await this.projectsRepository.findById(projectId)
-
-        if (!project) {
-            throw new NotFoundException(`Project with ID "${projectId}" not found.`)
-        }
-
-        return project
     }
 
     async getProjectDto(projectId: string) {

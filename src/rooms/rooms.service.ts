@@ -1,10 +1,18 @@
-import { ForbiddenException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common'
-import { CacheService, convertTimeToSeconds, generateUUID, getSlug, updateIntersection } from 'src/common'
+import { ForbiddenException, Inject, Injectable, forwardRef } from '@nestjs/common'
+import {
+    Assert,
+    CacheService,
+    convertTimeToSeconds,
+    generateUUID,
+    getSlug,
+    updateIntersection
+} from 'src/common'
 import { FileStorageService } from 'src/file-storage'
 import { ProjectsService } from 'src/projects'
 import { ReticulumService } from 'src/reticulum'
 import { ScenesService } from 'src/scenes'
 import { CreateRoomDto, QueryDto, RoomDto, UpdateRoomDto } from './dto'
+import { Room } from './entities'
 import { RoomsRepository } from './rooms.repository'
 import { RoomConfigService } from './services/room-config.service'
 
@@ -58,6 +66,14 @@ export class RoomsService {
         return rooms
     }
 
+    async getRoom(roomId: string): Promise<Room> {
+        const room = await this.roomsRepository.findById(roomId)
+
+        Assert.defined(room, `Room with ID "${roomId}" not found.`)
+
+        return room as Room
+    }
+
     async updateRoom(updateRoomDto: UpdateRoomDto) {
         const { roomId, ...data } = updateRoomDto
 
@@ -85,7 +101,11 @@ export class RoomsService {
 
         const updatedRoom = updateIntersection(room, updateRoom)
 
-        return await this.roomsRepository.update(updatedRoom)
+        const savedRoom = await this.roomsRepository.update(updatedRoom)
+
+        Assert.deepEquals(savedRoom, updatedRoom, 'The result is different from the update request')
+
+        return savedRoom
     }
 
     async removeRoom(roomId: string) {
@@ -94,14 +114,19 @@ export class RoomsService {
         await this.roomsRepository.remove(room)
     }
 
-    async getRoom(roomId: string) {
-        const scene = await this.roomsRepository.findById(roomId)
+    async getRoomDto(roomId: string, token?: string) {
+        const room = await this.getRoom(roomId)
 
-        if (!scene) {
-            throw new NotFoundException(`Room with ID "${roomId}" not found.`)
-        }
+        const scene = await this.scenesService.getScene(room.sceneId)
 
-        return scene
+        const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
+        const roomUrl = await this.getRoomUrl(roomId, token)
+
+        const dto = new RoomDto(room)
+        dto.roomUrl = roomUrl
+        dto.thumbnailUrl = thumbnailUrl
+
+        return dto
     }
 
     async getRoomUrl(roomId: string, token?: string) {
@@ -119,6 +144,8 @@ export class RoomsService {
         if (options?.token) {
             const optionId = generateUUID()
 
+            const key = `option:${optionId}`
+
             const extendedOptions = {
                 ...options,
                 faviconUrl: `${faviconUrl}.ico`,
@@ -127,7 +154,7 @@ export class RoomsService {
 
             const expireTime = convertTimeToSeconds(this.configService.roomOptionExpiration)
 
-            await this.cacheService.set(optionId, JSON.stringify(extendedOptions), expireTime)
+            await this.cacheService.set(key, JSON.stringify(extendedOptions), expireTime)
 
             roomUrl = `${url}?optId=${optionId}`
         }
@@ -135,19 +162,8 @@ export class RoomsService {
         return roomUrl
     }
 
-    async getRoomDto(roomId: string, token?: string) {
-        const room = await this.getRoom(roomId)
-
-        const scene = await this.scenesService.getScene(room.sceneId)
-
-        const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
-        const roomUrl = await this.getRoomUrl(roomId, token)
-
-        const dto = new RoomDto(room)
-        dto.roomUrl = roomUrl
-        dto.thumbnailUrl = thumbnailUrl
-
-        return dto
+    async roomExists(roomId: string): Promise<boolean> {
+        return this.roomsRepository.exist(roomId)
     }
 
     async restrictRoomCreation(projectId: string) {

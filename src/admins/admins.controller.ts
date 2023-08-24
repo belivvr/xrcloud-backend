@@ -2,7 +2,7 @@ import { Body, ConflictException, Controller, Patch, Post, Req, UseGuards } from
 import { AdminsService } from './admins.service'
 import { AdminDto, CreateAdminDto } from './dto'
 import { AdminAuthGuard } from 'src/auth'
-import { LogicException } from 'src/common'
+import { Assert } from 'src/common'
 
 @Controller('admins')
 export class AdminsController {
@@ -24,9 +24,7 @@ export class AdminsController {
     @Patch('api-key')
     @UseGuards(AdminAuthGuard)
     async generateApiKey(@Req() req: any) {
-        if (!req.user) {
-            throw new LogicException('authentication failed. req.user is null.')
-        }
+        Assert.defined(req.user, 'Authentication failed. req.user is null.')
 
         const admin = await this.adminsService.generateApiKey(req.user.adminId)
 

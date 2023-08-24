@@ -1,14 +1,11 @@
 import { Logger } from '@nestjs/common'
 import { Logger as ILogger, QueryRunner } from 'typeorm'
-import { isProduction } from '../utils'
 
 export class TypeormLogger implements ILogger {
     constructor() {}
 
     logQuery(query: string, parameters?: any[], _queryRunner?: QueryRunner) {
-        if (!isProduction()) {
-            Logger.verbose('QUERY', 'ORM', { query, parameters })
-        }
+        Logger.verbose('QUERY', 'ORM', { query, parameters })
     }
 
     logQueryError(error: string | Error, query: string, parameters?: any[], _queryRunner?: QueryRunner) {

@@ -1,5 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
-import { CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
+import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
 import { ReticulumService } from 'src/reticulum'
 import { CreateSceneDto, QueryDto, SceneDto, UpdateSceneDto } from './dto'
 import { Scene } from './entities'
@@ -37,6 +37,62 @@ export class ScenesService {
         await this.scenesRepository.create(createScene)
     }
 
+    async findScenes(projectId: string, queryDto: QueryDto) {
+        const scenes = await this.scenesRepository.find(projectId, queryDto)
+
+        return scenes
+    }
+
+    async getScene(sceneId: string): Promise<Scene> {
+        const scene = await this.scenesRepository.findById(sceneId)
+
+        Assert.defined(scene, `Scene with ID "${sceneId}" not found.`)
+
+        return scene as Scene
+    }
+
+    async updateScene(updateSceneDto: UpdateSceneDto) {
+        const { infraSceneId } = updateSceneDto
+
+        const scene = await this.findByInfraSceneId(infraSceneId)
+
+        const infraScene = await this.reticulumService.getScene(infraSceneId)
+
+        const thumbnailId = await this.reticulumService.getThumbnailId(infraScene.screenshot_owned_file_id)
+
+        const updateScene = {
+            name: infraScene.name,
+            thumbnailId: thumbnailId
+        }
+
+        const updatedScene = updateIntersection(scene, updateScene)
+
+        const savedScene = await this.scenesRepository.update(updatedScene)
+
+        Assert.deepEquals(savedScene, updatedScene, 'The result is different from the update request')
+
+        return savedScene
+    }
+
+    async removeScene(sceneId: string) {
+        const scene = await this.getScene(sceneId)
+
+        await this.scenesRepository.remove(scene)
+    }
+
+    async getSceneDto(sceneId: string) {
+        const scene = await this.getScene(sceneId)
+
+        const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
+        const sceneModificationUrl = await this.getSceneModificationUrl(scene.projectId, scene.id)
+
+        const dto = new SceneDto(scene)
+        dto.thumbnailUrl = thumbnailUrl
+        dto.sceneModificationUrl = sceneModificationUrl
+
+        return dto
+    }
+
     async getSceneCreationUrl(projectId: string) {
         const token = await this.reticulumService.getToken(
             projectId,
@@ -51,9 +107,11 @@ export class ScenesService {
 
         const optionId = generateUUID()
 
+        const key = `option:${optionId}`
+
         const expireTime = convertTimeToSeconds(this.configService.sceneOptionExpiration)
 
-        await this.cacheService.set(optionId, JSON.stringify(options), expireTime)
+        await this.cacheService.set(key, JSON.stringify(options), expireTime)
 
         const sceneCreationUrl = `${url}?optId=${optionId}`
 
@@ -75,67 +133,15 @@ export class ScenesService {
 
         const optionId = generateUUID()
 
+        const key = `option:${optionId}`
+
         const expireTime = convertTimeToSeconds(this.configService.sceneOptionExpiration)
 
-        await this.cacheService.set(optionId, JSON.stringify(options), expireTime)
+        await this.cacheService.set(key, JSON.stringify(options), expireTime)
 
         const sceneModificationUrl = `${url}?optId=${optionId}`
 
         return sceneModificationUrl
-    }
-
-    async findScenes(projectId: string, queryDto: QueryDto) {
-        const scenes = await this.scenesRepository.find(projectId, queryDto)
-
-        return scenes
-    }
-
-    async getScene(sceneId: string): Promise<Scene> {
-        const scene = await this.scenesRepository.findById(sceneId)
-
-        if (!scene) {
-            throw new NotFoundException(`Scene with ID "${sceneId}" not found.`)
-        }
-
-        return scene
-    }
-
-    async updateScene(updateSceneDto: UpdateSceneDto) {
-        const { infraSceneId } = updateSceneDto
-
-        const scene = await this.findByInfraSceneId(infraSceneId)
-
-        const infraScene = await this.reticulumService.getScene(infraSceneId)
-
-        const thumbnailId = await this.reticulumService.getThumbnailId(infraScene.screenshot_owned_file_id)
-
-        const updateScene = {
-            name: infraScene.name,
-            thumbnailId: thumbnailId
-        }
-
-        const updatedScene = updateIntersection(scene, updateScene)
-
-        await this.scenesRepository.update(updatedScene)
-    }
-
-    async removeScene(sceneId: string) {
-        const scene = await this.getScene(sceneId)
-
-        await this.scenesRepository.remove(scene)
-    }
-
-    async getSceneDto(sceneId: string) {
-        const scene = await this.getScene(sceneId)
-
-        const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
-        const sceneModificationUrl = await this.getSceneModificationUrl(scene.projectId, scene.id)
-
-        const dto = new SceneDto(scene)
-        dto.thumbnailUrl = thumbnailUrl
-        dto.sceneModificationUrl = sceneModificationUrl
-
-        return dto
     }
 
     async findByInfraSceneId(infraSceneId: string) {

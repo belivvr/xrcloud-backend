@@ -9,7 +9,7 @@ res=$(
     POST /auth/login \
         -H 'Content-Type: application/json' \
         -d '{
-                "email": "zizi2717@belivvr.com",
+                "email": "zizi27177@belivvr.com",
                 "password": "123123"
             }'
 )
