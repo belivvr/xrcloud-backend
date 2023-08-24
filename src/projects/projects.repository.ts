@@ -12,6 +12,8 @@ export class ProjectsRepository extends BaseRepository<Project> {
     }
 
     async find(queryDto: QueryDto, adminId: string): Promise<PaginationResult<Project>> {
+        const { take, skip } = queryDto
+
         const qb = this.createQueryBuilder(queryDto)
 
         qb.where('entity.adminId = :adminId', {
@@ -20,7 +22,7 @@ export class ProjectsRepository extends BaseRepository<Project> {
 
         const [items, total] = await qb.getManyAndCount()
 
-        return { items, total, take: queryDto.take, skip: queryDto.skip }
+        return { items, total, take, skip }
     }
 
     async findByAdminId(adminId: string): Promise<Project | null> {

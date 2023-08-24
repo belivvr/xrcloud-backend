@@ -12,13 +12,15 @@ export class RoomsRepository extends BaseRepository<Room> {
     }
 
     async find(queryDto: QueryDto): Promise<PaginationResult<Room>> {
+        const { take, skip } = queryDto
+
         const qb = this.createQueryBuilder(queryDto)
 
         qb.where('entity.sceneId = :sceneId', { sceneId: queryDto.sceneId })
 
         const [items, total] = await qb.getManyAndCount()
 
-        return { items, total, take: queryDto.take, skip: queryDto.skip }
+        return { items, total, take, skip }
     }
 
     async countByProjectId(projectId: string): Promise<number> {

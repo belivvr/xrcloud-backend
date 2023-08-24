@@ -12,13 +12,15 @@ export class ScenesRepository extends BaseRepository<Scene> {
     }
 
     async find(projectId: string, queryDto: QueryDto): Promise<PaginationResult<Scene>> {
+        const { take, skip } = queryDto
+
         const qb = this.createQueryBuilder(queryDto)
 
         qb.where('entity.projectId = :projectId', { projectId })
 
         const [items, total] = await qb.getManyAndCount()
 
-        return { items, total, take: queryDto.take, skip: queryDto.skip }
+        return { items, total, take, skip }
     }
 
     async findByInfraUserId(infraSceneId: string): Promise<Scene | null> {
