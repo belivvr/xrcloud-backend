@@ -34,7 +34,7 @@ export class ApiScenesController {
     }
 
     @Delete(':sceneId')
-    async clearScene(@Param('sceneId') sceneId: string) {
+    async removeScene(@Param('sceneId') sceneId: string) {
         return await this.clearService.clearScene(sceneId)
     }
 }

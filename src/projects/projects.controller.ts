@@ -120,7 +120,7 @@ export class ProjectsController {
     }
 
     @Delete(':projectId')
-    async clearProject(@Param('projectId') projectId: string) {
+    async removeProject(@Param('projectId') projectId: string) {
         return await this.clearService.clearProject(projectId)
     }
 }

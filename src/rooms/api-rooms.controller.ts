@@ -68,7 +68,7 @@ export class ApiRoomsController {
     }
 
     @Delete(':roomId')
-    async clearRoom(@Param('roomId') roomId: string) {
+    async removeRoom(@Param('roomId') roomId: string) {
         return await this.clearService.clearRoom(roomId)
     }
 }
