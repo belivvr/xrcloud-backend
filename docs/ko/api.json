@@ -22,7 +22,7 @@
         {
             "name": "scene",
             "x-displayName": "Scene",
-            "description": "Scene 생성: [get project api]([#tag/project/operation/GetProject)의 response json 필드 중 sceneCreationUrl을 사용하여 생성합니다. \n\n Scene 수정: [get scene api]([#tag/project/operation/GetScene)의 response json 필드 중 sceneModificationUrl을 사용하여 수정합니다. \n\n - `event-callback`, `extra` 값은 XRCLOUD에서 Scene의 생성 및 수정을 확인하기위한 callback value 입니다. 변형하여 사용하면 오류가 발생할 수 있습니다."
+            "description": "Scene 생성: [get project api]([#tag/project/operation/GetProject)의 response json 필드 중 sceneCreationUrl을 사용하여 생성합니다. \n\n Scene 수정: [get scene api]([#tag/project/operation/GetScene)의 response json 필드 중 sceneModificationUrl을 사용하여 수정합니다. \n\n - `optId` 값은 XRCLOUD에서 Scene의 생성 및 수정을 확인하기위한 callback value 입니다. 변형하여 사용하면 오류가 발생할 수 있습니다."
         },
         {
             "name": "room",
@@ -48,7 +48,7 @@
     ],
     
     "paths": {
-        "/api/projects/{id}": {
+        "/api/projects/{project_id}": {
             "get": {
                 "tags": [
                     "project"
@@ -84,7 +84,7 @@
                 }
             }
         },
-        "/api/projects/{project_id}/scenes": {
+        "/api/scenes": {
             "get": {
                 "tags": [
                     "scene"
@@ -94,6 +94,9 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ProjectId"
                     },
                     {
                         "$ref": "#/components/parameters/PaginationTake"
@@ -126,7 +129,7 @@
                 }
             }
         },
-        "/api/projects/{project_id}/scenes/{scene_id}": {
+        "/api/scenes/{scene_id}": {
             "get": {
                 "tags": [
                     "scene"
@@ -189,7 +192,7 @@
                 }
             }
         },
-        "/api/projects/{project_id}/scenes/{scene_id}/rooms": {
+        "/api/rooms": {
             "post": {
                 "tags": [
                     "room"
@@ -245,13 +248,16 @@
                         "$ref": "#/components/parameters/ApiKey"
                     },
                     {
+                        "$ref": "#/components/parameters/SceneId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/UserId"
+                    },
+                    {
                         "$ref": "#/components/parameters/PaginationTake"
                     },
                     {
                         "$ref": "#/components/parameters/PaginationSkip"
-                    },
-                    {
-                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "responses": {
@@ -278,7 +284,7 @@
                 }
             }
         },
-        "/api/projects/{project_id}/scenes/{scene_id}/rooms/{room_id}": {
+        "/api/rooms/{room_id}": {
             "get": {
                 "tags": [
                     "room"
@@ -417,6 +423,24 @@
                     "type": "number"
                 },
                 "description": "(pagination) 건너뛸 데이터의 갯수."
+            },
+            "ProjectId": {
+                "required": true,
+                "name": "projectId",
+                "in": "query",
+                "schema": {
+                    "type": "uuid"
+                },
+                "description": "Project의 고유 ID입니다."
+            },
+            "SceneId": {
+                "required": true,
+                "name": "sceneId",
+                "in": "query",
+                "schema": {
+                    "type": "uuid"
+                },
+                "description": "Scene의 고유 ID입니다."
             },
             "UserId": {
                 "required": false,
@@ -662,7 +686,7 @@
                     "sceneCreationUrl": {
                         "type": "string",
                         "description": "Scene을 생성할 공간의 URL입니다.",
-                        "example": "https://xrcloud.app:4000/spoke/projects/new?token=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
+                        "example": "https://room.xrcloud.app:4000/spoke/projects/new?optId=35e75895-9db7-4eee-bae3-87e20ee156dc"
                     }
                 }
             },
@@ -687,7 +711,7 @@
                     "sceneModificationUrl": {
                         "type": "string",
                         "description": "Scene을 수정할 공간의 URL입니다.",
-                        "example": "https://xrcloud.app:4000/spoke/projects/ASJCJK1?token=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
+                        "example": "https://room.xrcloud.app:4000/spoke/projects/ASJCJK1?optId=35e75895-9db7-4eee-bae3-87e20ee156dc"
                     }
                 }
             },
@@ -729,7 +753,7 @@
                     "roomUrl": {
                         "type": "string",
                         "description": "Room에 입장할 URL입니다.",
-                        "example": "https://xrcloud.app:4000/7UizZDL/example-room-name?token=WRlNDAtNWQ0OC00NjZjLWFlYTUtOTNkZDA1Yj..."
+                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?optId=35e75895-9db7-4eee-bae3-87e20ee156dc"
                     },
                     "thumbnailUrl": {
                         "type": "string",
@@ -789,9 +813,21 @@
             "CreateRoomRequest": {
                 "type": "object",
                 "required": [
+                    "projectId",
+                    "sceneId",
                     "name"
                 ],
                 "properties": {
+                    "projectId": {
+                        "type": "uuid",
+                        "description": "Project의 고유 ID입니다.",
+                        "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
+                    },
+                    "sceneId": {
+                        "type": "uuid",
+                        "description": "Scene의 고유 ID입니다.",
+                        "example": "1234e5ba-5678-4f7a-86ed-abcd95ea1efg"
+                    },
                     "name": {
                         "type": "string",
                         "description": "Room의 이름입니다.",

@@ -22,7 +22,7 @@
         {
             "name": "scene",
             "x-displayName": "Scene",
-            "description": "Scene Creation: Use the sceneCreationUrl field from the response json of [get project api](#tag/project/operation/GetProject) to create the scene. \n\n Scene Modification: Use the sceneModificationUrl field from the response json of [get scene api](#tag/project/operation/GetScene) to modify the scene. \n\n - The `event-callback`, `extra` values are callback values for checking the creation and modification of the Scene in XRCLOUD. Using them with variations may cause errors."
+            "description": "Scene Creation: Use the sceneCreationUrl field from the response json of [get project api](#tag/project/operation/GetProject) to create the scene. \n\n Scene Modification: Use the sceneModificationUrl field from the response json of [get scene api](#tag/project/operation/GetScene) to modify the scene. \n\n - The `optId` values are callback values for checking the creation and modification of the Scene in XRCLOUD. Using them with variations may cause errors."
         },
         {
             "name": "room",
@@ -84,7 +84,7 @@
                 }
             }
         },
-        "/api/projects/{project_id}/scenes": {
+        "/api/scenes": {
             "get": {
                 "tags": [
                     "scene"
@@ -94,6 +94,9 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ProjectId"
                     },
                     {
                         "$ref": "#/components/parameters/PaginationTake"
@@ -126,7 +129,7 @@
                 }
             }
         },
-        "/api/projects/{project_id}/scenes/{scene_id}": {
+        "/api/scenes/{scene_id}": {
             "get": {
                 "tags": [
                     "scene"
@@ -189,7 +192,7 @@
                 }
             }
         },
-        "/api/projects/{project_id}/scenes/{scene_id}/rooms": {
+        "/api/rooms": {
             "post": {
                 "tags": [
                     "room"
@@ -245,13 +248,16 @@
                         "$ref": "#/components/parameters/ApiKey"
                     },
                     {
+                        "$ref": "#/components/parameters/SceneId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/UserId"
+                    },
+                    {
                         "$ref": "#/components/parameters/PaginationTake"
                     },
                     {
                         "$ref": "#/components/parameters/PaginationSkip"
-                    },
-                    {
-                        "$ref": "#/components/parameters/UserId"
                     }
                 ],
                 "responses": {
@@ -278,7 +284,7 @@
                 }
             }
         },
-        "/api/projects/{project_id}/scenes/{scene_id}/rooms/{room_id}": {
+        "/api/rooms/{room_id}": {
             "get": {
                 "tags": [
                     "room"
@@ -418,6 +424,24 @@
                     "type": "number"
                 }
             },
+            "ProjectId": {
+                "required": true,
+                "name": "projectId",
+                "in": "query",
+                "schema": {
+                    "type": "uuid"
+                },
+                "description": "The unique ID of the project."
+            },
+            "SceneId": {
+                "required": true,
+                "name": "sceneId",
+                "in": "query",
+                "schema": {
+                    "type": "uuid"
+                },
+                "description": "The unique ID of the scene."
+            },
             "UserId": {
                 "required": false,
                 "name": "userId",
@@ -425,7 +449,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "The user of the project (app). Used to differentiate between users accessing Room."
+                "description": "The user of the project (app). Used to differentiate between users accessing room."
             }
         },
         "schemas": {
@@ -600,9 +624,21 @@
             "CreateRoomRequest": {
                 "type": "object",
                 "required": [
+                    "projectId",
+                    "sceneId",
                     "name"
                 ],
                 "properties": {
+                    "projectId": {
+                        "type": "uuid",
+                        "description": "The unique ID of the project.",
+                        "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
+                    },
+                    "sceneId": {
+                        "type": "uuid",
+                        "description": "The unique ID of the scene.",
+                        "example": "1234e5ba-5678-4f7a-86ed-abcd95ea1efg"
+                    },
                     "name": {
                         "type": "string",
                         "description": "The name of the room.",
