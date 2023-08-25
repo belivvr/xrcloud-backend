@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { ScenesModule } from 'src/scenes'
+import { ScenesModule } from 'src/scenes/scenes.module'
 import { OutdoorController } from './outdoor.controller'
 import { OutdoorService } from './outdoor.service'
 

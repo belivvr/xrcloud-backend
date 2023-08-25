@@ -7,30 +7,32 @@ cd "$(dirname "$0")"
 
 # createRoom
 res=$(
-    POST "/api/projects/$PROJECT_ID/scenes/$SCENE_ID/rooms" \
+    POST "/api/rooms" \
         -H "Authorization: Bearer $API_KEY" \
         -H "Content-Type: application/json" \
         -d '{
-                "name": "Test Room Name"
+                "projectId": "'$PROJECT_ID'",
+                "sceneId": "'$SCENE_ID'",
+                "name": "testName"
             }'
 )
 id=$(echo $res | jq -r '.id')
 
 # findRooms
 res=$(
-    GET "/api/projects/$PROJECT_ID/scenes/$SCENE_ID/rooms?$PAGE_OPT&userId=$USER_ID" \
+    GET "/api/rooms?sceneId=$SCENE_ID&userId=$USER_ID&$PAGE_OPT" \
         -H "Authorization: Bearer $API_KEY"
 )
 
 # getRoom
 res=$(
-    GET "/api/projects/$PROJECT_ID/scenes/$SCENE_ID/rooms/$id?userId=$USER_ID" \
+    GET "/api/rooms/$id?userId=$USER_ID" \
         -H "Authorization: Bearer $API_KEY"
 )
 
 # updateRoom
 res=$(
-    PATCH "/api/projects/$PROJECT_ID/scenes/$SCENE_ID/rooms/$id" \
+    PATCH "/api/rooms/$id" \
         -H "Authorization: Bearer $API_KEY" \
         -H "Content-Type: application/json" \
         -d '{
@@ -41,6 +43,6 @@ res=$(
 
 # removeRoom
 res=$(
-    DELETE "/api/projects/$PROJECT_ID/scenes/$SCENE_ID/rooms/$id" \
+    DELETE "/api/rooms/$id" \
         -H "Authorization: Bearer $API_KEY"
 )

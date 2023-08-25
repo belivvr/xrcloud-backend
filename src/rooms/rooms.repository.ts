@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { BaseRepository, PaginationResult } from 'src/common'
 import { Repository } from 'typeorm'
-import { QueryDto } from './dto'
+import { RoomQueryDto } from './dto'
 import { Room } from './entities'
 
 @Injectable()
@@ -11,22 +11,27 @@ export class RoomsRepository extends BaseRepository<Room> {
         super(typeorm)
     }
 
-    async find(queryDto: QueryDto): Promise<PaginationResult<Room>> {
-        const { take, skip } = queryDto
+    async find(roomQueryDto: RoomQueryDto): Promise<PaginationResult<Room>> {
+        const { sceneId, take, skip } = roomQueryDto
 
-        const qb = this.createQueryBuilder(queryDto)
-
-        qb.where('entity.sceneId = :sceneId', { sceneId: queryDto.sceneId })
+        const qb = this.createQueryBuilder(roomQueryDto)
+            .where('entity.sceneId = :sceneId', { sceneId })
 
         const [items, total] = await qb.getManyAndCount()
 
         return { items, total, take, skip }
     }
 
-    async countByProjectId(projectId: string): Promise<number> {
-        const qb = this.typeorm.createQueryBuilder('rooms')
+    async findBySceneId(sceneId: string): Promise<Room[]> {
+        const qb = this.createQueryBuilder()
+            .where('entity.sceneId = :sceneId', { sceneId })
 
-        qb.where('rooms.projectId = :projectId', { projectId })
+        return await qb.getMany()
+    }
+
+    async countByProjectId(projectId: string): Promise<number> {
+        const qb = this.createQueryBuilder()
+            .where('entity.projectId = :projectId', { projectId })
 
         const count = await qb.getCount()
 

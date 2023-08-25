@@ -9,6 +9,7 @@ export class ReticulumService {
     private host
     private apiHost
     private adminId
+    private userTokenExpiration
 
     constructor(
         private readonly configService: ReticulumConfigService,
@@ -17,6 +18,7 @@ export class ReticulumService {
         this.host = this.configService.host
         this.apiHost = this.configService.apiHost
         this.adminId = this.configService.adminId
+        this.userTokenExpiration = this.configService.userTokenExpiration
     }
 
     private async request(url: string, options?: any) {
@@ -45,7 +47,7 @@ export class ReticulumService {
             body
         })
 
-        if (!response || !response.token) {
+        if (!response || !response.token || typeof response.token !== 'string') {
             throw new InternalServerErrorException('Reticulum: Failed to login')
         }
 
@@ -135,10 +137,10 @@ export class ReticulumService {
         return response
     }
 
-    getRoomInfo(infraRoomId: string, slug: string, token?: string) {
+    getRoomInfo(infraRoomId: string, slug: string, token: string) {
         const returnValue = {
             url: `${this.apiHost}/${infraRoomId}/${slug}`,
-            options: token ? { token } : undefined
+            options: { token }
         }
 
         return returnValue
@@ -196,17 +198,19 @@ export class ReticulumService {
         return url
     }
 
-    async getToken(projectId: string, expireTime: string, userId?: string) {
-        if (!userId) {
-            userId = `admin@${projectId}`
-        }
+    async getAdminToken(projectId: string): Promise<string> {
+        return this.getUserToken(projectId, 'admin')
+    }
 
+    async getUserToken(projectId: string, userId: string): Promise<string> {
         const key = `${projectId}:${userId}`
 
         let savedToken = await this.cacheService.get(key)
 
         if (!savedToken) {
             const { token } = await this.login(userId)
+
+            const expireTime = this.userTokenExpiration
 
             const convertExpireTime = convertTimeToSeconds(expireTime)
 
@@ -215,6 +219,6 @@ export class ReticulumService {
             savedToken = token
         }
 
-        return savedToken
+        return savedToken as string
     }
 }

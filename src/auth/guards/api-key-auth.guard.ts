@@ -7,7 +7,7 @@ import {
     forwardRef
 } from '@nestjs/common'
 import { Request } from 'express'
-import { AdminsService } from 'src/admins'
+import { AdminsService } from 'src/admins/admins.service'
 
 @Injectable()
 export class ApiKeyAuthGuard implements CanActivate {
@@ -32,7 +32,7 @@ export class ApiKeyAuthGuard implements CanActivate {
 
         const apiKey = tokenParts.join(' ')
 
-        const admin = await this.adminsService.findByApiKey(apiKey)
+        const admin = await this.adminsService.findAdminByApiKey(apiKey)
 
         if (!admin) {
             throw new UnauthorizedException('Invalid api key.')

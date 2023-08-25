@@ -1,4 +1,4 @@
-import { ForbiddenException, Inject, Injectable, forwardRef } from '@nestjs/common'
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import {
     Assert,
     CacheService,
@@ -7,11 +7,10 @@ import {
     getSlug,
     updateIntersection
 } from 'src/common'
-import { FileStorageService } from 'src/file-storage'
-import { ProjectsService } from 'src/projects'
-import { ReticulumService } from 'src/reticulum'
-import { ScenesService } from 'src/scenes'
-import { CreateRoomDto, QueryDto, RoomDto, UpdateRoomDto } from './dto'
+import { FileStorageService } from 'src/file-storage/file-storage.service'
+import { ReticulumService } from 'src/reticulum/reticulum.service'
+import { ScenesService } from 'src/scenes/scenes.service'
+import { CreateRoomDto, RoomDto, RoomQueryDto, UpdateRoomDto } from './dto'
 import { Room } from './entities'
 import { RoomsRepository } from './rooms.repository'
 import { RoomConfigService } from './services/room-config.service'
@@ -20,17 +19,15 @@ import { RoomConfigService } from './services/room-config.service'
 export class RoomsService {
     constructor(
         private readonly roomsRepository: RoomsRepository,
-        private readonly scenesService: ScenesService,
         private readonly reticulumService: ReticulumService,
-        private readonly configService: RoomConfigService,
-        private readonly cacheService: CacheService,
         private readonly fileStorageService: FileStorageService,
-        @Inject(forwardRef(() => ProjectsService))
-        private readonly projectsService: ProjectsService
+        private readonly cacheService: CacheService,
+        private readonly configService: RoomConfigService,
+        private readonly scenesService: ScenesService
     ) {}
 
     async createRoom(createRoomDto: CreateRoomDto) {
-        const { projectId, sceneId, ...data } = createRoomDto
+        const { projectId, sceneId, ...createData } = createRoomDto
 
         const count = await this.restrictRoomCreation(projectId)
 
@@ -42,14 +39,14 @@ export class RoomsService {
 
         const scene = await this.scenesService.getScene(sceneId)
 
-        const token = await this.reticulumService.getToken(projectId, this.configService.roomOptionExpiration)
+        const token = await this.reticulumService.getAdminToken(projectId)
 
-        const infraRoom = await this.reticulumService.createRoom(scene.infraSceneId, data.name, token)
+        const infraRoom = await this.reticulumService.createRoom(scene.infraSceneId, createData.name, token)
 
         const slug = getSlug(infraRoom.url)
 
         const createRoom = {
-            ...data,
+            ...createData,
             slug: slug,
             infraRoomId: infraRoom.hub_id,
             thumbnailId: scene.thumbnailId,
@@ -60,8 +57,8 @@ export class RoomsService {
         return await this.roomsRepository.create(createRoom)
     }
 
-    async findRooms(queryDto: QueryDto) {
-        const rooms = await this.roomsRepository.find(queryDto)
+    async findRooms(roomQueryDto: RoomQueryDto) {
+        const rooms = await this.roomsRepository.find(roomQueryDto)
 
         return rooms
     }
@@ -74,18 +71,13 @@ export class RoomsService {
         return room as Room
     }
 
-    async updateRoom(updateRoomDto: UpdateRoomDto) {
-        const { roomId, ...data } = updateRoomDto
-
+    async updateRoom(roomId: string, updateRoomDto: UpdateRoomDto) {
         const room = await this.getRoom(roomId)
 
-        const token = await this.reticulumService.getToken(
-            room.projectId,
-            this.configService.roomOptionExpiration
-        )
+        const token = await this.reticulumService.getAdminToken(room.projectId)
 
         const updateRoomArgs = {
-            ...data,
+            ...updateRoomDto,
             token: token
         }
 
@@ -95,7 +87,7 @@ export class RoomsService {
         )
 
         const updateRoom = {
-            ...data,
+            ...updateRoomDto,
             slug: updatedInfraRoom[0].slug
         }
 
@@ -114,13 +106,31 @@ export class RoomsService {
         await this.roomsRepository.remove(room)
     }
 
-    async getRoomDto(roomId: string, token?: string) {
+    async roomExists(roomId: string): Promise<boolean> {
+        return this.roomsRepository.exist(roomId)
+    }
+
+    async findRoomsBySceneId(sceneId: string) {
+        const rooms = await this.roomsRepository.findBySceneId(sceneId)
+
+        return rooms
+    }
+
+    async validateRoomExists(roomId: string) {
+        const roomExists = await this.roomExists(roomId)
+
+        if (!roomExists) {
+            throw new NotFoundException(`Room with ID "${roomId}" not found.`)
+        }
+    }
+
+    async getRoomDto(roomId: string, userId?: string) {
         const room = await this.getRoom(roomId)
 
         const scene = await this.scenesService.getScene(room.sceneId)
 
         const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
-        const roomUrl = await this.getRoomUrl(roomId, token)
+        const roomUrl = await this.getRoomUrl(roomId, userId)
 
         const dto = new RoomDto(room)
         dto.roomUrl = roomUrl
@@ -129,17 +139,25 @@ export class RoomsService {
         return dto
     }
 
-    async getRoomUrl(roomId: string, token?: string) {
+    async getRoomUrl(roomId: string, userId?: string) {
         const room = await this.getRoom(roomId)
 
-        const project = await this.projectsService.getProject(room.projectId)
+        const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
+
+        let token
+
+        if (!userId) {
+            token = await this.reticulumService.getAdminToken(projectId)
+        } else {
+            token = await this.reticulumService.getUserToken(projectId, userId)
+        }
 
         const { url, options } = this.reticulumService.getRoomInfo(room.infraRoomId, room.slug, token)
 
         let roomUrl = url
 
-        const faviconUrl = this.fileStorageService.getFileUrl(project.faviconId, 'favicon')
-        const logoUrl = this.fileStorageService.getFileUrl(project.logoId, 'logo')
+        const faviconUrl = this.fileStorageService.getFileUrl(faviconId, 'favicon')
+        const logoUrl = this.fileStorageService.getFileUrl(logoId, 'logo')
 
         if (options?.token) {
             const optionId = generateUUID()
@@ -160,10 +178,6 @@ export class RoomsService {
         }
 
         return roomUrl
-    }
-
-    async roomExists(roomId: string): Promise<boolean> {
-        return this.roomsRepository.exist(roomId)
     }
 
     async restrictRoomCreation(projectId: string) {

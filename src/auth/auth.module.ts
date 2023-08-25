@@ -1,7 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
-import { AdminsModule } from 'src/admins'
+import { AdminsModule } from 'src/admins/admins.module'
 import { SafeConfigService } from 'src/common'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
@@ -14,8 +14,8 @@ import { LocalStrategy } from './strategies/local.strategy'
         forwardRef(() => AdminsModule),
         PassportModule,
         JwtModule.registerAsync({
-            useFactory: async (configsafe: SafeConfigService) => {
-                const config = new AuthConfigService(configsafe)
+            useFactory: async (configService: SafeConfigService) => {
+                const config = new AuthConfigService(configService)
 
                 return {
                     secret: config.accessSecret,
@@ -27,8 +27,8 @@ import { LocalStrategy } from './strategies/local.strategy'
             inject: [SafeConfigService]
         }),
         JwtModule.registerAsync({
-            useFactory: async (configsafe: SafeConfigService) => {
-                const config = new AuthConfigService(configsafe)
+            useFactory: async (configService: SafeConfigService) => {
+                const config = new AuthConfigService(configService)
 
                 return {
                     secret: config.refreshSecret,

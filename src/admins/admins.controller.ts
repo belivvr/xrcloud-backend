@@ -1,8 +1,8 @@
-import { Body, ConflictException, Controller, Patch, Post, Req, UseGuards } from '@nestjs/common'
+import { Body, ConflictException, Controller, Post, Req, UseGuards } from '@nestjs/common'
+import { AdminAuthGuard } from 'src/auth/guards'
+import { Assert } from 'src/common'
 import { AdminsService } from './admins.service'
 import { AdminDto, CreateAdminDto } from './dto'
-import { AdminAuthGuard } from 'src/auth'
-import { Assert } from 'src/common'
 
 @Controller('admins')
 export class AdminsController {
@@ -21,7 +21,7 @@ export class AdminsController {
         return new AdminDto(admin)
     }
 
-    @Patch('api-key')
+    @Post('generate-api-key')
     @UseGuards(AdminAuthGuard)
     async generateApiKey(@Req() req: any) {
         Assert.defined(req.user, 'Authentication failed. req.user is null.')

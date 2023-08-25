@@ -1,11 +1,17 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common'
-import { Assert, generateUUID, updateIntersection } from 'src/common'
-import { FileStorageService } from 'src/file-storage'
-import { ScenesService } from 'src/scenes'
+import {
+    BadRequestException,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException
+} from '@nestjs/common'
+import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
+import { FileStorageService } from 'src/file-storage/file-storage.service'
+import { ReticulumService } from 'src/reticulum/reticulum.service'
 import { CreateProjectDto, ProjectDto, QueryDto, UpdateProjectDto } from './dto'
 import { Project } from './entities'
 import { FILE_TYPES } from './interfaces'
 import { ProjectsRepository } from './projects.repository'
+import { ProjectConfigService } from './services'
 import { UploadedFilesType } from './types'
 
 const FAVICON = 'favicon'
@@ -16,7 +22,9 @@ export class ProjectsService {
     constructor(
         private readonly projectsRepository: ProjectsRepository,
         private readonly fileStorageService: FileStorageService,
-        private readonly scenesService: ScenesService
+        private readonly reticulumService: ReticulumService,
+        private readonly cacheService: CacheService,
+        private readonly configService: ProjectConfigService
     ) {}
 
     async createProject(createProjectDto: CreateProjectDto, files: UploadedFilesType, adminId: string) {
@@ -105,12 +113,25 @@ export class ProjectsService {
         await this.projectsRepository.remove(project)
     }
 
+    async projectExists(projectId: string): Promise<boolean> {
+        return this.projectsRepository.exist(projectId)
+    }
+
+    async validateProjectExists(projectId: string) {
+        const projectExists = await this.projectExists(projectId)
+
+        if (!projectExists) {
+            throw new NotFoundException(`Project with ID "${projectId}" not found.`)
+        }
+    }
+
     async getProjectDto(projectId: string) {
         const project = await this.getProject(projectId)
 
         const faviconUrl = this.fileStorageService.getFileUrl(project.faviconId, 'favicon')
         const logoUrl = this.fileStorageService.getFileUrl(project.logoId, 'logo')
-        const sceneCreationUrl = await this.scenesService.getSceneCreationUrl(projectId)
+
+        const sceneCreationUrl = await this.getSceneCreationUrl(projectId)
 
         const dto = new ProjectDto(project)
         dto.faviconUrl = `${faviconUrl}.ico`
@@ -118,10 +139,6 @@ export class ProjectsService {
         dto.sceneCreationUrl = sceneCreationUrl
 
         return dto
-    }
-
-    async projectExists(projectId: string): Promise<boolean> {
-        return this.projectsRepository.exist(projectId)
     }
 
     private generateFileKey(fileId: string, fileType: string) {
@@ -134,6 +151,28 @@ export class ProjectsService {
         }
 
         return `${typeDetails.type}/${prePath}/${fileId}.${typeDetails.extension}`
+    }
+
+    async getSceneCreationUrl(projectId: string) {
+        const token = await this.reticulumService.getAdminToken(projectId)
+
+        const extraArgs = {
+            projectId: projectId
+        }
+
+        const { url, options } = await this.reticulumService.getSceneCreationInfo(token, extraArgs)
+
+        const optionId = generateUUID()
+
+        const key = `option:${optionId}`
+
+        const expireTime = convertTimeToSeconds(this.configService.sceneOptionExpiration)
+
+        await this.cacheService.set(key, JSON.stringify(options), expireTime)
+
+        const sceneCreationUrl = `${url}?optId=${optionId}`
+
+        return sceneCreationUrl
     }
 
     async restrictProjectCreation(adminId: string) {

@@ -16,6 +16,6 @@ res=$(
 
 # generateApiKey
 res=$(
-    PATCH /admins/api-key \
+    PATCH /admins/generate-api-key \
         -H "Authorization: Bearer $ACCESS_TOKEN"
 )

@@ -3,9 +3,9 @@ import { SafeConfigService } from 'src/common'
 
 @Injectable()
 export class ProjectConfigService {
-    public readonly userAccessTokenExpiration: string
+    public readonly sceneOptionExpiration: string
 
     constructor(config: SafeConfigService) {
-        this.userAccessTokenExpiration = config.getString('USER_ACCESS_TOKEN_EXPIRATION')
+        this.sceneOptionExpiration = config.getString('SCENE_OPTION_EXPIRATION')
     }
 }

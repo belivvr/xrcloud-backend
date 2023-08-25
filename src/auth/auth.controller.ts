@@ -9,7 +9,7 @@ import {
     UseGuards,
     forwardRef
 } from '@nestjs/common'
-import { AdminsService } from 'src/admins'
+import { AdminsService } from 'src/admins/admins.service'
 import { AdminDto } from 'src/admins/dto'
 import { Assert } from 'src/common'
 import { AuthService } from './auth.service'

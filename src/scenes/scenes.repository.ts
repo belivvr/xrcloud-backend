@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { BaseRepository, PaginationResult } from 'src/common'
 import { FindOptionsWhere, Repository } from 'typeorm'
-import { QueryDto } from './dto'
+import { SceneQueryDto } from './dto'
 import { Scene } from './entities'
 
 @Injectable()
@@ -11,12 +11,11 @@ export class ScenesRepository extends BaseRepository<Scene> {
         super(typeorm)
     }
 
-    async find(projectId: string, queryDto: QueryDto): Promise<PaginationResult<Scene>> {
-        const { take, skip } = queryDto
+    async find(sceneQueryDto: SceneQueryDto): Promise<PaginationResult<Scene>> {
+        const { projectId, take, skip } = sceneQueryDto
 
-        const qb = this.createQueryBuilder(queryDto)
-
-        qb.where('entity.projectId = :projectId', { projectId })
+        const qb = this.createQueryBuilder(sceneQueryDto)
+            .where('entity.projectId = :projectId', { projectId })
 
         const [items, total] = await qb.getManyAndCount()
 
@@ -25,6 +24,13 @@ export class ScenesRepository extends BaseRepository<Scene> {
 
     async findByInfraUserId(infraSceneId: string): Promise<Scene | null> {
         return this.typeorm.findOneBy({ infraSceneId })
+    }
+
+    async findByProjectId(projectId: string): Promise<Scene[]> {
+        const qb = this.createQueryBuilder()
+            .where('entity.projectId = :projectId', { projectId })
+
+        return await qb.getMany()
     }
 
     async sceneExists(infraSceneId: string): Promise<boolean> {

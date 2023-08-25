@@ -1,8 +1,8 @@
-import { IsNotEmpty, IsNumber, IsString, Max } from 'class-validator'
+import { IsNotEmpty, IsNumber, IsString, IsUUID, Max } from 'class-validator'
 
 export class AdminCreateRoomDto {
     @IsNotEmpty()
-    @IsString()
+    @IsUUID()
     sceneId: string
 
     @IsNotEmpty()

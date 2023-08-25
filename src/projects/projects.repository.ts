@@ -15,10 +15,7 @@ export class ProjectsRepository extends BaseRepository<Project> {
         const { take, skip } = queryDto
 
         const qb = this.createQueryBuilder(queryDto)
-
-        qb.where('entity.adminId = :adminId', {
-            adminId: adminId
-        })
+            .where('entity.adminId = :adminId', { adminId })
 
         const [items, total] = await qb.getManyAndCount()
 

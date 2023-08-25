@@ -1,8 +1,8 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator'
 
 export class CreateSceneDto {
     @IsNotEmpty()
-    @IsString()
+    @IsUUID()
     projectId: string
 
     @IsNotEmpty()

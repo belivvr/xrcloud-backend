@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { CacheService } from 'src/common'
-import { ScenesService } from 'src/scenes'
+import { ScenesService } from 'src/scenes/scenes.service'
 import { CreateEventDto, EventName } from './dto'
 
 @Injectable()

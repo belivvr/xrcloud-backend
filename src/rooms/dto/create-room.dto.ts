@@ -1,12 +1,12 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Max } from 'class-validator'
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max } from 'class-validator'
 
 export class CreateRoomDto {
     @IsNotEmpty()
-    @IsString()
+    @IsUUID()
     projectId: string
 
     @IsNotEmpty()
-    @IsString()
+    @IsUUID()
     sceneId: string
 
     @IsNotEmpty()

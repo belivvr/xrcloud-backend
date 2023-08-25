@@ -2,15 +2,16 @@ import { Module } from '@nestjs/common'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
 import { GlobalModule } from 'src/global'
-import { AdminsModule } from './admins'
+import { AdminsModule } from './admins/admins.module'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
-import { OutdoorModule } from './outdoor'
-import { ProjectsModule } from './projects'
-import { ReticulumModule } from './reticulum'
-import { RoomsModule } from './rooms'
-import { ScenesModule } from './scenes'
+import { ClearModule } from './clear/clear.module'
+import { OutdoorModule } from './outdoor/outdoor.module'
+import { ProjectsModule } from './projects/projects.module'
+import { ReticulumModule } from './reticulum/reticulum.module'
+import { RoomsModule } from './rooms/rooms.module'
+import { ScenesModule } from './scenes/scenes.module'
 
 const appModules = [
     ServeStaticModule.forRoot({
@@ -28,7 +29,8 @@ const appModules = [
     ProjectsModule,
     ScenesModule,
     RoomsModule,
-    OutdoorModule
+    OutdoorModule,
+    ClearModule
 ]
 
 @Module({

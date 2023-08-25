@@ -1,10 +1,6 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Max } from 'class-validator'
+import { IsNumber, IsOptional, IsString, Max } from 'class-validator'
 
 export class UpdateRoomDto {
-    @IsNotEmpty()
-    @IsString()
-    roomId: string
-
     @IsOptional()
     @IsString()
     name: string

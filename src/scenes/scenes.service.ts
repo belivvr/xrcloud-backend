@@ -1,7 +1,8 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
-import { ReticulumService } from 'src/reticulum'
-import { CreateSceneDto, QueryDto, SceneDto, UpdateSceneDto } from './dto'
+import { ProjectsService } from 'src/projects/projects.service'
+import { ReticulumService } from 'src/reticulum/reticulum.service'
+import { CreateSceneDto, SceneDto, SceneQueryDto, UpdateSceneDto } from './dto'
 import { Scene } from './entities'
 import { ScenesRepository } from './scenes.repository'
 import { SceneConfigService } from './services/scene-config.service'
@@ -12,7 +13,8 @@ export class ScenesService {
         private readonly scenesRepository: ScenesRepository,
         private readonly reticulumService: ReticulumService,
         private readonly cacheService: CacheService,
-        private readonly configService: SceneConfigService
+        private readonly configService: SceneConfigService,
+        private readonly projectsService: ProjectsService
     ) {}
 
     async createScene(createSceneDto: CreateSceneDto) {
@@ -37,8 +39,8 @@ export class ScenesService {
         await this.scenesRepository.create(createScene)
     }
 
-    async findScenes(projectId: string, queryDto: QueryDto) {
-        const scenes = await this.scenesRepository.find(projectId, queryDto)
+    async findScenes(sceneQueryDto: SceneQueryDto) {
+        const scenes = await this.scenesRepository.find(sceneQueryDto)
 
         return scenes
     }
@@ -54,7 +56,7 @@ export class ScenesService {
     async updateScene(updateSceneDto: UpdateSceneDto) {
         const { infraSceneId } = updateSceneDto
 
-        const scene = await this.findByInfraSceneId(infraSceneId)
+        const scene = await this.findSceneByInfraSceneId(infraSceneId)
 
         const infraScene = await this.reticulumService.getScene(infraSceneId)
 
@@ -80,6 +82,38 @@ export class ScenesService {
         await this.scenesRepository.remove(scene)
     }
 
+    async sceneExists(sceneId: string): Promise<boolean> {
+        return this.scenesRepository.exist(sceneId)
+    }
+
+    async infraSceneExists(infraSceneId: string): Promise<boolean> {
+        return this.scenesRepository.sceneExists(infraSceneId)
+    }
+
+    async findSceneByInfraSceneId(infraSceneId: string) {
+        const scene = await this.scenesRepository.findByInfraUserId(infraSceneId)
+
+        if (!scene) {
+            throw new NotFoundException(`Scene with ID "${infraSceneId}" not found.`)
+        }
+
+        return scene
+    }
+
+    async findScenesByProjectId(projectId: string) {
+        const scenes = await this.scenesRepository.findByProjectId(projectId)
+
+        return scenes
+    }
+
+    async validateSceneExists(sceneId: string) {
+        const sceneExists = await this.sceneExists(sceneId)
+
+        if (!sceneExists) {
+            throw new NotFoundException(`Scene with ID "${sceneId}" not found.`)
+        }
+    }
+
     async getSceneDto(sceneId: string) {
         const scene = await this.getScene(sceneId)
 
@@ -93,38 +127,10 @@ export class ScenesService {
         return dto
     }
 
-    async getSceneCreationUrl(projectId: string) {
-        const token = await this.reticulumService.getToken(
-            projectId,
-            this.configService.sceneOptionExpiration
-        )
-
-        const extraArgs = {
-            projectId: projectId
-        }
-
-        const { url, options } = await this.reticulumService.getSceneCreationInfo(token, extraArgs)
-
-        const optionId = generateUUID()
-
-        const key = `option:${optionId}`
-
-        const expireTime = convertTimeToSeconds(this.configService.sceneOptionExpiration)
-
-        await this.cacheService.set(key, JSON.stringify(options), expireTime)
-
-        const sceneCreationUrl = `${url}?optId=${optionId}`
-
-        return sceneCreationUrl
-    }
-
     async getSceneModificationUrl(projectId: string, sceneId: string) {
         const scene = await this.getScene(sceneId)
 
-        const token = await this.reticulumService.getToken(
-            projectId,
-            this.configService.sceneOptionExpiration
-        )
+        const token = await this.reticulumService.getAdminToken(projectId)
 
         const { url, options } = await this.reticulumService.getSceneModificationInfo(
             scene.infraProjectId,
@@ -144,21 +150,17 @@ export class ScenesService {
         return sceneModificationUrl
     }
 
-    async findByInfraSceneId(infraSceneId: string) {
-        const scene = await this.scenesRepository.findByInfraUserId(infraSceneId)
+    async getSceneResources(sceneId: string) {
+        const scene = await this.getScene(sceneId)
 
-        if (!scene) {
-            throw new NotFoundException(`Scene with ID "${infraSceneId}" not found.`)
+        const project = await this.projectsService.getProject(scene.projectId)
+
+        const returnValue = {
+            projectId: project.id,
+            faviconId: project.faviconId,
+            logoId: project.logoId
         }
 
-        return scene
-    }
-
-    async sceneExists(sceneId: string): Promise<boolean> {
-        return this.scenesRepository.exist(sceneId)
-    }
-
-    async infraSceneExists(infraSceneId: string): Promise<boolean> {
-        return this.scenesRepository.sceneExists(infraSceneId)
+        return returnValue
     }
 }

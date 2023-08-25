@@ -51,7 +51,7 @@ export class AdminsService {
         return admin
     }
 
-    async findByApiKey(apiKey: string): Promise<Admin | null> {
+    async findAdminByApiKey(apiKey: string): Promise<Admin | null> {
         const admin = await this.adminsRepository.findByApiKey(apiKey)
 
         return admin
