@@ -65,6 +65,12 @@ export class AdminsService {
         return this.adminsRepository.emailExists(email)
     }
 
+    async count() {
+        const count = await this.adminsRepository.count()
+
+        return count
+    }
+
     async validateAdmin(plainPassword: string, hashedPassword: string): Promise<boolean> {
         return validatePassword(plainPassword, hashedPassword)
     }

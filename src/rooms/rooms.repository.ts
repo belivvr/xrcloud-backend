@@ -29,6 +29,14 @@ export class RoomsRepository extends BaseRepository<Room> {
         return await qb.getMany()
     }
 
+    async count(): Promise<number> {
+        const qb = this.createQueryBuilder()
+
+        const count = await qb.getCount()
+
+        return count
+    }
+
     async countByProjectId(projectId: string): Promise<number> {
         const qb = this.createQueryBuilder()
             .where('entity.projectId = :projectId', { projectId })

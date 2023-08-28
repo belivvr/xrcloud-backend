@@ -116,6 +116,12 @@ export class RoomsService {
         return rooms
     }
 
+    async count() {
+        const count = await this.roomsRepository.count()
+
+        return count
+    }
+
     async validateRoomExists(roomId: string) {
         const roomExists = await this.roomExists(roomId)
 

@@ -7,6 +7,7 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import { ClearModule } from './clear/clear.module'
+import { HealthModule } from './health/health.module'
 import { OutdoorModule } from './outdoor/outdoor.module'
 import { ProjectsModule } from './projects/projects.module'
 import { ReticulumModule } from './reticulum/reticulum.module'
@@ -30,7 +31,8 @@ const appModules = [
     ScenesModule,
     RoomsModule,
     OutdoorModule,
-    ClearModule
+    ClearModule,
+    HealthModule
 ]
 
 @Module({

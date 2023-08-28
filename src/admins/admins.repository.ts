@@ -23,4 +23,12 @@ export class AdminsRepository extends BaseRepository<Admin> {
             where: { email } as FindOptionsWhere<Admin>
         })
     }
+
+    async count(): Promise<number> {
+        const qb = this.createQueryBuilder()
+
+        const count = await qb.getCount()
+
+        return count
+    }
 }

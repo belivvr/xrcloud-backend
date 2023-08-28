@@ -28,9 +28,9 @@ export class FatalExceptionFilter implements ExceptionFilter {
         Logger.error(message, 'HTTP', { ...additionalInfo, stack: error.stack })
 
         // google chat notification
-        const webhookUrl = process.env.GOOGLE_CHAT_WEBHOOK_URL
         const webhookKey = process.env.GOOGLE_CHAT_WEBHOOK_KEY
-        const webhookToken = process.env.GOOGLE_CHAT_WEBHOOK_TOKEN
+        const webhookUrl = process.env.GOOGLE_CHAT_MONITORING_URL
+        const webhookToken = process.env.GOOGLE_CHAT_MONITORING_TOKEN
 
         const googleChatWebhookUrl = `${webhookUrl}?key=${webhookKey}&token=${webhookToken}`
 
@@ -47,7 +47,7 @@ export class FatalExceptionFilter implements ExceptionFilter {
                                     {
                                         decoratedText: {
                                             topLabel: 'Date',
-                                            text: getServerDate()
+                                            text: `${getServerDate()} (UTC)`
                                         }
                                     },
                                     {
@@ -102,6 +102,6 @@ export class FatalExceptionFilter implements ExceptionFilter {
             Logger.error('Failed to send Google Mail', error.message)
         }
 
-        process.exit(1)
+        // process.exit(1)
     }
 }
