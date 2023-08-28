@@ -39,8 +39,8 @@ res=$(
         -F "name=testName"
 )
 
-# # removeProject
-# res=$(
-#     DELETE "/console/projects/$id" \
-#         -H "Authorization: Bearer $ACCESS_TOKEN"
-# )
+# removeProject
+res=$(
+    DELETE "/console/projects/$id" \
+        -H "Authorization: Bearer $ACCESS_TOKEN"
+)
