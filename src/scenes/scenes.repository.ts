@@ -30,7 +30,7 @@ export class ScenesRepository extends BaseRepository<Scene> {
         const qb = this.createQueryBuilder()
             .where('entity.projectId = :projectId', { projectId })
 
-        return await qb.getMany()
+        return qb.getMany()
     }
 
     async sceneExists(infraSceneId: string): Promise<boolean> {

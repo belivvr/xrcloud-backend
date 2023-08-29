@@ -25,10 +25,6 @@ export class AdminsRepository extends BaseRepository<Admin> {
     }
 
     async count(): Promise<number> {
-        const qb = this.createQueryBuilder()
-
-        const count = await qb.getCount()
-
-        return count
+        return this.typeorm.count()
     }
 }
