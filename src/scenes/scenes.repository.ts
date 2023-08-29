@@ -22,7 +22,7 @@ export class ScenesRepository extends BaseRepository<Scene> {
         return { items, total, take, skip }
     }
 
-    async findByInfraUserId(infraSceneId: string): Promise<Scene | null> {
+    async findByInfraSceneId(infraSceneId: string): Promise<Scene | null> {
         return this.typeorm.findOneBy({ infraSceneId })
     }
 

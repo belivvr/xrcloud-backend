@@ -91,7 +91,7 @@ export class ScenesService {
     }
 
     async findSceneByInfraSceneId(infraSceneId: string) {
-        const scene = await this.scenesRepository.findByInfraUserId(infraSceneId)
+        const scene = await this.scenesRepository.findByInfraSceneId(infraSceneId)
 
         if (!scene) {
             throw new NotFoundException(`Scene with ID "${infraSceneId}" not found.`)
