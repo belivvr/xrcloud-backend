@@ -102,6 +102,6 @@ export class FatalExceptionFilter implements ExceptionFilter {
             Logger.error('Failed to send Google Mail', error.message)
         }
 
-        // process.exit(1)
+        process.exit(1)
     }
 }
