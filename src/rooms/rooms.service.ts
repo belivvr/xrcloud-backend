@@ -116,6 +116,16 @@ export class RoomsService {
         return rooms
     }
 
+    async findRoomByInfraRoomid(infraRoomId: string) {
+        const room = await this.roomsRepository.findByInfraRoomId(infraRoomId)
+
+        if (!room) {
+            throw new NotFoundException(`Room with infraRoomId "${infraRoomId}" not found.`)
+        }
+
+        return room
+    }
+
     async count() {
         const count = await this.roomsRepository.count()
 
@@ -184,6 +194,33 @@ export class RoomsService {
         }
 
         return roomUrl
+    }
+
+    async getRoomDetails(sessionId: string) {
+        // const roomAccess = await this.roomAccessRepository.findAccessBySessionId(sessionId)
+
+        // await this.validateRoomExists(roomAccess.roomId)
+
+        // const room = await this.roomsRepository.findById(roomAccess.roomId) as Room
+
+        // const roomDetailsKey = `roomDetails:${room.id}`
+
+        // const savedDetails = await this.cacheService.get(roomDetailsKey)
+
+        // let roomDetails
+
+        // if (savedDetails) {
+        //     roomDetails = JSON.parse(savedDetails)
+        // } else {
+        //     roomDetails = {
+        //         projectId: room.projectId,
+        //         roomId: room.id,
+        //         userCount: 0,
+        //         users: []
+        //     }
+        // }
+
+        return { roomDetailsKey: '', roomDetails: {} }
     }
 
     async restrictRoomCreation(projectId: string) {

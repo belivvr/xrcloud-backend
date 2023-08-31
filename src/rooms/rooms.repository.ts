@@ -26,23 +26,21 @@ export class RoomsRepository extends BaseRepository<Room> {
         const qb = this.createQueryBuilder()
             .where('entity.sceneId = :sceneId', { sceneId })
 
-        return await qb.getMany()
+        return qb.getMany()
+    }
+
+    async findByInfraRoomId(infraRoomId: string): Promise<Room | null> {
+        return this.typeorm.findOneBy({ infraRoomId })
     }
 
     async count(): Promise<number> {
-        const qb = this.createQueryBuilder()
-
-        const count = await qb.getCount()
-
-        return count
+        return this.typeorm.count()
     }
 
     async countByProjectId(projectId: string): Promise<number> {
         const qb = this.createQueryBuilder()
             .where('entity.projectId = :projectId', { projectId })
 
-        const count = await qb.getCount()
-
-        return count
+        return qb.getCount()
     }
 }

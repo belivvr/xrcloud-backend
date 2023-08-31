@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { CacheService } from 'src/common'
 import { ScenesService } from 'src/scenes/scenes.service'
-import { CreateEventDto, EventName } from './dto'
+import { CreateEventDto, SpokeEventName } from './dto'
 
 @Injectable()
 export class OutdoorService {
@@ -29,7 +29,7 @@ export class OutdoorService {
         }
 
         switch (eventName) {
-            case EventName.SCENE_CREATED: {
+            case SpokeEventName.SCENE_CREATED: {
                 const createData = {
                     projectId: extraObj.projectId,
                     infraProjectId: infraProjectId,
@@ -40,7 +40,7 @@ export class OutdoorService {
 
                 break
             }
-            case EventName.SCENE_UPDATED: {
+            case SpokeEventName.SCENE_UPDATED: {
                 const updateData = {
                     infraSceneId: infraSceneId
                 }
@@ -50,7 +50,6 @@ export class OutdoorService {
                 break
             }
             default: {
-                // TODO
                 break
             }
         }
