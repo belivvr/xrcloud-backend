@@ -1,69 +1,62 @@
-import { Injectable, Logger } from '@nestjs/common'
-import axios from 'axios'
+import { Injectable } from '@nestjs/common'
+import { InjectEntityManager } from '@nestjs/typeorm'
+import * as os from 'os'
 import { AdminsService } from 'src/admins/admins.service'
 import { RoomsService } from 'src/rooms/rooms.service'
-import { HealthConfigService } from './services'
-import { getServerDate } from 'src/common'
+import { EntityManager } from 'typeorm'
 
 @Injectable()
 export class HealthService {
     constructor(
         private readonly adminsService: AdminsService,
         private readonly roomsService: RoomsService,
-        private readonly configService: HealthConfigService
+        @InjectEntityManager()
+        private readonly entityManager: EntityManager
     ) {}
+
+    async getHealthStatus() {
+        const dbStatus = await this.checkTableAndSelectRow()
+        const diskUsage = this.checkDiskUsage()
+
+        return {
+            database: {
+                status: dbStatus
+            },
+            resources: {
+                disk: diskUsage
+            }
+        }
+    }
 
     async getStatistics() {
         const countAdmins = await this.adminsService.count()
         const countRooms = await this.roomsService.count()
 
-        // google chat notification
-        const webhookKey = this.configService.googleChatWebhookKey
-        const webhookUrl = this.configService.googleChatStatisticsUrl
-        const webhookToken = this.configService.googleChatStatisticsToken
+        return {
+            admins: countAdmins,
+            rooms: countRooms
+        }
+    }
 
-        const googleChatWebhookUrl = `${webhookUrl}?key=${webhookKey}&token=${webhookToken}`
+    private async checkTableAndSelectRow(): Promise<boolean> {
+        const tableName = 'main.admins'
 
-        const chatMessage = {
-            cardsV2: [
-                {
-                    card: {
-                        header: {
-                            title: 'XRCLOUD Statistics'
-                        },
-                        sections: [
-                            {
-                                widgets: [
-                                    {
-                                        decoratedText: {
-                                            topLabel: 'Date',
-                                            text: `${getServerDate()} (UTC)`
-                                        }
-                                    },
-                                    {
-                                        decoratedText: {
-                                            topLabel: 'Admins',
-                                            text: `${countAdmins}`
-                                        }
-                                    },
-                                    {
-                                        decoratedText: {
-                                            topLabel: 'Rooms',
-                                            text: `${countRooms}`
-                                        }
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                }
-            ]
+        const tableExistsResult = await this.entityManager.query(`SELECT to_regclass('${tableName}');`)
+
+        if (!tableExistsResult[0].to_regclass) {
+            return false
         }
 
-        try {
-            await axios.post(googleChatWebhookUrl, chatMessage)
-        } catch (error) {
-            Logger.error('Failed to send Google Chat Msg', error.message)
-        }
+        await this.entityManager.query(`SELECT * FROM ${tableName} LIMIT 1;`)
+
+        return true
+    }
+
+    private checkDiskUsage(): string {
+        const totalMemory = os.totalmem()
+        const freeMemory = os.freemem()
+        const memoryUsage = ((totalMemory - freeMemory) / totalMemory) * 100
+
+        return `${Math.floor(memoryUsage)}%`
     }
 }

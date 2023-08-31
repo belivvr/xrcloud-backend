@@ -72,6 +72,7 @@
         "@types/node-fetch": "^2.6.4",
         "@types/passport-jwt": "^3.0.8",
         "@types/passport-local": "^1.0.35",
+        "@types/pg": "^8.10.2",
         "@types/supertest": "^2.0.12",
         "@types/uuid": "^9.0.2",
         "@typescript-eslint/eslint-plugin": "^5.60.0",
