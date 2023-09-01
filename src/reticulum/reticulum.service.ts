@@ -199,7 +199,7 @@ export class ReticulumService {
     }
 
     async getAdminToken(projectId: string): Promise<string> {
-        return this.getUserToken(projectId, 'admin')
+        return this.getUserToken(projectId, `admin@${projectId}`)
     }
 
     async getUserToken(projectId: string, userId: string): Promise<string> {
