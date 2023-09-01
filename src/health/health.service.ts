@@ -47,7 +47,11 @@ export class HealthService {
             return false
         }
 
-        await this.entityManager.query(`SELECT * FROM ${tableName} LIMIT 1;`)
+        const row = await this.entityManager.query(`SELECT * FROM ${tableName} LIMIT 1;`)
+
+        if (!row) {
+            return false
+        }
 
         return true
     }
