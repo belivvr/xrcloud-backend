@@ -1,10 +1,17 @@
 #!/bin/bash
 
 #
-docker rm redis -f
+container_exists=$(docker ps -a -q -f name=redis)
+
+if [ ! -z "$container_exists" ]; then
+    docker stop redis
+    docker rm redis
+fi
 
 #
-docker network create --subnet=172.18.0.0/16 xrcloud || true
+docker network create \
+    --subnet=172.18.0.0/16 \
+    xrcloud || true
 
 #
 docker run --restart always -d \
@@ -17,3 +24,6 @@ docker run --restart always -d \
     -v ~/etc/redis/redis.conf:/etc/redis/redis.conf \
     -v ~/var/log/redis.log:/var/log/redis.log \
     redis:7.0 redis-server /etc/redis/redis.conf
+
+#
+echo "Docker container redis is up and running."

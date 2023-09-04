@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# 이미지 버전을 입력 받습니다. 인자로 넘기지 않으면 기본값 'latest'를 사용합니다.
 i=${1:-latest}
 
 #
-cd ~/workspace/xrcloud-backend || exit 1
+cd ~/workspace/xrcloud-backend
 git pull origin main || exit 1
 
 #
@@ -18,7 +17,9 @@ docker rm backend || true
 docker build -t "backend-$i" . || exit 1
 
 #
-docker network create --subnet=172.18.0.0/16 xrcloud || true
+docker network create \
+    --subnet=172.18.0.0/16 \
+    xrcloud || true
 
 #
 docker run --restart always -d \

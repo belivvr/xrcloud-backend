@@ -1,11 +1,37 @@
 #!/bin/bash
 
+env=$1
+
 #
+container_exists=$(docker ps -a -q -f name=cron)
+
+if [ ! -z "$container_exists" ]; then
+    docker stop cron
+    docker rm cron
+fi
+
+#
+image_exists=$(docker images -q cron:$env)
+
+if [ ! -z "$image_exists" ]; then
+    docker rmi cron:$env
+fi
+
+#
+dockerfile="Dockerfile.$env"
+
+if [ ! -f $dockerfile ]; then
+    echo "Error: $dockerfile does not exist."
+    exit 1
+fi
+
+#
+docker build -t cron:$env -f $dockerfile .
+
 docker network create \
     --subnet=172.18.0.0/16 \
     xrcloud || true
 
-#
 docker run --restart always -d \
     --name cron \
     --network xrcloud \
@@ -13,4 +39,7 @@ docker run --restart always -d \
     --log-opt max-file=3 \
     -v ./cron:/etc/cron \
     -v ~/var/log/cron:/var/log \
-    cron
+    cron:$env
+
+#
+echo "Docker container cron is up and running."

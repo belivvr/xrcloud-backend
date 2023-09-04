@@ -1,0 +1,21 @@
+FROM node:18-alpine
+
+RUN apk update && \
+    apk add --no-cache cronie && \
+    rm -rf /var/cache/apk/*
+
+RUN touch /var/log/cron.log
+RUN touch /var/log/health.log
+RUN touch /var/log/statistics.log
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm i node-fetch@2
+RUN npm install dotenv
+
+RUN (echo "* * * * * node /app/health.js >> /var/log/cron.log 2>&1" && \
+    echo "0 1 * * 1 node /app/statistics.js >> /var/log/cron.log 2>&1") | crontab -
+
+CMD [ "crond", "-f" ]
