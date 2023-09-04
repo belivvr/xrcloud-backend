@@ -6,16 +6,20 @@ RUN apk update && \
 
 RUN touch /var/log/cron.log
 RUN touch /var/log/health.log
-RUN touch /var/log/statistics.log
+
+# # prod
+# RUN touch /var/log/statistics.log
 
 WORKDIR /app
 
 COPY . .
 
 RUN npm i node-fetch@2
-RUN npm i dotenv
 
-RUN (echo "* * * * * node /app/health.js >> /var/log/cron.log 2>&1" && \
-    echo "0 1 * * 1 node /app/statistics.js >> /var/log/cron.log 2>&1") | crontab -
+RUN echo "* * * * * node /app/health.js >> /var/log/cron.log 2>&1" | crontab -
+
+# # prod
+# RUN (echo "* * * * * node /app/health.js >> /var/log/cron.log 2>&1" && \
+#     echo "0 1 * * 1 node /app/statistics.js >> /var/log/cron.log 2>&1") | crontab -
 
 CMD [ "crond", "-f" ]

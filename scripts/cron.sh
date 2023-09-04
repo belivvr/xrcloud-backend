@@ -10,6 +10,5 @@ docker run --restart always -d \
     --name cron \
     --network xrcloud \
     -v ./cron:/etc/cron \
-    -v ~/workspace/xrcloud-backend/.env:/app/.env \
     -v ~/var/log/cron:/var/log \
     cron
