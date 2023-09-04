@@ -12,7 +12,7 @@ docker run --restart always -d \
     --network xrcloud \
     --ip 172.18.0.10 \
     --log-opt max-size=10m \
-    --log-opt max-file=10 \
+    --log-opt max-file=3 \
     -p 6379:6379 \
     -v ~/etc/redis/redis.conf:/etc/redis/redis.conf \
     -v ~/var/log/redis.log:/var/log/redis.log \

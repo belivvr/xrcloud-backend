@@ -9,6 +9,8 @@ docker network create \
 docker run --restart always -d \
     --name cron \
     --network xrcloud \
+    --log-opt max-size=10m \
+    --log-opt max-file=3 \
     -v ./cron:/etc/cron \
     -v ~/var/log/cron:/var/log \
     cron
