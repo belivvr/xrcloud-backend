@@ -15,6 +15,7 @@ WORKDIR /app
 COPY . .
 
 RUN npm i node-fetch@2
+RUN npm install dotenv
 
 RUN echo "* * * * * node /app/health.js >> /var/log/cron.log 2>&1" | crontab -
 

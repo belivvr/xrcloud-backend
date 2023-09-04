@@ -1,9 +1,11 @@
 const fetch = require('node-fetch')
 const fs = require('fs')
 
+require('dotenv').config({ path: '/app/.env' })
+
 const runStatisticsCheck = async () => {
     try {
-        const host = 'https://vevv-test.vevv.io:3300'
+        const host = process.env.HOST
         
         const statisticsResponse = await fetch(`${host}/health/statistics`)
         const statisticsData = await statisticsResponse.json()
@@ -47,9 +49,9 @@ const runStatisticsCheck = async () => {
             ],
         }
 
-        const webhookUrl = 'https://chat.googleapis.com/v1/spaces/AAAAtJIrHow/messages'
-        const webhookKey = 'AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI'
-        const webhookToken = 'gh_9nPs-6MZCBb1acOXou5y52ffUPJAqbiLliHx7xAw'
+        const webhookUrl = process.env.GOOGLE_CHAT_STATISTICS_URL
+        const webhookKey = process.env.GOOGLE_CHAT_WEBHOOK_KEY
+        const webhookToken = process.env.GOOGLE_CHAT_STATISTICS_TOKEN
 
         const fullWebhookUrl = `${webhookUrl}?key=${webhookKey}&token=${webhookToken}`
 
