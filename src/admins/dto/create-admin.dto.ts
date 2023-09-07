@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer'
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 
 export class CreateAdminDto {
     @IsNotEmpty()
@@ -10,4 +10,8 @@ export class CreateAdminDto {
     @IsNotEmpty()
     @IsString()
     password: string
+
+    @IsOptional()
+    @IsString()
+    name?: string = 'name'
 }

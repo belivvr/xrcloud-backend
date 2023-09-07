@@ -7,8 +7,14 @@ export class Admin extends AggregateRoot {
     email: string
 
     @Column()
+    name: string
+
+    @Column()
     password: string
 
     @Column({ nullable: true })
     apiKey: string
+
+    @Column()
+    subsTierId: number
 }

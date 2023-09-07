@@ -9,11 +9,13 @@ import { AuthModule } from './auth/auth.module'
 import { ClearModule } from './clear/clear.module'
 import { EventsModule } from './events/events.module'
 import { HealthModule } from './health/health.module'
+import { InfrastructureModule } from './infrastructure/infrastructure.module'
 import { OutdoorModule } from './outdoor/outdoor.module'
 import { ProjectsModule } from './projects/projects.module'
 import { ReticulumModule } from './reticulum/reticulum.module'
 import { RoomsModule } from './rooms/rooms.module'
 import { ScenesModule } from './scenes/scenes.module'
+import { SubscriptionsModule } from './subscriptions/subscriptions.module'
 
 const appModules = [
     ServeStaticModule.forRoot({
@@ -34,7 +36,9 @@ const appModules = [
     OutdoorModule,
     ClearModule,
     HealthModule,
-    EventsModule
+    EventsModule,
+    SubscriptionsModule,
+    InfrastructureModule
 ]
 
 @Module({

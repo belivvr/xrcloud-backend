@@ -1,14 +1,16 @@
-import { Module } from '@nestjs/common'
+import { Module, forwardRef } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
+import { SubscriptionsModule } from 'src/subscriptions/subscriptions.module'
 import { AdminsController } from './admins.controller'
 import { AdminsRepository } from './admins.repository'
 import { AdminsService } from './admins.service'
-import { Admin } from './entities'
+import { Admin, OrderAccount } from './entities'
+import { OrderAccountRepository } from './order-account.repository'
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Admin])],
+    imports: [TypeOrmModule.forFeature([Admin, OrderAccount]), forwardRef(() => SubscriptionsModule)],
     controllers: [AdminsController],
-    providers: [AdminsService, AdminsRepository],
+    providers: [AdminsService, AdminsRepository, OrderAccountRepository],
     exports: [AdminsService]
 })
 export class AdminsModule {}

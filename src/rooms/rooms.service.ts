@@ -13,7 +13,7 @@ import { ScenesService } from 'src/scenes/scenes.service'
 import { CreateRoomDto, RoomDto, RoomQueryDto, UpdateRoomDto } from './dto'
 import { Room } from './entities'
 import { RoomsRepository } from './rooms.repository'
-import { RoomConfigService } from './services/room-config.service'
+import { RoomConfigService } from './services'
 
 @Injectable()
 export class RoomsService {
@@ -127,9 +127,7 @@ export class RoomsService {
     }
 
     async count() {
-        const count = await this.roomsRepository.count()
-
-        return count
+        return await this.roomsRepository.count()
     }
 
     async validateRoomExists(roomId: string) {
