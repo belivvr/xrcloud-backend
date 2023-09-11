@@ -1,11 +1,11 @@
 import { Logger } from '@nestjs/common'
 import * as dotenv from 'dotenv'
-import { Admin, OrderAccount } from 'src/admins/entities'
 import { ConfigException, TypeormLogger } from 'src/common'
-import { Project } from 'src/projects/entities'
-import { Room } from 'src/rooms/entities'
-import { Scene } from 'src/scenes/entities'
-import { SubsPayment, SubsTier } from 'src/subscriptions/entities'
+import { Admin, OrderAccount } from 'src/services/admins/entities'
+import { Project } from 'src/services/projects/entities'
+import { Room } from 'src/services/rooms/entities'
+import { Scene } from 'src/services/scenes/entities'
+import { SubsPayment, SubsTier } from 'src/services/subscriptions/entities'
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions'
 import { Mig1687757321854 } from './migrations/1687757321854-mig'
 import { Mig1687933860267 } from './migrations/1687933860267-mig'
@@ -21,6 +21,7 @@ import { Mig1691560685487 } from './migrations/1691560685487-mig'
 import { Mig1694013983212 } from './migrations/1694013983212-mig'
 import { Mig1694015266083 } from './migrations/1694015266083-mig'
 import { Mig1694016456405 } from './migrations/1694016456405-mig'
+import { Mig1694077768925 } from './migrations/1694077768925-mig'
 
 dotenv.config()
 
@@ -39,7 +40,8 @@ const migrations = [
     Mig1691560685487,
     Mig1694013983212,
     Mig1694015266083,
-    Mig1694016456405
+    Mig1694016456405,
+    Mig1694077768925
 ]
 
 type SupportedConnectionOptions = PostgresConnectionOptions

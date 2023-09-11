@@ -1,6 +1,0 @@
-export * from './admin.create-room.dto'
-export * from './admin.dto'
-export * from './admin.update-room.dto'
-export * from './create-admin.dto'
-export * from './query.dto'
-export * from './update-admin.dto'

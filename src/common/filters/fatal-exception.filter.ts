@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common'
 import axios from 'axios'
 import { Request, Response } from 'express'
-import { EmailService } from 'src/email/email.service'
+import { EmailService } from 'src/infra/email/email.service'
 import { FatalException } from '../exceptions'
 import { getServerDate } from '../utils'
 

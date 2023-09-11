@@ -1,25 +1,21 @@
 #!/bin/bash
+set -e
 cd "$(dirname "$0")"
 
 #
-. ./@env.sh
-. ./@config.sh
+. ./@env-api.sh
+. ../@config.sh
 
 # findScenes
-res=$(
-    GET "/api/scenes?projectId=$PROJECT_ID&$PAGE_OPT" \
-        -H "Authorization: Bearer $API_KEY"
-)
-id=$(echo $res | jq -r '.items[0].id')
+GET "/api/scenes?projectId=$PROJECT_ID&$PAGE_OPT" \
+    -H "Authorization: Bearer $API_KEY"
+
+SCENE_ID=$(echo $BODY | jq -r '.items[0].id')
 
 # getScene
-res=$(
-    GET "/api/scenes/$id" \
-        -H "Authorization: Bearer $API_KEY"
-)
+GET /api/scenes/$SCENE_ID \
+    -H "Authorization: Bearer $API_KEY"
 
 # removeScene
-res=$(
-    DELETE "/api/scenes/$id" \
-        -H "Authorization: Bearer $API_KEY"
-)
+DELETE /api/scenes/$SCENE_ID \
+    -H "Authorization: Bearer $API_KEY"

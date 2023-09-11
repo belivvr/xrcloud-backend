@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common'
 import { APP_FILTER } from '@nestjs/core'
 import { ErrorFilter, HttpExceptionFilter } from 'src/common'
 import { FatalExceptionFilter } from 'src/common/filters/fatal-exception.filter'
-import { EmailModule } from 'src/email/email.module'
+import { InfraModule } from 'src/infra/infra.module'
 
 @Module({
-    imports: [EmailModule],
+    imports: [InfraModule],
     providers: [
         {
             provide: APP_FILTER,

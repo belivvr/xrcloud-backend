@@ -2,20 +2,20 @@ import { Module } from '@nestjs/common'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path'
 import { GlobalModule } from 'src/global'
-import { AdminsModule } from './admins/admins.module'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { AuthModule } from './auth/auth.module'
-import { ClearModule } from './clear/clear.module'
-import { EventsModule } from './events/events.module'
-import { HealthModule } from './health/health.module'
-import { InfrastructureModule } from './infrastructure/infrastructure.module'
-import { OutdoorModule } from './outdoor/outdoor.module'
-import { ProjectsModule } from './projects/projects.module'
-import { ReticulumModule } from './reticulum/reticulum.module'
-import { RoomsModule } from './rooms/rooms.module'
-import { ScenesModule } from './scenes/scenes.module'
-import { SubscriptionsModule } from './subscriptions/subscriptions.module'
+import { ControllersModule } from './controllers/controllers.module'
+import { InfraModule } from './infra/infra.module'
+import { AdminsModule } from './services/admins/admins.module'
+import { AuthModule } from './services/auth/auth.module'
+import { ClearModule } from './services/clear/clear.module'
+import { EventsModule } from './services/events/events.module'
+import { HealthModule } from './services/health/health.module'
+import { OutdoorModule } from './services/outdoor/outdoor.module'
+import { ProjectsModule } from './services/projects/projects.module'
+import { RoomsModule } from './services/rooms/rooms.module'
+import { ScenesModule } from './services/scenes/scenes.module'
+import { SubscriptionsModule } from './services/subscriptions/subscriptions.module'
 
 const appModules = [
     ServeStaticModule.forRoot({
@@ -27,9 +27,9 @@ const appModules = [
         serveRoot: '/docs/ko'
     }),
     GlobalModule,
+    ControllersModule,
     AuthModule,
     AdminsModule,
-    ReticulumModule,
     ProjectsModule,
     ScenesModule,
     RoomsModule,
@@ -38,7 +38,7 @@ const appModules = [
     HealthModule,
     EventsModule,
     SubscriptionsModule,
-    InfrastructureModule
+    InfraModule
 ]
 
 @Module({

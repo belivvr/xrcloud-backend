@@ -1,52 +1,41 @@
 #!/bin/bash
-cd "$(dirname "$0")"
 
 #
-. ./@env.sh
+. ./@env-console.sh
 . ./@config.sh
 . ./login.sh
 
 # create
-res=$(
-    POST /subscriptions/tier \
-        -H "Authorization: Bearer $ACCESS_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d '{
-                "name": "starter"
-            }'
-)
-id=$(echo $res | jq -r '.id')
+POST /subscriptions/tier \
+    -H "Authorization: Bearer $ACCESS_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{
+            "name": "starter"
+        }'
 
 # # create
-# res=$(
-#     POST /subscriptions/tier \
-#         -H "Authorization: Bearer $ACCESS_TOKEN" \
-#         -H "Content-Type: application/json" \
-#         -d '{
-#                 "productCode": "product_ElbeyhCS8",
-#                 "priceCode": "price_utcAwEP9u",
-#                 "name": "starter",
-#                 "currency": "KRW",
-#                 "price": "8800"
-#             }'
-# )
-# id=$(echo $res | jq -r '.id')
+# POST /subscriptions/tier \
+#     -H "Authorization: Bearer $ACCESS_TOKEN" \
+#     -H "Content-Type: application/json" \
+#     -d '{
+#             "productCode": "product_ElbeyhCS8",
+#             "priceCode": "price_utcAwEP9u",
+#             "name": "starter",
+#             "currency": "KRW",
+#             "price": "8800"
+#         }'
 
 # findSubsTiers
-res=$(
-    GET "/subscriptions/tier?$PAGE_OPT" \
-        -H "Authorization: Bearer $ACCESS_TOKEN"
-)
+GET /subscriptions/tier?$PAGE_OPT \
+    -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # createPayment
-res=$(
-    POST /subscriptions/payment \
-        -H "Authorization: Bearer $ACCESS_TOKEN" \
-        -H "Content-Type: application/json" \
-        -d '{
-                "subsTierId": 2,
-                "successUrl": "https://xrcloud.app",
-                "errorUrl": "https://xrcloud.app",
-                "cancelUrl": "https://xrcloud.app"
-            }'
-)
+POST /subscriptions/payment \
+    -H "Authorization: Bearer $ACCESS_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{
+            "subsTierId": 2,
+            "successUrl": "https://xrcloud.app",
+            "errorUrl": "https://xrcloud.app",
+            "cancelUrl": "https://xrcloud.app"
+        }'
