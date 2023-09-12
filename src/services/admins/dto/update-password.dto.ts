@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Length } from 'class-validator'
+import { IsNotEmpty, IsString, Length, Matches } from 'class-validator'
 
 export class UpdatePasswordDto {
     @IsNotEmpty()
@@ -7,6 +7,9 @@ export class UpdatePasswordDto {
 
     @IsNotEmpty()
     @IsString()
-    @Length(6)
+    @Length(8)
+    @Matches(/^(?=.*\d)(?=.*[!@#$%^&*()])[\d!@#$%^&*()A-Za-z]{8,}$/, {
+        message: 'Invalid password'
+    })
     newPassword: string
 }
