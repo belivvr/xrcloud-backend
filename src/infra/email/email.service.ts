@@ -1,33 +1,76 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'
-import { MailgunService } from 'nestjs-mailgun'
+import { Injectable, Logger } from '@nestjs/common'
+import { createHmac } from 'crypto'
+import fetch from 'node-fetch'
 import { EmailConfigService } from './email-config.service'
 
 @Injectable()
 export class EmailService {
-    private readonly domain: string
-    private readonly fromEmail: string
+    private readonly accessKeyId: string
+    private readonly secretAccessKey: string
+    private readonly endpoint: string
+    private readonly sender: string
 
-    constructor(
-        private readonly mailgunService: MailgunService,
-        private readonly configService: EmailConfigService
-    ) {
-        this.domain = this.configService.mailgunDomain
-        this.fromEmail = this.configService.mailgunFromEmail
+    constructor(private readonly configService: EmailConfigService) {
+        this.accessKeyId = this.configService.accessKeyId
+        this.secretAccessKey = this.configService.secretAccessKey
+        this.endpoint = this.configService.endpoint
+        this.sender = this.configService.sender
     }
 
-    async createEmail(to: string, subject: string, sendEmailData: object) {
+    async sendEmail(to: string, title: string, sendEmailData: object) {
+        const timestamp = Date.now().toString()
+
+        const signature = this.makeSignature('POST', '/api/v1/mails', timestamp)
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'x-ncp-apigw-timestamp': timestamp,
+            'x-ncp-iam-access-key': this.accessKeyId,
+            'x-ncp-apigw-signature-v2': signature
+        }
+
+        const recipient = {
+            address: to,
+            type: 'R'
+        }
+
+        const data = {
+            senderAddress: this.sender,
+            title: title,
+            body: JSON.stringify(sendEmailData),
+            recipients: [recipient]
+        }
+
         try {
-            const data = {
-                from: this.fromEmail,
-                to: to,
-                subject: subject,
-                template: 'xrcloud-backend',
-                'h:X-Mailgun-Variables': JSON.stringify(sendEmailData)
+            const response = await fetch(`${this.endpoint}/mails`, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(data)
+            })
+
+            if (!response.ok) {
+                const errorData = await response.text()
+
+                Logger.error('Failed to mailing', errorData)
+
+                throw new Error(`Failed with status ${response.status}`)
             }
 
-            this.mailgunService.createEmail(this.domain, data)
+            return response.json()
         } catch (error) {
-            throw new InternalServerErrorException(error)
+            throw error
         }
+    }
+
+    private makeSignature(method: string, uri: string, timestamp: string): string {
+        const space = ' '
+        const newLine = '\n'
+
+        const message = [method, space, uri, newLine, timestamp, newLine, this.accessKeyId].join('')
+
+        const hmac = createHmac('sha256', this.secretAccessKey)
+        const signature = hmac.update(message).digest('base64')
+
+        return signature
     }
 }

@@ -16,8 +16,8 @@ export class FileStorageConfigService {
         this.cdnPath = config.getString('CDN_PATH')
         this.accessKeyId = config.getString('NCLOUD_ACCESS_KEY_ID')
         this.secretAccessKey = config.getString('NCLOUD_SECRET_ACCESS_KEY')
-        this.endpoint = config.getString('NCLOUD_END_POINT')
-        this.region = config.getString('NCLOUD_REGION')
-        this.bucket = config.getString('NCLOUD_BUCKET')
+        this.endpoint = config.getString('NCLOUD_STORAGE_END_POINT')
+        this.region = config.getString('NCLOUD_STORAGE_REGION')
+        this.bucket = config.getString('NCLOUD_STORAGE_BUCKET')
     }
 }

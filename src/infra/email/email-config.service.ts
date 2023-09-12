@@ -3,17 +3,15 @@ import { SafeConfigService } from 'src/common'
 
 @Injectable()
 export class EmailConfigService {
-    public readonly mailgunUserName: string
-    public readonly mailgunApiKey: string
-    public readonly mailgunDomain: string
-    public readonly mailgunFromEmail: string
-    public readonly mailgunFromname: string
+    public readonly accessKeyId: string
+    public readonly secretAccessKey: string
+    public readonly endpoint: string
+    public readonly sender: string
 
     constructor(config: SafeConfigService) {
-        this.mailgunUserName = config.getString('MAILGUN_USERNAME')
-        this.mailgunApiKey = config.getString('MAILGUN_API_KEY')
-        this.mailgunDomain = config.getString('MAILGUN_DOMAIN')
-        this.mailgunFromEmail = config.getString('MAILGUN_FROM_EMAIL')
-        this.mailgunFromname = config.getString('MAILGUN_FROM_NAME')
+        this.accessKeyId = config.getString('NCLOUD_ACCESS_KEY_ID')
+        this.secretAccessKey = config.getString('NCLOUD_SECRET_ACCESS_KEY')
+        this.endpoint = config.getString('NCLOUD_MAILER_END_POINT')
+        this.sender = config.getString('NCLOUD_MAILER_SENDER_ADDRESS')
     }
 }

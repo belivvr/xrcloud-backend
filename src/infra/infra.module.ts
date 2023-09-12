@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common'
-import { MailgunModule } from 'nestjs-mailgun'
-import { SafeConfigService } from 'src/common'
 import { EmailConfigService } from './email/email-config.service'
 import { EmailService } from './email/email.service'
 import { FileStorageConfigService } from './file-storage/file-storage-config.service'
@@ -11,19 +9,6 @@ import { SteppayConfigService } from './steppay/steppay-config.service'
 import { SteppayService } from './steppay/steppay.service'
 
 @Module({
-    imports: [
-        MailgunModule.forAsyncRoot({
-            useFactory: async (configService: SafeConfigService) => {
-                const config = new EmailConfigService(configService)
-
-                return {
-                    username: config.mailgunUserName,
-                    key: config.mailgunApiKey
-                }
-            },
-            inject: [SafeConfigService]
-        })
-    ],
     providers: [
         EmailService,
         EmailConfigService,

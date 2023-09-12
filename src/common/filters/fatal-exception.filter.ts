@@ -1,5 +1,4 @@
 import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common'
-import axios from 'axios'
 import { Request, Response } from 'express'
 import { EmailService } from 'src/infra/email/email.service'
 import { FatalException } from '../exceptions'
@@ -24,7 +23,6 @@ export class FatalExceptionFilter implements ExceptionFilter {
 
         response.status(500).json({ ...additionalInfo, message: 'Internal Server Error' })
 
-        // logging
         Logger.error(message, 'HTTP', { ...additionalInfo, stack: error.stack })
 
         // google chat notification
@@ -80,14 +78,20 @@ export class FatalExceptionFilter implements ExceptionFilter {
         }
 
         try {
-            await axios.post(googleChatWebhookUrl, chatMessage)
+            await fetch(googleChatWebhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(chatMessage)
+            })
         } catch (error) {
             Logger.error('Failed to send Google Chat Msg', error.message)
         }
 
         // email notification
         const to = 'dev_team@belivvr.com'
-        const subject = 'FatalException Occurred'
+        const title = 'FatalException Occurred'
 
         const createEmailData = {
             date: getServerDate(),
@@ -97,7 +101,7 @@ export class FatalExceptionFilter implements ExceptionFilter {
         }
 
         try {
-            await this.emailService.createEmail(to, subject, createEmailData)
+            await this.emailService.sendEmail(to, title, createEmailData)
         } catch (error) {
             Logger.error('Failed to send Google Mail', error.message)
         }
