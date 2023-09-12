@@ -19,11 +19,11 @@ import { SubscriptionsModule } from './services/subscriptions/subscriptions.modu
 
 const appModules = [
     ServeStaticModule.forRoot({
-        rootPath: join(__dirname, '..', 'docs/en'),
+        rootPath: join(__dirname, '..', 'docs/api/en'),
         serveRoot: '/docs/en'
     }),
     ServeStaticModule.forRoot({
-        rootPath: join(__dirname, '..', 'docs/ko'),
+        rootPath: join(__dirname, '..', 'docs/api/ko'),
         serveRoot: '/docs/ko'
     }),
     GlobalModule,
