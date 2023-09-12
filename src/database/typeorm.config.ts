@@ -18,14 +18,11 @@ import { Mig1691123984351 } from './migrations/1691123984351-mig'
 import { Mig1691126254884 } from './migrations/1691126254884-mig'
 import { Mig1691560406939 } from './migrations/1691560406939-mig'
 import { Mig1691560685487 } from './migrations/1691560685487-mig'
-import { Mig1694013983212 } from './migrations/1694013983212-mig'
-import { Mig1694015266083 } from './migrations/1694015266083-mig'
-import { Mig1694016456405 } from './migrations/1694016456405-mig'
-import { Mig1694077768925 } from './migrations/1694077768925-mig'
+import { Mig1694511062893 } from './migrations/1694511062893-mig'
 
 dotenv.config()
 
-const entities = [Admin, Project, Scene, Room, OrderAccount, SubsTier, SubsPayment]
+const entities = [Admin, Project, Scene, Room]
 const migrations = [
     Mig1687757321854,
     Mig1687933860267,
@@ -38,10 +35,7 @@ const migrations = [
     Mig1691126254884,
     Mig1691560406939,
     Mig1691560685487,
-    Mig1694013983212,
-    Mig1694015266083,
-    Mig1694016456405,
-    Mig1694077768925
+    Mig1694511062893
 ]
 
 type SupportedConnectionOptions = PostgresConnectionOptions
