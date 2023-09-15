@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max, Min } from 'class-validator'
+import { IsNotEmpty, IsNumber, IsString, IsUUID, Max, Min } from 'class-validator'
 
 export class CreateRoomDto {
     @IsNotEmpty()
@@ -13,9 +13,9 @@ export class CreateRoomDto {
     @IsString()
     name: string
 
-    @IsOptional()
+    @IsNotEmpty()
     @IsNumber()
     @Min(1)
-    @Max(10)
+    @Max(1000)
     size: number
 }

@@ -1,7 +1,7 @@
 import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common'
 import fetch from 'node-fetch'
 import { CacheService, addQuotesToNumbers, convertTimeToSeconds } from 'src/common'
-import { ExtraArgs, UpdateRoomArgs } from './interfaces'
+import { ExtraArgs, RoomData } from './interfaces'
 import { ReticulumConfigService } from './reticulum-config.service'
 
 @Injectable()
@@ -113,11 +113,14 @@ export class ReticulumService {
         return returnValue
     }
 
-    async createRoom(infraSceneId: string, name: string, token: string | undefined) {
+    async createRoom(infraSceneId: string, roomData: RoomData) {
+        const { name, size, token } = roomData
+
         const body = JSON.stringify({
             hub: {
                 scene_id: infraSceneId,
-                name: name
+                name: name,
+                room_size: size
             }
         })
 
@@ -146,8 +149,8 @@ export class ReticulumService {
         return returnValue
     }
 
-    async updateRoom(infraRoomId: string, updateRoomArgs: UpdateRoomArgs) {
-        const { name, size, token } = updateRoomArgs
+    async updateRoom(infraRoomId: string, roomData: RoomData) {
+        const { name, size, token } = roomData
 
         const body = JSON.stringify({
             hub: {

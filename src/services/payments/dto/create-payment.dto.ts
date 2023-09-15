@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { IsNotEmpty, IsString } from 'class-validator'
 
-export class CreateSubsPaymentDto {
+export class CreatePaymentDto {
     @IsNotEmpty()
-    @IsNumber()
-    subsTierId: number
+    @IsString()
+    tierId: string
 
     @IsNotEmpty()
     @IsString()

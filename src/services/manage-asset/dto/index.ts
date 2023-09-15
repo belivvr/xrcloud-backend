@@ -1,0 +1,6 @@
+export * from './create-project.dto'
+export * from './create-room.dto'
+export * from './create-scene.dto'
+export * from './update-project.dto'
+export * from './update-room.dto'
+export * from './update-scene.dto'

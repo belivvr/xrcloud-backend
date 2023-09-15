@@ -1,16 +1,10 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
-import {
-    Assert,
-    CacheService,
-    convertTimeToSeconds,
-    generateUUID,
-    getSlug,
-    updateIntersection
-} from 'src/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
 import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
-import { CreateRoomDto, RoomDto, RoomQueryDto, UpdateRoomDto } from './dto'
+import { DeepPartial } from 'typeorm'
+import { RoomDto, RoomQueryDto } from './dto'
 import { Room } from './entities'
 import { RoomConfigService } from './room-config.service'
 import { RoomsRepository } from './rooms.repository'
@@ -26,35 +20,10 @@ export class RoomsService {
         private readonly scenesService: ScenesService
     ) {}
 
-    async createRoom(createRoomDto: CreateRoomDto) {
-        const { projectId, sceneId, ...createData } = createRoomDto
+    async createRoom(createRoomData: DeepPartial<Room>) {
+        const room = await this.roomsRepository.create(createRoomData)
 
-        const count = await this.restrictRoomCreation(projectId)
-
-        if (count >= 3) {
-            throw new ForbiddenException(
-                `Project with ID "${projectId}" exceeds the number of rooms that can be created.`
-            )
-        }
-
-        const scene = await this.scenesService.getScene(sceneId)
-
-        const token = await this.reticulumService.getAdminToken(projectId)
-
-        const infraRoom = await this.reticulumService.createRoom(scene.infraSceneId, createData.name, token)
-
-        const slug = getSlug(infraRoom.url)
-
-        const createRoom = {
-            ...createData,
-            slug: slug,
-            infraRoomId: infraRoom.hub_id,
-            thumbnailId: scene.thumbnailId,
-            projectId: projectId,
-            sceneId: scene.id
-        }
-
-        return await this.roomsRepository.create(createRoom)
+        return this.getRoomDto(room.id)
     }
 
     async findRooms(queryDto: RoomQueryDto) {
@@ -71,33 +40,14 @@ export class RoomsService {
         return room as Room
     }
 
-    async updateRoom(roomId: string, updateRoomDto: UpdateRoomDto) {
-        const room = await this.getRoom(roomId)
-
-        const token = await this.reticulumService.getAdminToken(room.projectId)
-
-        const updateRoomArgs = {
-            ...updateRoomDto,
-            token: token
-        }
-
-        const { hubs: updatedInfraRoom } = await this.reticulumService.updateRoom(
-            room.infraRoomId,
-            updateRoomArgs
-        )
-
-        const updateRoom = {
-            ...updateRoomDto,
-            slug: updatedInfraRoom[0].slug
-        }
-
-        const updatedRoom = updateIntersection(room, updateRoom)
+    async updateRoom(room: Room, updateRoomData: DeepPartial<Room>) {
+        const updatedRoom = updateIntersection(room, updateRoomData)
 
         const savedRoom = await this.roomsRepository.update(updatedRoom)
 
         Assert.deepEquals(savedRoom, updatedRoom, 'The result is different from the update request')
 
-        return savedRoom
+        return this.getRoomDto(savedRoom.id)
     }
 
     async removeRoom(roomId: string) {
@@ -114,16 +64,6 @@ export class RoomsService {
         const rooms = await this.roomsRepository.findBySceneId(sceneId)
 
         return rooms
-    }
-
-    async findRoomByInfraRoomid(infraRoomId: string) {
-        const room = await this.roomsRepository.findByInfraRoomId(infraRoomId)
-
-        if (!room) {
-            throw new NotFoundException(`Room with infraRoomId "${infraRoomId}" not found.`)
-        }
-
-        return room
     }
 
     async count() {
@@ -194,34 +134,7 @@ export class RoomsService {
         return roomUrl
     }
 
-    async getRoomDetails(sessionId: string) {
-        // const roomAccess = await this.roomAccessRepository.findAccessBySessionId(sessionId)
-
-        // await this.validateRoomExists(roomAccess.roomId)
-
-        // const room = await this.roomsRepository.findById(roomAccess.roomId) as Room
-
-        // const roomDetailsKey = `roomDetails:${room.id}`
-
-        // const savedDetails = await this.cacheService.get(roomDetailsKey)
-
-        // let roomDetails
-
-        // if (savedDetails) {
-        //     roomDetails = JSON.parse(savedDetails)
-        // } else {
-        //     roomDetails = {
-        //         projectId: room.projectId,
-        //         roomId: room.id,
-        //         userCount: 0,
-        //         users: []
-        //     }
-        // }
-
-        return { roomDetailsKey: '', roomDetails: {} }
-    }
-
-    async restrictRoomCreation(projectId: string) {
+    async countRoomsByProjectId(projectId: string) {
         const count = await this.roomsRepository.countByProjectId(projectId)
 
         return count

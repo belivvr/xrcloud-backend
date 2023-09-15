@@ -12,7 +12,9 @@ import {
     forwardRef
 } from '@nestjs/common'
 import { ClearService } from 'src/services/clear/clear.service'
-import { ApiRoomQueryDto, ApiRoomUserQueryDto, CreateRoomDto, UpdateRoomDto } from 'src/services/rooms/dto'
+import { CreateRoomDto, UpdateRoomDto } from 'src/services/manage-asset/dto'
+import { ManageAssetService } from 'src/services/manage-asset/manage-asset.service'
+import { ApiRoomQueryDto, ApiRoomUserQueryDto } from 'src/services/rooms/dto'
 import { RoomsService } from 'src/services/rooms/rooms.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { ApiKeyAuthGuard } from './guards'
@@ -23,6 +25,7 @@ export class ApiRoomsController {
     constructor(
         private readonly roomsService: RoomsService,
         private readonly scenesService: ScenesService,
+        private readonly manageAssetService: ManageAssetService,
         @Inject(forwardRef(() => ClearService))
         private readonly clearService: ClearService
     ) {}
@@ -31,9 +34,7 @@ export class ApiRoomsController {
     async createRoom(@Body() createRoomDto: CreateRoomDto) {
         await this.scenesService.validateSceneExists(createRoomDto.sceneId)
 
-        const room = await this.roomsService.createRoom(createRoomDto)
-
-        return await this.roomsService.getRoomDto(room.id)
+        return await this.manageAssetService.createRoom(createRoomDto)
     }
 
     @Get()
@@ -62,9 +63,7 @@ export class ApiRoomsController {
     async updateRoom(@Param('roomId') roomId: string, @Body() updateRoomDto: UpdateRoomDto) {
         await this.roomsService.validateRoomExists(roomId)
 
-        const room = await this.roomsService.updateRoom(roomId, updateRoomDto)
-
-        return await this.roomsService.getRoomDto(room.id)
+        return await this.manageAssetService.updateRoom(roomId, updateRoomDto)
     }
 
     @Delete(':roomId')

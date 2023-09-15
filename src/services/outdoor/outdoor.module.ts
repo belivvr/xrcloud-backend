@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common'
-import { ScenesModule } from 'src/services/scenes/scenes.module'
+import { ManageAssetModule } from '../manage-asset/manage-asset.module'
 import { OutdoorService } from './outdoor.service'
 
 @Module({
-    imports: [ScenesModule],
+    imports: [ManageAssetModule],
     providers: [OutdoorService],
     exports: [OutdoorService]
 })

@@ -9,12 +9,7 @@ import { RoomsRepository } from './rooms.repository'
 import { RoomsService } from './rooms.service'
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([Room]),
-        InfraModule,
-        AdminsModule,
-        ScenesModule
-    ],
+    imports: [TypeOrmModule.forFeature([Room]), AdminsModule, InfraModule, ScenesModule],
     providers: [RoomsService, RoomsRepository, RoomConfigService],
     exports: [RoomsService]
 })

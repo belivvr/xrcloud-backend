@@ -8,6 +8,6 @@ export class UpdateRoomDto {
     @IsOptional()
     @IsNumber()
     @Min(1)
-    @Max(10)
+    @Max(1000)
     size: number
 }

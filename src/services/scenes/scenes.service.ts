@@ -1,8 +1,9 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ProjectsService } from 'src/services/projects/projects.service'
-import { CreateSceneDto, SceneDto, SceneQueryDto, UpdateSceneDto } from './dto'
+import { DeepPartial } from 'typeorm'
+import { SceneDto, SceneQueryDto } from './dto'
 import { Scene } from './entities'
 import { SceneConfigService } from './scene-config.service'
 import { ScenesRepository } from './scenes.repository'
@@ -17,26 +18,10 @@ export class ScenesService {
         private readonly projectsService: ProjectsService
     ) {}
 
-    async createScene(createSceneDto: CreateSceneDto) {
-        const { projectId, infraProjectId, infraSceneId } = createSceneDto
+    async createScene(createSceneData: DeepPartial<Scene>) {
+        const scene = await this.scenesRepository.create(createSceneData)
 
-        if (await this.infraSceneExists(infraSceneId)) {
-            throw new ConflictException(`Scene with ID "${infraSceneId}" already exists.`)
-        }
-
-        const infraScene = await this.reticulumService.getScene(infraSceneId)
-
-        const thumbnailId = await this.reticulumService.getThumbnailId(infraScene.screenshot_owned_file_id)
-
-        const createScene = {
-            name: infraScene.name,
-            infraSceneId: infraSceneId,
-            infraProjectId: infraProjectId,
-            thumbnailId: thumbnailId,
-            projectId: projectId
-        }
-
-        await this.scenesRepository.create(createScene)
+        return this.getSceneDto(scene.id)
     }
 
     async findScenes(sceneQueryDto: SceneQueryDto) {
@@ -53,27 +38,26 @@ export class ScenesService {
         return scene as Scene
     }
 
-    async updateScene(updateSceneDto: UpdateSceneDto) {
-        const { infraSceneId } = updateSceneDto
+    async getProjectBySceneId(sceneId: string) {
+        const scene = await this.scenesRepository.findById(sceneId)
 
-        const scene = await this.findSceneByInfraSceneId(infraSceneId)
-
-        const infraScene = await this.reticulumService.getScene(infraSceneId)
-
-        const thumbnailId = await this.reticulumService.getThumbnailId(infraScene.screenshot_owned_file_id)
-
-        const updateScene = {
-            name: infraScene.name,
-            thumbnailId: thumbnailId
+        if (!scene) {
+            throw new NotFoundException(`Scene with ID "${sceneId}" not found.`)
         }
 
-        const updatedScene = updateIntersection(scene, updateScene)
+        const project = await this.projectsService.getProject(scene.projectId)
+
+        return project
+    }
+
+    async updateScene(scene: Scene, updateSceneData: DeepPartial<Scene>) {
+        const updatedScene = updateIntersection(scene, updateSceneData)
 
         const savedScene = await this.scenesRepository.update(updatedScene)
 
         Assert.deepEquals(savedScene, updatedScene, 'The result is different from the update request')
 
-        return savedScene
+        return this.getSceneDto(savedScene.id)
     }
 
     async removeScene(sceneId: string) {

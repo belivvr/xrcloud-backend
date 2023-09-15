@@ -20,9 +20,11 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express'
 import { Assert } from 'src/common'
 import { multerOptions } from 'src/middleware'
 import { ClearService } from 'src/services/clear/clear.service'
-import { CreateProjectDto, QueryDto, UpdateProjectDto } from 'src/services/projects/dto'
+import { CreateProjectDto, UpdateProjectDto } from 'src/services/manage-asset/dto'
+import { ManageAssetService } from 'src/services/manage-asset/manage-asset.service'
+import { UploadedFilesType } from 'src/services/manage-asset/types'
+import { QueryDto } from 'src/services/projects/dto'
 import { ProjectsService } from 'src/services/projects/projects.service'
-import { UploadedFilesType } from 'src/services/projects/types'
 import { AdminAuthGuard } from './guards'
 
 const FAVICON = 'favicon'
@@ -33,6 +35,7 @@ const LOGO = 'logo'
 export class ProjectsController {
     constructor(
         private readonly projectsService: ProjectsService,
+        private readonly manageAssetService: ManageAssetService,
         @Inject(forwardRef(() => ClearService))
         private readonly clearService: ClearService
     ) {}
@@ -66,7 +69,7 @@ export class ProjectsController {
             throw new BadRequestException('Files is required.')
         }
 
-        const project = await this.projectsService.createProject(createProjectDto, files, req.user.adminId)
+        const project = await this.manageAssetService.createProject(createProjectDto, files, req.user.adminId)
 
         return await this.projectsService.getProjectDto(project.id)
     }
@@ -114,7 +117,7 @@ export class ProjectsController {
     ) {
         await this.projectsService.validateProjectExists(projectId)
 
-        const project = await this.projectsService.updateProject(projectId, updateProjectDto, files)
+        const project = await this.manageAssetService.updateProject(projectId, updateProjectDto, files)
 
         return await this.projectsService.getProjectDto(project.id)
     }

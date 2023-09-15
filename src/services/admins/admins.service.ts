@@ -3,15 +3,10 @@ import { Assert, hashPassword, makeApikey, updateIntersection, validatePassword 
 import { AdminsRepository } from './admins.repository'
 import { CreateAdminDto, UpdateAdminDto, UpdatePasswordDto } from './dto'
 import { Admin } from './entities'
-import { CreateOrderAccountData } from './interfaces'
-import { OrderAccountRepository } from './order-account.repository'
 
 @Injectable()
 export class AdminsService {
-    constructor(
-        private readonly adminsRepository: AdminsRepository,
-        private readonly orderAccountRepository: OrderAccountRepository
-    ) {}
+    constructor(private readonly adminsRepository: AdminsRepository) {}
 
     async createAdmin(createAdminDto: CreateAdminDto) {
         const { password } = createAdminDto
@@ -124,28 +119,6 @@ export class AdminsService {
 
     async count() {
         return await this.adminsRepository.count()
-    }
-
-    async createOrderAccount(createOrderAccountData: CreateOrderAccountData) {
-        const createOrderAccount = {
-            ...createOrderAccountData
-        }
-
-        return await this.orderAccountRepository.create(createOrderAccount)
-    }
-
-    async findOrderAccountByAdminId(adminId: string) {
-        return await this.orderAccountRepository.findByAdminId(adminId)
-    }
-
-    async findOrderAccountByAccountId(accountId: number) {
-        const orderAccount = await this.orderAccountRepository.findByAccountId(accountId)
-
-        if (!orderAccount) {
-            throw new NotFoundException(`OrderAccount with accountId "${accountId}" not found.`)
-        }
-
-        return orderAccount
     }
 
     async validateAdmin(plainPassword: string, hashedPassword: string): Promise<boolean> {

@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common'
-import { CacheService, convertTimeToSeconds } from 'src/common'
+import { CacheService } from 'src/common'
 import { RoomsService } from 'src/services/rooms/rooms.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
+import { ManageAssetService } from '../manage-asset/manage-asset.service'
 import { CreateEventDto, EventType } from './dto'
-import { CreateSceneData, JoinRoomData, ExitRoomData, UpdateSceneData, UserDetails } from './interfaces'
 import { EventConfigService } from './event-config.service'
+import { CreateSceneData, ExitRoomData, JoinRoomData, UpdateSceneData } from './interfaces'
 
 @Injectable()
 export class EventsService {
     constructor(
+        private readonly manageAssetService: ManageAssetService,
         private readonly scenesService: ScenesService,
         private readonly roomsService: RoomsService,
         private readonly cacheService: CacheService,
@@ -75,7 +77,6 @@ export class EventsService {
         }
     }
 
-    // TODO: outdoor > events
     async createScene(createSceneData: CreateSceneData) {
         const { projectId: infraProjectId, sceneId: infraSceneId, extra: extraArgs } = createSceneData
 
@@ -98,10 +99,9 @@ export class EventsService {
             infraSceneId: infraSceneId
         }
 
-        await this.scenesService.createScene(createData)
+        await this.manageAssetService.createScene(createData)
     }
 
-    // TODO: outdoor > events
     async updateScene(updateSceneData: UpdateSceneData) {
         const { sceneId: infraSceneId } = updateSceneData
 
@@ -109,7 +109,7 @@ export class EventsService {
             infraSceneId: infraSceneId
         }
 
-        await this.scenesService.updateScene(updateData)
+        await this.manageAssetService.updateScene(updateData)
     }
 
     async joinRoom(joinRoomData: JoinRoomData) {

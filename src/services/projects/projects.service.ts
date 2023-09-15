@@ -1,18 +1,15 @@
 import {
-    BadRequestException,
     Injectable,
-    InternalServerErrorException,
     NotFoundException
 } from '@nestjs/common'
 import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
 import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
-import { CreateProjectDto, ProjectDto, QueryDto, UpdateProjectDto } from './dto'
+import { DeepPartial } from 'typeorm'
+import { ProjectDto, QueryDto } from './dto'
 import { Project } from './entities'
-import { FILE_TYPES } from './interfaces'
 import { ProjectConfigService } from './project-config.service'
 import { ProjectsRepository } from './projects.repository'
-import { UploadedFilesType } from './types'
 
 const FAVICON = 'favicon'
 const LOGO = 'logo'
@@ -27,38 +24,10 @@ export class ProjectsService {
         private readonly configService: ProjectConfigService
     ) {}
 
-    async createProject(createProjectDto: CreateProjectDto, files: UploadedFilesType, adminId: string) {
-        const faviconFile = files[FAVICON][0]
-        const logoFile = files[LOGO][0]
+    async createProject(createProjectData: DeepPartial<Project>) {
+        const project = await this.projectsRepository.create(createProjectData)
 
-        const faviconId = generateUUID()
-        const logoId = generateUUID()
-
-        const faviconKey = this.generateFileKey(faviconId, FAVICON)
-        const logoKey = this.generateFileKey(logoId, LOGO)
-
-        let uploadedFavicon
-
-        try {
-            uploadedFavicon = await this.fileStorageService.saveFile(faviconFile.buffer, faviconKey)
-
-            await this.fileStorageService.saveFile(logoFile.buffer, logoKey)
-        } catch (error) {
-            if (uploadedFavicon) {
-                await this.fileStorageService.removeFile(faviconKey)
-            }
-
-            throw new InternalServerErrorException(`Failed to upload files: ${error.message}.`)
-        }
-
-        const createProject = {
-            ...createProjectDto,
-            faviconId: faviconId,
-            logoId: logoId,
-            adminId: adminId
-        }
-
-        return await this.projectsRepository.create(createProject)
+        return this.getProjectDto(project.id)
     }
 
     async findProjects(queryDto: QueryDto, adminId: string) {
@@ -75,36 +44,14 @@ export class ProjectsService {
         return project as Project
     }
 
-    async updateProject(projectId: string, updateProjectDto: UpdateProjectDto, files: UploadedFilesType) {
-        const project = await this.getProject(projectId)
-
-        for (const fieldName of [FAVICON, LOGO] as const) {
-            if (files[fieldName] && files[fieldName][0]) {
-                const file = files[fieldName][0]
-
-                let fileKey
-
-                if (fieldName === FAVICON) {
-                    fileKey = this.generateFileKey(project.faviconId, fieldName)
-                } else if (fieldName === LOGO) {
-                    fileKey = this.generateFileKey(project.logoId, fieldName)
-                }
-
-                await this.fileStorageService.saveFile(file.buffer, fileKey)
-            }
-        }
-
-        const updateProject = {
-            ...updateProjectDto
-        }
-
-        const updatedProject = updateIntersection(project, updateProject)
+    async updateProject(project: Project, updateProjectData: DeepPartial<Project>) {
+        const updatedProject = updateIntersection(project, updateProjectData)
 
         const savedProject = await this.projectsRepository.update(updatedProject)
 
         Assert.deepEquals(savedProject, updatedProject, 'The result is different from the update request')
 
-        return savedProject
+        return this.getProjectDto(savedProject.id)
     }
 
     async removeProject(projectId: string) {
@@ -134,8 +81,8 @@ export class ProjectsService {
     async getProjectDto(projectId: string) {
         const project = await this.getProject(projectId)
 
-        const faviconUrl = this.fileStorageService.getFileUrl(project.faviconId, 'favicon')
-        const logoUrl = this.fileStorageService.getFileUrl(project.logoId, 'logo')
+        const faviconUrl = this.fileStorageService.getFileUrl(project.faviconId, FAVICON)
+        const logoUrl = this.fileStorageService.getFileUrl(project.logoId, LOGO)
 
         const sceneCreationUrl = await this.getSceneCreationUrl(projectId)
 
@@ -145,18 +92,6 @@ export class ProjectsService {
         dto.sceneCreationUrl = sceneCreationUrl
 
         return dto
-    }
-
-    private generateFileKey(fileId: string, fileType: string) {
-        const prePath = fileId.slice(0, 3)
-
-        const typeDetails = FILE_TYPES.get(fileType)
-
-        if (!typeDetails) {
-            throw new BadRequestException(`Unsupported file type: ${fileType}.`)
-        }
-
-        return `${typeDetails.type}/${prePath}/${fileId}.${typeDetails.extension}`
     }
 
     async getSceneCreationUrl(projectId: string) {

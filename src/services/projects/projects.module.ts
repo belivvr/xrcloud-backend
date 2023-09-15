@@ -8,11 +8,7 @@ import { ProjectsRepository } from './projects.repository'
 import { ProjectsService } from './projects.service'
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([Project]),
-        InfraModule,
-        AdminsModule
-    ],
+    imports: [TypeOrmModule.forFeature([Project]), AdminsModule, InfraModule],
     providers: [ProjectsService, ProjectsRepository, ProjectConfigService],
     exports: [ProjectsService]
 })

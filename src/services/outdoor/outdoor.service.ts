@@ -1,11 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { CacheService } from 'src/common'
-import { ScenesService } from 'src/services/scenes/scenes.service'
+import { ManageAssetService } from '../manage-asset/manage-asset.service'
 import { CreateEventDto, SpokeEventName } from './dto'
 
 @Injectable()
 export class OutdoorService {
-    constructor(private readonly scenesService: ScenesService, private readonly cacheService: CacheService) {}
+    constructor(
+        private readonly manageAssetService: ManageAssetService,
+        private readonly cacheService: CacheService
+    ) {}
 
     async createEvent(createEventDto: CreateEventDto) {
         const {
@@ -36,7 +39,7 @@ export class OutdoorService {
                     infraSceneId: infraSceneId
                 }
 
-                await this.scenesService.createScene(createData)
+                await this.manageAssetService.createScene(createData)
 
                 break
             }
@@ -45,7 +48,7 @@ export class OutdoorService {
                     infraSceneId: infraSceneId
                 }
 
-                await this.scenesService.updateScene(updateData)
+                await this.manageAssetService.updateScene(updateData)
 
                 break
             }

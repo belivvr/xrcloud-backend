@@ -1,12 +1,10 @@
-export enum PaymentStatus {
-    created = 'created',
-    completed = 'completed',
-    failed = 'failed',
+export enum SubscriptionStatus {
+    active = 'active',
+    paused = 'paused',
     canceled = 'canceled'
 }
 
-export enum WebhookEventType {
-    paymentCompleted = 'payment.completed',
-    paymentFailed = 'payment.failed',
-    paymentCanceled = 'payment.canceled'
-}
+// export enum SubscriptionStatus {
+//     active = 'active',
+//     inactive = 'inactive'
+// }
