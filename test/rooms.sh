@@ -14,7 +14,8 @@ POST /console/rooms \
     -d '{
             "projectId": "'$PROJECT_ID'",
             "sceneId": "'$SCENE_ID'",
-            "name": "testName"
+            "name": "testName",
+            "size": 9
         }'
 
 ROOM_ID=$(echo $BODY | jq -r '.id')

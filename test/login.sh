@@ -7,8 +7,8 @@
 POST /auth/login \
     -H 'Content-Type: application/json' \
     -d '{
-            "email": "zizi27177@belivvr.com",
-            "password": "112233"
+            "email": "zizi271777@belivvr.com",
+            "password": "123123a!"
         }'
 
 ACCESS_TOKEN=$(echo $BODY | jq -r '.accessToken')

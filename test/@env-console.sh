@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILE_PATH='./public/images'
+FILE_PATH='./images'
 PAGE_OPT='take=100&skip=0'
-PROJECT_ID='a3009f55-e361-4d79-bef2-30404ff86106'
-SCENE_ID='ec803c1b-8051-4156-b461-3f3e6b096bc3'
+PROJECT_ID='415288f8-5218-47f4-ba29-043bfa662b99'
+SCENE_ID='16854433-77a1-4622-a1eb-1a1b70fe0f4f'
