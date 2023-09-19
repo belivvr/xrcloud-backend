@@ -1,13 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
-import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import {
+    Assert,
+    CacheService,
+    convertTimeToSeconds,
+    generateUUID,
+    getSlug,
+    updateIntersection
+} from 'src/common'
+import { FAVICON, LOGO } from 'src/common/constants'
 import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
-import { DeepPartial } from 'typeorm'
-import { RoomDto, RoomQueryDto } from './dto'
+import { CreateRoomDto, UpdateRoomDto } from '../manage-asset/dto'
+import { OptionQueryDto, RoomDto, RoomQueryDto } from './dto'
 import { Room } from './entities'
+import { RoomOption } from './interfaces'
 import { RoomConfigService } from './room-config.service'
 import { RoomsRepository } from './rooms.repository'
+import { RoomOptionType } from './types'
 
 @Injectable()
 export class RoomsService {
@@ -20,8 +30,37 @@ export class RoomsService {
         private readonly scenesService: ScenesService
     ) {}
 
-    async createRoom(createRoomData: DeepPartial<Room>) {
-        const room = await this.roomsRepository.create(createRoomData)
+    async createRoom(createRoomDto: CreateRoomDto) {
+        const { projectId, sceneId, ...createData } = createRoomDto
+
+        const scene = await this.scenesService.getScene(sceneId)
+
+        const token = await this.reticulumService.getAdminToken(projectId)
+
+        const createRoomData = {
+            ...createData,
+            token: token
+        }
+
+        const infraRoom = await this.reticulumService.createRoom(scene.infraSceneId, createRoomData)
+
+        const slug = getSlug(infraRoom.url)
+
+        const createRoom = {
+            ...createData,
+            slug,
+            infraRoomId: infraRoom.hub_id,
+            thumbnailId: scene.thumbnailId,
+            isPublic: false,
+            projectId,
+            sceneId: sceneId
+        }
+
+        if (scene.isPublicRoomOnCreate) {
+            createRoom.isPublic = true
+        }
+
+        const room = await this.roomsRepository.create(createRoom)
 
         return this.getRoomDto(room.id)
     }
@@ -40,8 +79,66 @@ export class RoomsService {
         return room as Room
     }
 
-    async updateRoom(room: Room, updateRoomData: DeepPartial<Room>) {
-        const updatedRoom = updateIntersection(room, updateRoomData)
+    async getRoomOption(optionId: string, queryDto: OptionQueryDto) {
+        const { type } = queryDto
+
+        switch (type) {
+            case RoomOptionType.private: {
+                const key = `option:${optionId}`
+
+                const option = await this.cacheService.get(key)
+
+                if (!option) {
+                    throw new BadRequestException('Invalid optionId.')
+                }
+
+                return JSON.parse(option)
+            }
+
+            case RoomOptionType.public: {
+                const roomId = optionId
+
+                await this.validateRoomExists(roomId)
+
+                const room = await this.getRoom(roomId)
+
+                const { faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
+
+                const option = {
+                    faviconUrl: `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`,
+                    logoUrl: `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
+                } as RoomOption
+
+                return option
+            }
+
+            default: {
+                break
+            }
+        }
+    }
+
+    async updateRoom(roomId: string, updateRoomDto: UpdateRoomDto) {
+        const room = await this.getRoom(roomId)
+
+        const token = await this.reticulumService.getAdminToken(room.projectId)
+
+        const updateRoomData = {
+            ...updateRoomDto,
+            token: token
+        }
+
+        const { hubs: updatedInfraRoom } = await this.reticulumService.updateRoom(
+            room.infraRoomId,
+            updateRoomData
+        )
+
+        const updateRoom = {
+            ...updateRoomDto,
+            slug: updatedInfraRoom[0].slug
+        }
+
+        const updatedRoom = updateIntersection(room, updateRoom)
 
         const savedRoom = await this.roomsRepository.update(updatedRoom)
 
@@ -98,40 +195,32 @@ export class RoomsService {
 
         const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
 
-        let token
-
-        if (!userId) {
-            token = await this.reticulumService.getAdminToken(projectId)
-        } else {
-            token = await this.reticulumService.getUserToken(projectId, userId)
-        }
+        const token =
+            room.isPublic || !userId
+                ? await this.reticulumService.getAdminToken(projectId)
+                : await this.reticulumService.getUserToken(projectId, userId)
 
         const { url, options } = this.reticulumService.getRoomInfo(room.infraRoomId, room.slug, token)
 
-        let roomUrl = url
+        const extendedOptions = {
+            ...options,
+            faviconUrl: `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`,
+            logoUrl: `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
+        } as RoomOption
 
-        const faviconUrl = this.fileStorageService.getFileUrl(faviconId, 'favicon')
-        const logoUrl = this.fileStorageService.getFileUrl(logoId, 'logo')
-
-        if (options?.token) {
-            const optionId = generateUUID()
-
-            const key = `option:${optionId}`
-
-            const extendedOptions = {
-                ...options,
-                faviconUrl: `${faviconUrl}.ico`,
-                logoUrl: `${logoUrl}.jpg`
-            }
-
-            const expireTime = convertTimeToSeconds(this.configService.roomOptionExpiration)
-
-            await this.cacheService.set(key, JSON.stringify(extendedOptions), expireTime)
-
-            roomUrl = `${url}?optId=${optionId}`
+        if (room.isPublic) {
+            return `${url}?public=${room.id}`
         }
 
-        return roomUrl
+        const optionId = generateUUID()
+
+        const key = `option:${optionId}`
+
+        const expireTime = convertTimeToSeconds(this.configService.roomOptionExpiration)
+
+        await this.cacheService.set(key, JSON.stringify(extendedOptions), expireTime)
+
+        return `${url}?private=${optionId}`
     }
 
     async countRoomsByProjectId(projectId: string) {

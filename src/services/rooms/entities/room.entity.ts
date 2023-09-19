@@ -9,7 +9,7 @@ export class Room extends AggregateRoot {
     @Column()
     slug: string
 
-    @Column({ default: 10 })
+    @Column()
     size: number
 
     @Column()
@@ -17,6 +17,9 @@ export class Room extends AggregateRoot {
 
     @Column()
     thumbnailId: string
+
+    @Column({ default: false })
+    isPublic: boolean
 
     @Column()
     projectId: string

@@ -1,8 +1,8 @@
-import { Controller, Delete, Get, Inject, Param, Query, UseGuards, forwardRef } from '@nestjs/common'
-import { AdminAuthGuard } from './guards'
+import { Controller, Delete, Get, Inject, Param, Patch, Query, UseGuards, forwardRef } from '@nestjs/common'
 import { ClearService } from 'src/services/clear/clear.service'
 import { SceneQueryDto } from 'src/services/scenes/dto'
 import { ScenesService } from 'src/services/scenes/scenes.service'
+import { AdminAuthGuard } from './guards'
 
 @Controller('console/scenes')
 @UseGuards(AdminAuthGuard)
@@ -31,6 +31,18 @@ export class ScenesController {
         await this.scenesService.validateSceneExists(sceneId)
 
         return await this.scenesService.getSceneDto(sceneId)
+    }
+
+    @Get('option/:optionId')
+    async getSceneOption(@Param('optionId') optionId: string) {
+        return await this.scenesService.getSceneOption(optionId)
+    }
+
+    @Patch(':sceneId/toggle-public-room')
+    async togglePublicRoom(@Param('sceneId') sceneId: string) {
+        await this.scenesService.validateSceneExists(sceneId)
+
+        return await this.scenesService.togglePublicRoom(sceneId)
     }
 
     @Delete(':sceneId')

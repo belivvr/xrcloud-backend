@@ -22,6 +22,8 @@ import { Mig1691560685487 } from './migrations/1691560685487-mig'
 import { Mig1694511062893 } from './migrations/1694511062893-mig'
 import { Mig1694676703129 } from './migrations/1694676703129-mig'
 import { Mig1694770598959 } from './migrations/1694770598959-mig'
+import { Mig1695003851851 } from './migrations/1695003851851-mig'
+import { Mig1695003945653 } from './migrations/1695003945653-mig'
 
 dotenv.config()
 
@@ -40,7 +42,9 @@ const migrations = [
     Mig1691560685487,
     Mig1694511062893,
     Mig1694676703129,
-    Mig1694770598959
+    Mig1694770598959,
+    Mig1695003851851,
+    Mig1695003945653
 ]
 
 type SupportedConnectionOptions = PostgresConnectionOptions

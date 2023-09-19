@@ -5,7 +5,7 @@ export enum SpokeEventName {
     SCENE_UPDATED = 'scene_updated'
 }
 
-export class CreateEventDto {
+export class SpokeEventDto {
     @IsNotEmpty()
     @IsString()
     token: string

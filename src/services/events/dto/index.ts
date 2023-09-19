@@ -1,1 +1,1 @@
-export * from './create-event.dto'
+export * from './spoke-event.dto'

@@ -13,7 +13,7 @@ import {
 import { ClearService } from 'src/services/clear/clear.service'
 import { CreateRoomDto } from 'src/services/manage-asset/dto'
 import { ManageAssetService } from 'src/services/manage-asset/manage-asset.service'
-import { RoomQueryDto } from 'src/services/rooms/dto'
+import { OptionQueryDto, RoomQueryDto } from 'src/services/rooms/dto'
 import { RoomsService } from 'src/services/rooms/rooms.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { AdminAuthGuard } from './guards'
@@ -54,6 +54,11 @@ export class RoomsController {
         await this.roomsService.validateRoomExists(roomId)
 
         return await this.roomsService.getRoomDto(roomId)
+    }
+
+    @Get('option/:optionId')
+    async getRoomOption(@Param('optionId') optionId: string, @Query() queryDto: OptionQueryDto) {
+        return await this.roomsService.getRoomOption(optionId, queryDto)
     }
 
     @Delete(':roomId')

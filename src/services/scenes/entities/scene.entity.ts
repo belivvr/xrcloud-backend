@@ -15,6 +15,9 @@ export class Scene extends AggregateRoot {
     @Column()
     thumbnailId: string
 
+    @Column({ default: false })
+    isPublicRoomOnCreate: boolean
+
     @Column()
     projectId: string
 }

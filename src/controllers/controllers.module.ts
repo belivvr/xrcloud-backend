@@ -5,7 +5,6 @@ import { ClearModule } from 'src/services/clear/clear.module'
 import { EventsModule } from 'src/services/events/events.module'
 import { HealthModule } from 'src/services/health/health.module'
 import { ManageAssetModule } from 'src/services/manage-asset/manage-asset.module'
-import { OutdoorModule } from 'src/services/outdoor/outdoor.module'
 import { PaymentsModule } from 'src/services/payments/payments.module'
 import { ProjectsModule } from 'src/services/projects/projects.module'
 import { RoomsModule } from 'src/services/rooms/rooms.module'
@@ -19,7 +18,6 @@ import { ApiScenesController } from './api-scenes.controller'
 import { AuthController } from './auth.controller'
 import { EventsController } from './events.controller'
 import { HealthController } from './health.controller'
-import { OutdoorController } from './outdoor.controller'
 import { PaymentsController } from './payments.controller'
 import { ProjectsController } from './projects.controller'
 import { RoomsController } from './rooms.controller'
@@ -34,7 +32,6 @@ const imports = [
     RoomsModule,
     ManageAssetModule,
     ClearModule,
-    OutdoorModule,
     EventsModule,
     HealthModule,
     TiersModule,
@@ -51,7 +48,6 @@ const controllers = [
     ApiScenesController,
     RoomsController,
     ApiRoomsController,
-    OutdoorController,
     EventsController,
     HealthController,
     PaymentsController,

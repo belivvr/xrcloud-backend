@@ -11,7 +11,6 @@ import { AuthModule } from './services/auth/auth.module'
 import { ClearModule } from './services/clear/clear.module'
 import { EventsModule } from './services/events/events.module'
 import { HealthModule } from './services/health/health.module'
-import { OutdoorModule } from './services/outdoor/outdoor.module'
 import { PaymentsModule } from './services/payments/payments.module'
 import { ProjectsModule } from './services/projects/projects.module'
 import { RoomsModule } from './services/rooms/rooms.module'
@@ -35,7 +34,6 @@ const appModules = [
     ProjectsModule,
     ScenesModule,
     RoomsModule,
-    OutdoorModule,
     ClearModule,
     HealthModule,
     EventsModule,

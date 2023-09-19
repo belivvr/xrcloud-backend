@@ -9,7 +9,7 @@ cd "$(dirname "$0")"
 POST /admins \
     -H 'Content-Type: application/json' \
     -d '{
-            "email": "zizi271777@belivvr.com",
+            "email": "zizi2717@belivvr.com",
             "password": "123123a!"
         }'
 

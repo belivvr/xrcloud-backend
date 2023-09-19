@@ -61,6 +61,7 @@ export class AdminsService {
         return await this.adminsRepository.update(updatedScene)
     }
 
+    // TODO
     async getAdmin(adminId: string, withPassword = false): Promise<Admin> {
         let admin
 

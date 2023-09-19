@@ -1,9 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ProjectsService } from 'src/services/projects/projects.service'
-import { DeepPartial } from 'typeorm'
-import { SceneDto, SceneQueryDto } from './dto'
+import { CreateSceneDto, SceneDto, SceneQueryDto, UpdateSceneDto } from './dto'
 import { Scene } from './entities'
 import { SceneConfigService } from './scene-config.service'
 import { ScenesRepository } from './scenes.repository'
@@ -18,8 +17,28 @@ export class ScenesService {
         private readonly projectsService: ProjectsService
     ) {}
 
-    async createScene(createSceneData: DeepPartial<Scene>) {
-        const scene = await this.scenesRepository.create(createSceneData)
+    async createScene(createSceneDto: CreateSceneDto) {
+        const { projectId, infraProjectId, infraSceneId } = createSceneDto
+
+        await this.projectsService.validateProjectExists(projectId)
+
+        if (await this.infraSceneExists(infraSceneId)) {
+            throw new ConflictException(`Scene with ID "${infraSceneId}" already exists.`)
+        }
+
+        const infraScene = await this.reticulumService.getScene(infraSceneId)
+
+        const thumbnailId = await this.reticulumService.getThumbnailId(infraScene.screenshot_owned_file_id)
+
+        const createScene = {
+            name: infraScene.name,
+            infraSceneId: infraSceneId,
+            infraProjectId: infraProjectId,
+            thumbnailId: thumbnailId,
+            projectId: projectId
+        }
+
+        const scene = await this.scenesRepository.create(createScene)
 
         return this.getSceneDto(scene.id)
     }
@@ -38,6 +57,18 @@ export class ScenesService {
         return scene as Scene
     }
 
+    async getSceneOption(optionId: string) {
+        const key = `option:${optionId}`
+
+        const option = await this.cacheService.get(key)
+
+        if (!option) {
+            throw new BadRequestException('Invalid optionId.')
+        }
+
+        return JSON.parse(option)
+    }
+
     async getProjectBySceneId(sceneId: string) {
         const scene = await this.scenesRepository.findById(sceneId)
 
@@ -50,8 +81,37 @@ export class ScenesService {
         return project
     }
 
-    async updateScene(scene: Scene, updateSceneData: DeepPartial<Scene>) {
-        const updatedScene = updateIntersection(scene, updateSceneData)
+    async updateScene(updateSceneDto: UpdateSceneDto) {
+        const { infraSceneId } = updateSceneDto
+
+        const scene = await this.findSceneByInfraSceneId(infraSceneId)
+
+        const infraScene = await this.reticulumService.getScene(infraSceneId)
+
+        const thumbnailId = await this.reticulumService.getThumbnailId(infraScene.screenshot_owned_file_id)
+
+        const updateScene = {
+            name: infraScene.name,
+            thumbnailId: thumbnailId
+        }
+
+        const updatedScene = updateIntersection(scene, updateScene)
+
+        const savedScene = await this.scenesRepository.update(updatedScene)
+
+        Assert.deepEquals(savedScene, updatedScene, 'The result is different from the update request')
+
+        return this.getSceneDto(savedScene.id)
+    }
+
+    async togglePublicRoom(sceneId: string) {
+        const scene = await this.getScene(sceneId)
+
+        const updateScene = {
+            isPublicRoomOnCreate: !scene.isPublicRoomOnCreate
+        }
+
+        const updatedScene = updateIntersection(scene, updateScene)
 
         const savedScene = await this.scenesRepository.update(updatedScene)
 
@@ -139,12 +199,12 @@ export class ScenesService {
 
         const project = await this.projectsService.getProject(scene.projectId)
 
-        const returnValue = {
+        const resources = {
             projectId: project.id,
             faviconId: project.faviconId,
             logoId: project.logoId
         }
 
-        return returnValue
+        return resources
     }
 }
