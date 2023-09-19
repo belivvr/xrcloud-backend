@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { Assert } from 'src/common'
-import { TierDto, TierQueryDto } from './dto'
+import { TierDto, TiersQueryDto } from './dto'
 import { Tier } from './entities'
 import { TiersRepository } from './tiers.repository'
 
@@ -8,7 +8,7 @@ import { TiersRepository } from './tiers.repository'
 export class TiersService {
     constructor(private readonly tiersRepository: TiersRepository) {}
 
-    async findTiers(queryDto: TierQueryDto) {
+    async findTiers(queryDto: TiersQueryDto) {
         const tiers = await this.tiersRepository.find(queryDto)
 
         const items = tiers.items.map((tier) => new TierDto(tier))

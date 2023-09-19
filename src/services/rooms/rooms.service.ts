@@ -11,8 +11,8 @@ import { FAVICON, LOGO } from 'src/common/constants'
 import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
-import { CreateRoomDto, UpdateRoomDto } from '../manage-asset/dto'
-import { OptionQueryDto, RoomDto, RoomQueryDto } from './dto'
+import { CreateRoomDto, UpdateRoomDto } from './dto'
+import { OptionQueryDto, RoomDto, RoomsQueryDto } from './dto'
 import { Room } from './entities'
 import { RoomOption } from './interfaces'
 import { RoomConfigService } from './room-config.service'
@@ -65,7 +65,7 @@ export class RoomsService {
         return this.getRoomDto(room.id)
     }
 
-    async findRooms(queryDto: RoomQueryDto) {
+    async findRooms(queryDto: RoomsQueryDto) {
         const rooms = await this.roomsRepository.find(queryDto)
 
         return rooms

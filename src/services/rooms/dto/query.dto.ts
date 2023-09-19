@@ -1,13 +1,13 @@
 import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator'
 import { PaginationOptions } from 'src/common'
 
-export class RoomQueryDto extends PaginationOptions {
+export class RoomsQueryDto extends PaginationOptions {
     @IsNotEmpty()
     @IsUUID()
     sceneId: string
 }
 
-export class ApiRoomQueryDto extends PaginationOptions {
+export class ApiRoomsQueryDto extends PaginationOptions {
     @IsNotEmpty()
     @IsUUID()
     sceneId: string
@@ -17,7 +17,7 @@ export class ApiRoomQueryDto extends PaginationOptions {
     userId: string
 }
 
-export class ApiRoomUserQueryDto {
+export class ApiRoomQueryDto {
     @IsOptional()
     @IsString()
     userId: string

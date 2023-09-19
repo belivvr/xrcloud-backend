@@ -14,7 +14,7 @@ import {
 import { ClearService } from 'src/services/clear/clear.service'
 import { CreateRoomDto, UpdateRoomDto } from 'src/services/manage-asset/dto'
 import { ManageAssetService } from 'src/services/manage-asset/manage-asset.service'
-import { ApiRoomQueryDto, ApiRoomUserQueryDto } from 'src/services/rooms/dto'
+import { ApiRoomQueryDto, ApiRoomsQueryDto } from 'src/services/rooms/dto'
 import { RoomsService } from 'src/services/rooms/rooms.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { ApiKeyAuthGuard } from './guards'
@@ -38,25 +38,25 @@ export class ApiRoomsController {
     }
 
     @Get()
-    async findRooms(@Query() roomQueryDto: ApiRoomQueryDto) {
-        const rooms = await this.roomsService.findRooms(roomQueryDto)
+    async findRooms(@Query() queryDto: ApiRoomsQueryDto) {
+        const rooms = await this.roomsService.findRooms(queryDto)
 
         if (rooms.items.length === 0) {
             return { ...rooms, items: [] }
         }
 
         const dtos = await Promise.all(
-            rooms.items.map((room) => this.roomsService.getRoomDto(room.id, roomQueryDto.userId))
+            rooms.items.map((room) => this.roomsService.getRoomDto(room.id, queryDto.userId))
         )
 
         return { ...rooms, items: dtos }
     }
 
     @Get(':roomId')
-    async getRoom(@Param('roomId') roomId: string, @Query() roomQueryDto: ApiRoomUserQueryDto) {
+    async getRoom(@Param('roomId') roomId: string, @Query() queryDto: ApiRoomQueryDto) {
         await this.roomsService.validateRoomExists(roomId)
 
-        return await this.roomsService.getRoomDto(roomId, roomQueryDto.userId)
+        return await this.roomsService.getRoomDto(roomId, queryDto.userId)
     }
 
     @Patch(':roomId')

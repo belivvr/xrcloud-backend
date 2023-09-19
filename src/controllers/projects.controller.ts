@@ -22,7 +22,7 @@ import { FAVICON, LOGO } from 'src/common/constants'
 import { multerOptions } from 'src/middleware'
 import { ClearService } from 'src/services/clear/clear.service'
 import { UploadedFilesType } from 'src/services/manage-asset/types'
-import { CreateProjectDto, QueryDto, UpdateProjectDto } from 'src/services/projects/dto'
+import { CreateProjectDto, ProjectsQueryDto, UpdateProjectDto } from 'src/services/projects/dto'
 import { ProjectsService } from 'src/services/projects/projects.service'
 import { AdminAuthGuard } from './guards'
 
@@ -70,7 +70,7 @@ export class ProjectsController {
     }
 
     @Get()
-    async findProjects(@Query() queryDto: QueryDto, @Req() req: any) {
+    async findProjects(@Query() queryDto: ProjectsQueryDto, @Req() req: any) {
         Assert.defined(req.user, 'Admin authentication failed. req.user is null.')
 
         const projects = await this.projectsService.findProjects(queryDto, req.user.adminId)

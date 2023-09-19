@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { ProjectsService } from 'src/services/projects/projects.service'
-import { RoomDto } from 'src/services/rooms/dto'
+import { CreateRoomDto, RoomDto, UpdateRoomDto } from 'src/services/rooms/dto'
 import { RoomsService } from 'src/services/rooms/rooms.service'
 import { SubscriptionsService } from 'src/services/subscriptions/subscriptions.service'
-import { CreateRoomDto, UpdateRoomDto } from './dto'
 
 @Injectable()
 export class ManageAssetService {

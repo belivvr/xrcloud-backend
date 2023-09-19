@@ -1,6 +1,6 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common'
 import { SubscriptionsService } from 'src/services/subscriptions/subscriptions.service'
-import { TierQueryDto } from 'src/services/tiers/dto'
+import { TiersQueryDto } from 'src/services/tiers/dto'
 import { TiersService } from 'src/services/tiers/tiers.service'
 import { AdminAuthGuard } from './guards'
 
@@ -13,7 +13,7 @@ export class SubscriptionsController {
 
     @Get('tiers')
     @UseGuards(AdminAuthGuard)
-    async findTiers(@Query() queryDto: TierQueryDto) {
+    async findTiers(@Query() queryDto: TiersQueryDto) {
         return await this.tiersService.findTiers(queryDto)
     }
 }

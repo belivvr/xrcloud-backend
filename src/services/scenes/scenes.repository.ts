@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { BaseRepository, PaginationResult } from 'src/common'
 import { FindOptionsWhere, Repository } from 'typeorm'
-import { SceneQueryDto } from './dto'
+import { ScenesQueryDto } from './dto'
 import { Scene } from './entities'
 
 @Injectable()
@@ -11,10 +11,10 @@ export class ScenesRepository extends BaseRepository<Scene> {
         super(typeorm)
     }
 
-    async find(sceneQueryDto: SceneQueryDto): Promise<PaginationResult<Scene>> {
-        const { projectId, take, skip } = sceneQueryDto
+    async find(queryDto: ScenesQueryDto): Promise<PaginationResult<Scene>> {
+        const { projectId, take, skip } = queryDto
 
-        const qb = this.createQueryBuilder(sceneQueryDto)
+        const qb = this.createQueryBuilder(queryDto)
             .where('entity.projectId = :projectId', { projectId })
 
         const [items, total] = await qb.getManyAndCount()

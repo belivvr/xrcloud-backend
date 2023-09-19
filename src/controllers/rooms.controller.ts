@@ -13,7 +13,7 @@ import {
 import { ClearService } from 'src/services/clear/clear.service'
 import { CreateRoomDto } from 'src/services/manage-asset/dto'
 import { ManageAssetService } from 'src/services/manage-asset/manage-asset.service'
-import { OptionQueryDto, RoomQueryDto } from 'src/services/rooms/dto'
+import { OptionQueryDto, RoomsQueryDto } from 'src/services/rooms/dto'
 import { RoomsService } from 'src/services/rooms/rooms.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { AdminAuthGuard } from './guards'
@@ -37,8 +37,8 @@ export class RoomsController {
     }
 
     @Get()
-    async findRooms(@Query() roomQueryDto: RoomQueryDto) {
-        const rooms = await this.roomsService.findRooms(roomQueryDto)
+    async findRooms(@Query() queryDto: RoomsQueryDto) {
+        const rooms = await this.roomsService.findRooms(queryDto)
 
         if (rooms.items.length === 0) {
             return { ...rooms, items: [] }

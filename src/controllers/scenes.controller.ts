@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, Inject, Param, Patch, Query, UseGuards, forwardRef } from '@nestjs/common'
 import { ClearService } from 'src/services/clear/clear.service'
-import { SceneQueryDto } from 'src/services/scenes/dto'
+import { ScenesQueryDto } from 'src/services/scenes/dto'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { AdminAuthGuard } from './guards'
 
@@ -14,8 +14,8 @@ export class ScenesController {
     ) {}
 
     @Get()
-    async findScenes(@Query() sceneQueryDto: SceneQueryDto) {
-        const scenes = await this.scenesService.findScenes(sceneQueryDto)
+    async findScenes(@Query() queryDto: ScenesQueryDto) {
+        const scenes = await this.scenesService.findScenes(queryDto)
 
         if (scenes.items.length === 0) {
             return { ...scenes, items: [] }

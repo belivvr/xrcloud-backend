@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ProjectsService } from 'src/services/projects/projects.service'
-import { CreateSceneDto, SceneDto, SceneQueryDto, UpdateSceneDto } from './dto'
+import { CreateSceneDto, SceneDto, ScenesQueryDto, UpdateSceneDto } from './dto'
 import { Scene } from './entities'
 import { SceneConfigService } from './scene-config.service'
 import { ScenesRepository } from './scenes.repository'
@@ -43,8 +43,8 @@ export class ScenesService {
         return this.getSceneDto(scene.id)
     }
 
-    async findScenes(sceneQueryDto: SceneQueryDto) {
-        const scenes = await this.scenesRepository.find(sceneQueryDto)
+    async findScenes(queryDto: ScenesQueryDto) {
+        const scenes = await this.scenesRepository.find(queryDto)
 
         return scenes
     }

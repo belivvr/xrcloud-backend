@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { BaseRepository, PaginationResult } from 'src/common'
 import { Repository } from 'typeorm'
-import { QueryDto } from './dto'
+import { ProjectsQueryDto } from './dto'
 import { Project } from './entities'
 
 @Injectable()
@@ -11,7 +11,7 @@ export class ProjectsRepository extends BaseRepository<Project> {
         super(typeorm)
     }
 
-    async find(queryDto: QueryDto, adminId: string): Promise<PaginationResult<Project>> {
+    async find(queryDto: ProjectsQueryDto, adminId: string): Promise<PaginationResult<Project>> {
         const { take, skip } = queryDto
 
         const qb = this.createQueryBuilder(queryDto)

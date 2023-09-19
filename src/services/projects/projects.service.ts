@@ -5,15 +5,15 @@ import {
     NotFoundException
 } from '@nestjs/common'
 import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
+import { FAVICON, LOGO } from 'src/common/constants'
 import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { UploadedFilesType } from '../manage-asset/types'
-import { CreateProjectDto, ProjectDto, QueryDto, UpdateProjectDto } from './dto'
+import { CreateProjectDto, ProjectDto, ProjectsQueryDto, UpdateProjectDto } from './dto'
 import { Project } from './entities'
 import { FILE_TYPES } from './interfaces'
 import { ProjectConfigService } from './project-config.service'
 import { ProjectsRepository } from './projects.repository'
-import { FAVICON, LOGO } from 'src/common/constants'
 
 @Injectable()
 export class ProjectsService {
@@ -61,7 +61,7 @@ export class ProjectsService {
         return this.getProjectDto(project.id)
     }
 
-    async findProjects(queryDto: QueryDto, adminId: string) {
+    async findProjects(queryDto: ProjectsQueryDto, adminId: string) {
         const projects = await this.projectsRepository.find(queryDto, adminId)
 
         return projects

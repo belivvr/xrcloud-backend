@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { BaseRepository, PaginationResult } from 'src/common'
 import { Repository } from 'typeorm'
-import { TierQueryDto } from './dto'
+import { TiersQueryDto } from './dto'
 import { Tier } from './entities'
 
 @Injectable()
@@ -11,7 +11,7 @@ export class TiersRepository extends BaseRepository<Tier> {
         super(typeorm)
     }
 
-    async find(queryDto: TierQueryDto): Promise<PaginationResult<Tier>> {
+    async find(queryDto: TiersQueryDto): Promise<PaginationResult<Tier>> {
         const { take, skip } = queryDto
 
         const qb = this.createQueryBuilder(queryDto)
@@ -24,8 +24,4 @@ export class TiersRepository extends BaseRepository<Tier> {
     async getDefaultTier(): Promise<Tier | null> {
         return this.typeorm.findOneBy({ isDefault: true })
     }
-
-    // async findByPriceCode(priceCode: string): Promise<Tier | null> {
-    //     return this.typeorm.findOneBy({ priceCode })
-    // }
 }

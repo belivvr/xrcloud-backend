@@ -1,3 +1,3 @@
 import { PaginationOptions } from 'src/common'
 
-export class QueryDto extends PaginationOptions {}
+export class ProjectsQueryDto extends PaginationOptions {}
