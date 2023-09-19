@@ -29,12 +29,12 @@ export class HealthService {
     }
 
     async getStatistics() {
-        const countAdmins = await this.adminsService.count()
-        const countRooms = await this.roomsService.count()
+        const adminCount = await this.adminsService.count()
+        const roomCount = await this.roomsService.count()
 
         return {
-            admins: countAdmins,
-            rooms: countRooms
+            admins: adminCount,
+            rooms: roomCount
         }
     }
 

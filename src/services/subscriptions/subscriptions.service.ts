@@ -22,14 +22,14 @@ export class SubscriptionsService {
         return subscription
     }
 
-    async validateRoomCreation(sceneId: string, countRooms: number, desiredRoomSize: number) {
+    async validateRoomCreation(sceneId: string, roomCount: number, desiredRoomSize: number) {
         const project = await this.scenesService.getProjectBySceneId(sceneId)
 
         const subscription = await this.findSubscriptionByAdminId(project.adminId)
 
         const tierId = subscription ? subscription.tierId : undefined
 
-        await this.tiersService.validateMaxRooms(countRooms, tierId)
+        await this.tiersService.validateMaxRooms(roomCount, tierId)
 
         await this.tiersService.validateMaxRoomSize(desiredRoomSize, tierId)
     }
