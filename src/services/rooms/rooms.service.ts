@@ -51,13 +51,10 @@ export class RoomsService {
             slug,
             infraRoomId: infraRoom.hub_id,
             thumbnailId: scene.thumbnailId,
-            isPublic: false,
+            // TODO: public
+            isPublic: true,
             projectId,
             sceneId: sceneId
-        }
-
-        if (scene.isPublicRoomOnCreate) {
-            createRoom.isPublic = true
         }
 
         const room = await this.roomsRepository.create(createRoom)
@@ -201,10 +198,15 @@ export class RoomsService {
 
         const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
 
-        const token =
-            room.isPublic || !userId
-                ? await this.reticulumService.getAdminToken(projectId)
-                : await this.reticulumService.getUserToken(projectId, userId)
+        // TODO: public
+        const token = !userId
+            ? await this.reticulumService.getAdminToken(projectId)
+            : await this.reticulumService.getUserToken(projectId, userId)
+
+        // const token =
+        //     room.isPublic || !userId
+        //         ? await this.reticulumService.getAdminToken(projectId)
+        //         : await this.reticulumService.getUserToken(projectId, userId)
 
         const { url, options } = this.reticulumService.getRoomInfo(room.infraRoomId, room.slug, token)
 
@@ -213,6 +215,8 @@ export class RoomsService {
             faviconUrl: `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`,
             logoUrl: `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
         } as RoomOption
+
+        return `${url}?public=${room.id}`
 
         if (room.isPublic) {
             return `${url}?public=${room.id}`

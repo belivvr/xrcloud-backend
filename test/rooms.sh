@@ -28,6 +28,9 @@ GET "/console/rooms?sceneId=$SCENE_ID&$PAGE_OPT" \
 GET /console/rooms/$ROOM_ID \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
-# removeRoom
-DELETE /console/rooms/$ROOM_ID \
-    -H "Authorization: Bearer $ACCESS_TOKEN"
+# # getOption
+# GET /console/scenes/option/$OPTION_ID?type=public
+
+# # removeRoom
+# DELETE /console/rooms/$ROOM_ID \
+#     -H "Authorization: Bearer $ACCESS_TOKEN"
