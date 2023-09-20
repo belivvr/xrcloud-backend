@@ -15,57 +15,44 @@ import { ClearService } from 'src/services/clear/clear.service'
 import { ManageAssetService } from 'src/services/manage-asset/manage-asset.service'
 import { ApiRoomQueryDto, ApiRoomsQueryDto, CreateRoomDto, UpdateRoomDto } from 'src/services/rooms/dto'
 import { RoomsService } from 'src/services/rooms/rooms.service'
-import { ScenesService } from 'src/services/scenes/scenes.service'
-import { ApiKeyAuthGuard } from './guards'
+import { ApiKeyAuthGuard, ProjectExistsGuard, SceneExistsGuard } from './guards'
+import { RoomExistsGuard } from './guards/room-exists.guard'
 
 @Controller('api/rooms')
 @UseGuards(ApiKeyAuthGuard)
 export class ApiRoomsController {
     constructor(
         private readonly roomsService: RoomsService,
-        private readonly scenesService: ScenesService,
         private readonly manageAssetService: ManageAssetService,
         @Inject(forwardRef(() => ClearService))
         private readonly clearService: ClearService
     ) {}
 
     @Post()
+    @UseGuards(ProjectExistsGuard, SceneExistsGuard)
     async createRoom(@Body() createRoomDto: CreateRoomDto) {
-        await this.scenesService.validateSceneExists(createRoomDto.sceneId)
-
         return await this.manageAssetService.createRoom(createRoomDto)
     }
 
     @Get()
     async findRooms(@Query() queryDto: ApiRoomsQueryDto) {
-        const rooms = await this.roomsService.findRooms(queryDto)
-
-        if (rooms.items.length === 0) {
-            return { ...rooms, items: [] }
-        }
-
-        const dtos = await Promise.all(
-            rooms.items.map((room) => this.roomsService.getRoomDto(room.id, queryDto.userId))
-        )
-
-        return { ...rooms, items: dtos }
+        return await this.roomsService.findRooms(queryDto)
     }
 
     @Get(':roomId')
+    @UseGuards(RoomExistsGuard)
     async getRoom(@Param('roomId') roomId: string, @Query() queryDto: ApiRoomQueryDto) {
-        await this.roomsService.validateRoomExists(roomId)
-
         return await this.roomsService.getRoomDto(roomId, queryDto.userId)
     }
 
     @Patch(':roomId')
+    @UseGuards(RoomExistsGuard)
     async updateRoom(@Param('roomId') roomId: string, @Body() updateRoomDto: UpdateRoomDto) {
-        await this.roomsService.validateRoomExists(roomId)
-
         return await this.manageAssetService.updateRoom(roomId, updateRoomDto)
     }
 
     @Delete(':roomId')
+    @UseGuards(RoomExistsGuard)
     async removeRoom(@Param('roomId') roomId: string) {
         return await this.clearService.clearRoom(roomId)
     }

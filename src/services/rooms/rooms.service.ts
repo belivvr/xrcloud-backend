@@ -68,7 +68,13 @@ export class RoomsService {
     async findRooms(queryDto: RoomsQueryDto) {
         const rooms = await this.roomsRepository.find(queryDto)
 
-        return rooms
+        if (rooms.items.length === 0) {
+            return { ...rooms, items: [] }
+        }
+
+        const dtos = await Promise.all(rooms.items.map((room) => this.getRoomDto(room.id)))
+
+        return { ...rooms, items: dtos }
     }
 
     async getRoom(roomId: string): Promise<Room> {

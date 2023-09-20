@@ -18,8 +18,6 @@ export class ManageAssetService {
     async createRoom(createRoomDto: CreateRoomDto) {
         const { projectId, sceneId, ...createData } = createRoomDto
 
-        await this.projectsService.validateProjectExists(projectId)
-
         const roomCount = await this.roomsService.countRoomsByProjectId(projectId)
 
         await this.subscriptionsService.validateRoomCreation(sceneId, roomCount, createData.size)

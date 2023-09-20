@@ -33,6 +33,6 @@ PATCH /console/projects/$PROJECT_ID \
     -F "logo=@$FILE_PATH/logo.png" \
     -F "name=testName"
 
-# # removeProject
-# DELETE /console/projects/$PROJECT_ID \
-#     -H "Authorization: Bearer $ACCESS_TOKEN"
+# removeProject
+DELETE /console/projects/$PROJECT_ID \
+    -H "Authorization: Bearer $ACCESS_TOKEN"

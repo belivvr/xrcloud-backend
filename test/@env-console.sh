@@ -1,5 +1,8 @@
 #!/bin/bash
 
+EMAIL='zizi27177777@belivvr.com'
+PASSWORD='123123a!'
+
 FILE_PATH='./images'
 PAGE_OPT='take=100&skip=0'
 PROJECT_ID='415288f8-5218-47f4-ba29-043bfa662b99'

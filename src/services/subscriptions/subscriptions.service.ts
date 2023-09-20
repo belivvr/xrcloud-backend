@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import { ProjectsService } from '../projects/projects.service'
 import { RoomDto } from '../rooms/dto'
 import { ScenesService } from '../scenes/scenes.service'
 import { TiersService } from '../tiers/tiers.service'
@@ -9,6 +10,7 @@ export class SubscriptionsService {
     constructor(
         private readonly subscriptionsRepository: SubscriptionsRepository,
         private readonly tiersService: TiersService,
+        private readonly projectsService: ProjectsService,
         private readonly scenesService: ScenesService
     ) {}
 
@@ -23,7 +25,9 @@ export class SubscriptionsService {
     }
 
     async validateRoomCreation(sceneId: string, roomCount: number, desiredRoomSize: number) {
-        const project = await this.scenesService.getProjectBySceneId(sceneId)
+        const scene = await this.scenesService.getScene(sceneId)
+
+        const project = await this.projectsService.getProject(scene.projectId)
 
         const subscription = await this.findSubscriptionByAdminId(project.adminId)
 
@@ -35,7 +39,9 @@ export class SubscriptionsService {
     }
 
     async validateRoomUpdate(room: RoomDto, desiredRoomSize = 1) {
-        const project = await this.scenesService.getProjectBySceneId(room.sceneId)
+        const scene = await this.scenesService.getScene(room.sceneId)
+
+        const project = await this.projectsService.getProject(scene.projectId)
 
         const subscription = await this.findSubscriptionByAdminId(project.adminId)
 

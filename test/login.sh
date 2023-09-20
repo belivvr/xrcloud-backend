@@ -7,7 +7,7 @@
 POST /auth/login \
     -H 'Content-Type: application/json' \
     -d '{
-            "email": "zizi2717777@belivvr.com",
+            "email": "zizi27177777@belivvr.com",
             "password": "123123a!"
         }'
 

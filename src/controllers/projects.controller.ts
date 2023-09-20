@@ -24,7 +24,7 @@ import { ClearService } from 'src/services/clear/clear.service'
 import { UploadedFilesType } from 'src/services/manage-asset/types'
 import { CreateProjectDto, ProjectsQueryDto, UpdateProjectDto } from 'src/services/projects/dto'
 import { ProjectsService } from 'src/services/projects/projects.service'
-import { AdminAuthGuard } from './guards'
+import { AdminAuthGuard, ProjectExistsGuard } from './guards'
 
 @Controller('console/projects')
 @UseGuards(AdminAuthGuard)
@@ -64,36 +64,24 @@ export class ProjectsController {
             throw new BadRequestException('Files is required.')
         }
 
-        const project = await this.projectsService.createProject(createProjectDto, files, req.user.adminId)
-
-        return await this.projectsService.getProjectDto(project.id)
+        return await this.projectsService.createProject(createProjectDto, files, req.user.adminId)
     }
 
     @Get()
     async findProjects(@Query() queryDto: ProjectsQueryDto, @Req() req: any) {
         Assert.defined(req.user, 'Admin authentication failed. req.user is null.')
 
-        const projects = await this.projectsService.findProjects(queryDto, req.user.adminId)
-
-        if (projects.items.length === 0) {
-            return { ...projects, items: [] }
-        }
-
-        const dtos = await Promise.all(
-            projects.items.map((project) => this.projectsService.getProjectDto(project.id))
-        )
-
-        return { ...projects, items: dtos }
+        return await this.projectsService.findProjects(queryDto, req.user.adminId)
     }
 
     @Get(':projectId')
+    @UseGuards(ProjectExistsGuard)
     async getProject(@Param('projectId') projectId: string) {
-        await this.projectsService.validateProjectExists(projectId)
-
         return await this.projectsService.getProjectDto(projectId)
     }
 
     @Patch(':projectId')
+    @UseGuards(ProjectExistsGuard)
     @UseInterceptors(
         FileFieldsInterceptor(
             [
@@ -110,11 +98,7 @@ export class ProjectsController {
         @Body() updateProjectDto: UpdateProjectDto,
         @UploadedFiles() files: UploadedFilesType
     ) {
-        await this.projectsService.validateProjectExists(projectId)
-
-        const project = await this.projectsService.updateProject(projectId, updateProjectDto, files)
-
-        return await this.projectsService.getProjectDto(project.id)
+        return await this.projectsService.updateProject(projectId, updateProjectDto, files)
     }
 
     @Delete(':projectId')

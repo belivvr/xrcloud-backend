@@ -64,7 +64,15 @@ export class ProjectsService {
     async findProjects(queryDto: ProjectsQueryDto, adminId: string) {
         const projects = await this.projectsRepository.find(queryDto, adminId)
 
-        return projects
+        if (projects.items.length === 0) {
+            return { ...projects, items: [] }
+        }
+
+        const dtos = await Promise.all(
+            projects.items.map((project) => this.getProjectDto(project.id))
+        )
+
+        return { ...projects, items: dtos }
     }
 
     async getProject(projectId: string): Promise<Project> {

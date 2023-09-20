@@ -4,13 +4,14 @@ cd "$(dirname "$0")"
 
 #
 . ./@config.sh
+. ./@env-console.sh
 
 # createAdmin
 POST /admins \
     -H 'Content-Type: application/json' \
     -d '{
-            "email": "zizi2717@belivvr.com",
-            "password": "123123a!"
+            "email": "'$EMAIL'",
+            "password": "'$PASSWORD'"
         }'
 
 ADMIN_ID=$(echo $BODY | jq -r '.id')

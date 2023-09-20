@@ -1,8 +1,9 @@
 import { Controller, Delete, Get, Inject, Param, Patch, Query, UseGuards, forwardRef } from '@nestjs/common'
+import { SkipAuth } from 'src/common'
 import { ClearService } from 'src/services/clear/clear.service'
 import { ScenesQueryDto } from 'src/services/scenes/dto'
 import { ScenesService } from 'src/services/scenes/scenes.service'
-import { AdminAuthGuard } from './guards'
+import { AdminAuthGuard, SceneExistsGuard } from './guards'
 
 @Controller('console/scenes')
 @UseGuards(AdminAuthGuard)
@@ -15,37 +16,29 @@ export class ScenesController {
 
     @Get()
     async findScenes(@Query() queryDto: ScenesQueryDto) {
-        const scenes = await this.scenesService.findScenes(queryDto)
-
-        if (scenes.items.length === 0) {
-            return { ...scenes, items: [] }
-        }
-
-        const dtos = await Promise.all(scenes.items.map((scene) => this.scenesService.getSceneDto(scene.id)))
-
-        return { ...scenes, items: dtos }
+        return await this.scenesService.findScenes(queryDto)
     }
 
     @Get(':sceneId')
+    @UseGuards(SceneExistsGuard)
     async getScene(@Param('sceneId') sceneId: string) {
-        await this.scenesService.validateSceneExists(sceneId)
-
         return await this.scenesService.getSceneDto(sceneId)
     }
 
     @Get('option/:optionId')
+    @SkipAuth()
     async getSceneOption(@Param('optionId') optionId: string) {
         return await this.scenesService.getSceneOption(optionId)
     }
 
     @Patch(':sceneId/toggle-public-room')
+    @UseGuards(SceneExistsGuard)
     async togglePublicRoom(@Param('sceneId') sceneId: string) {
-        await this.scenesService.validateSceneExists(sceneId)
-
         return await this.scenesService.togglePublicRoom(sceneId)
     }
 
     @Delete(':sceneId')
+    @UseGuards(SceneExistsGuard)
     async removeScene(@Param('sceneId') sceneId: string) {
         return await this.clearService.clearScene(sceneId)
     }

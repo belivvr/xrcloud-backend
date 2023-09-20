@@ -46,7 +46,13 @@ export class ScenesService {
     async findScenes(queryDto: ScenesQueryDto) {
         const scenes = await this.scenesRepository.find(queryDto)
 
-        return scenes
+        if (scenes.items.length === 0) {
+            return { ...scenes, items: [] }
+        }
+
+        const dtos = await Promise.all(scenes.items.map((scene) => this.getSceneDto(scene.id)))
+
+        return { ...scenes, items: dtos }
     }
 
     async getScene(sceneId: string): Promise<Scene> {
