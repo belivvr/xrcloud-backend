@@ -3,7 +3,6 @@ import {
     Body,
     Controller,
     Delete,
-    ForbiddenException,
     Get,
     Inject,
     Param,
@@ -53,12 +52,6 @@ export class ProjectsController {
         @Req() req: any
     ) {
         Assert.defined(req.user, 'Admin authentication failed. req.user is null.')
-
-        if (!(await this.projectsService.restrictProjectCreation(req.user.adminId))) {
-            throw new ForbiddenException(
-                `Admin with ID "${req.user.adminId}" exceeds the number of projects that can be created.`
-            )
-        }
 
         if (!files[FAVICON] || !files[LOGO]) {
             throw new BadRequestException('Files is required.')

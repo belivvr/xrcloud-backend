@@ -17,7 +17,7 @@
         {
             "name": "project",
             "x-displayName": "Project",
-            "description": "Project in XRCLOUD, which can be a developer's project, platform, 3rd-party app, etc. \n\n - **Currently, only one project can be created per admin account.**"
+            "description": "Project in XRCLOUD, which can be a developer's project, platform, 3rd-party app, etc."
         },
         {
             "name": "scene",
@@ -26,8 +26,7 @@
         },
         {
             "name": "room",
-            "x-displayName": "Room",
-            "description": "- **Currently, can create 3 rooms per project.**"
+            "x-displayName": "Room"
         }
     ],
     "x-tagGroups": [

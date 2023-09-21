@@ -1,18 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import {
-    Assert,
-    CacheService,
-    convertTimeToSeconds,
-    generateUUID,
-    getSlug,
-    updateIntersection
-} from 'src/common'
+import { Assert, CacheService, getSlug, updateIntersection } from 'src/common'
 import { FAVICON, LOGO } from 'src/common/constants'
 import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
-import { CreateRoomDto, UpdateRoomDto } from './dto'
-import { OptionQueryDto, RoomDto, RoomsQueryDto } from './dto'
+import { CreateRoomDto, OptionQueryDto, RoomDto, RoomsQueryDto, UpdateRoomDto } from './dto'
 import { Room } from './entities'
 import { RoomOption } from './interfaces'
 import { RoomConfigService } from './room-config.service'
@@ -166,7 +158,7 @@ export class RoomsService {
         return rooms
     }
 
-    async count() {
+    async countRooms() {
         return await this.roomsRepository.count()
     }
 
@@ -210,32 +202,38 @@ export class RoomsService {
 
         const { url, options } = this.reticulumService.getRoomInfo(room.infraRoomId, room.slug, token)
 
-        const extendedOptions = {
-            ...options,
-            faviconUrl: `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`,
-            logoUrl: `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
-        } as RoomOption
-
         return `${url}?public=${room.id}`
 
-        if (room.isPublic) {
-            return `${url}?public=${room.id}`
-        }
+        // const extendedOptions = {
+        //     ...options,
+        //     faviconUrl: `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`,
+        //     logoUrl: `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
+        // } as RoomOption
 
-        const optionId = generateUUID()
+        // if (room.isPublic) {
+        //     return `${url}?public=${room.id}`
+        // }
 
-        const key = `option:${optionId}`
+        // const optionId = generateUUID()
 
-        const expireTime = convertTimeToSeconds(this.configService.roomOptionExpiration)
+        // const key = `option:${optionId}`
 
-        await this.cacheService.set(key, JSON.stringify(extendedOptions), expireTime)
+        // const expireTime = convertTimeToSeconds(this.configService.roomOptionExpiration)
 
-        return `${url}?private=${optionId}`
+        // await this.cacheService.set(key, JSON.stringify(extendedOptions), expireTime)
+
+        // return `${url}?private=${optionId}`
     }
 
-    async countRoomsByProjectId(projectId: string) {
-        const count = await this.roomsRepository.countByProjectId(projectId)
+    async countRoomsByProjectIds(projectIds: string[]): Promise<number> {
+        let totalRooms = 0
 
-        return count
+        for (const projectId of projectIds) {
+            const count = await this.roomsRepository.countByProjectId(projectId)
+
+            totalRooms += count
+        }
+
+        return totalRooms
     }
 }

@@ -17,7 +17,7 @@
         {
             "name": "project",
             "x-displayName": "Project",
-            "description": "개발자의 프로젝트, 플랫폼, 3rd-party app 등이 될 수 있는 XRCLOUD의 Project입니다. \n\n - **현재 관리자 계정당 하나의 Project만 생성할 수 있습니다.**"
+            "description": "개발자의 프로젝트, 플랫폼, 3rd-party app 등이 될 수 있는 XRCLOUD의 Project입니다."
         },
         {
             "name": "scene",
@@ -26,8 +26,7 @@
         },
         {
             "name": "room",
-            "x-displayName": "Room",
-            "description": "- **현재 Project당 3개의 Room을 생성할 수 있습니다.**"
+            "x-displayName": "Room"
         }
     ],
     "x-tagGroups": [

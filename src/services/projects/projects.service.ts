@@ -68,9 +68,7 @@ export class ProjectsService {
             return { ...projects, items: [] }
         }
 
-        const dtos = await Promise.all(
-            projects.items.map((project) => this.getProjectDto(project.id))
-        )
+        const dtos = await Promise.all(projects.items.map((project) => this.getProjectDto(project.id)))
 
         return { ...projects, items: dtos }
     }
@@ -187,15 +185,5 @@ export class ProjectsService {
         }
 
         return `${typeDetails.type}/${prePath}/${fileId}.${typeDetails.extension}`
-    }
-
-    async restrictProjectCreation(adminId: string) {
-        const projects = await this.projectsRepository.findByAdminId(adminId)
-
-        if (projects.length > 0) {
-            return false
-        }
-
-        return true
     }
 }

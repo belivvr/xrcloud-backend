@@ -118,7 +118,7 @@ export class AdminsService {
         return this.adminsRepository.emailExists(email)
     }
 
-    async count() {
+    async countAdmins() {
         return await this.adminsRepository.count()
     }
 
