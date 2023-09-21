@@ -6,9 +6,9 @@ import { FileStorageConfigService } from './file-storage-config.service'
 export class FileStorageService {
     private s3: S3
 
-    private readonly env: string
     private readonly cdnPath: string
     private readonly storage: string
+    private readonly bucket: string
 
     constructor(private readonly configService: FileStorageConfigService) {
         this.s3 = new S3({
@@ -20,14 +20,9 @@ export class FileStorageService {
             }
         })
 
-        this.env = this.configService.env
         this.cdnPath = this.configService.cdnPath
-
-        if (this.env === 'dev') {
-            this.storage = `${this.cdnPath}/loool-${this.env}`
-        } else {
-            this.storage = `${this.cdnPath}/xrcloud-prod-backend`
-        }
+        this.bucket = this.configService.bucket
+        this.storage = `${this.cdnPath}/${this.bucket}`
     }
 
     async saveFile(file: Buffer, key: string | undefined) {
