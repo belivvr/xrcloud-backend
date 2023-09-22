@@ -101,7 +101,8 @@ export class RoomsService {
 
                 const option = {
                     faviconUrl: `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`,
-                    logoUrl: `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
+                    logoUrl: `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`,
+                    returnUrl: room.returnUrl
                 } as RoomOption
 
                 return option
@@ -207,7 +208,8 @@ export class RoomsService {
         // const extendedOptions = {
         //     ...options,
         //     faviconUrl: `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`,
-        //     logoUrl: `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
+        //     logoUrl: `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`,
+        //     returnUrl: room.returnUrl
         // } as RoomOption
 
         // if (room.isPublic) {

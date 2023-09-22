@@ -5,6 +5,7 @@ import {
     Get,
     Inject,
     Param,
+    Patch,
     Post,
     Query,
     UseGuards,
@@ -13,7 +14,7 @@ import {
 import { SkipAuth } from 'src/common'
 import { ClearService } from 'src/services/clear/clear.service'
 import { ManageAssetService } from 'src/services/manage-asset/manage-asset.service'
-import { CreateRoomDto, OptionQueryDto, RoomsQueryDto } from 'src/services/rooms/dto'
+import { CreateRoomDto, OptionQueryDto, RoomsQueryDto, UpdateRoomDto } from 'src/services/rooms/dto'
 import { RoomsService } from 'src/services/rooms/rooms.service'
 import { AdminAuthGuard, ProjectExistsGuard, SceneExistsGuard } from './guards'
 import { RoomExistsGuard } from './guards/room-exists.guard'
@@ -49,6 +50,12 @@ export class RoomsController {
     @SkipAuth()
     async getRoomOption(@Param('optionId') optionId: string, @Query() queryDto: OptionQueryDto) {
         return await this.roomsService.getRoomOption(optionId, queryDto)
+    }
+
+    @Patch(':roomId')
+    @UseGuards(RoomExistsGuard)
+    async updateRoom(@Param('roomId') roomId: string, @Body() updateRoomDto: UpdateRoomDto) {
+        return await this.manageAssetService.updateRoom(roomId, updateRoomDto)
     }
 
     @Delete(':roomId')

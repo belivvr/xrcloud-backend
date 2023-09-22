@@ -7,11 +7,13 @@ export class RoomDto {
     sceneId: string
     createdAt: Date
     updatedAt: Date
+    isPublic: boolean
+    returnUrl: string
     roomUrl: string
     thumbnailUrl: string
 
     constructor(room: Room) {
-        const { id, name, size, sceneId, createdAt, updatedAt } = room
+        const { id, name, size, sceneId, createdAt, updatedAt, isPublic, returnUrl } = room
 
         Object.assign(this, {
             id,
@@ -19,7 +21,9 @@ export class RoomDto {
             size,
             sceneId,
             createdAt,
-            updatedAt
+            updatedAt,
+            isPublic,
+            returnUrl
         })
     }
 }

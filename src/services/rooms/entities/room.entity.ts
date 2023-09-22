@@ -21,6 +21,9 @@ export class Room extends AggregateRoot {
     @Column({ default: false })
     isPublic: boolean
 
+    @Column({ nullable: true })
+    returnUrl: string
+
     @Column()
     projectId: string
 

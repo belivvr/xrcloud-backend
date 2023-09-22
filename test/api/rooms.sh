@@ -11,8 +11,11 @@ POST /api/rooms \
     -d '{
             "projectId": "'$PROJECT_ID'",
             "sceneId": "'$SCENE_ID'",
-            "name": "testName"
+            "name": "testName",
+            "size": 9,
+            "returnUrl": "https://naver.com"
         }'
+
 ROOM_ID=$(echo $BODY | jq -r '.id')
 
 # findRooms
@@ -29,7 +32,8 @@ PATCH /api/rooms/$ROOM_ID \
     -H "Content-Type: application/json" \
     -d '{
             "name": "Updated Test Room Name",
-            "size": 5
+            "size": 5,
+            "returnUrl": "https://naver.com"
         }'
 
 # removeRoom
