@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { Assert, hashPassword, makeApikey, updateIntersection, validatePassword } from 'src/common'
 import { AdminsRepository } from './admins.repository'
-import { CreateAdminDto, UpdateAdminDto, UpdatePasswordDto } from './dto'
+import { AdminDto, CreateAdminDto, UpdateAdminDto, UpdatePasswordDto } from './dto'
 import { Admin } from './entities'
 
 @Injectable()
@@ -18,7 +18,9 @@ export class AdminsService {
             password: hashedPassword
         }
 
-        return await this.adminsRepository.create(createAdmin)
+        const admin = await this.adminsRepository.create(createAdmin)
+
+        return new AdminDto(admin)
     }
 
     async updatePassword(updatePasswordDto: UpdatePasswordDto, adminId: string) {
@@ -44,7 +46,7 @@ export class AdminsService {
 
         Assert.deepEquals(savedAdmin, updatedAdmin, 'The result is different from the update request')
 
-        return savedAdmin
+        return new AdminDto(savedAdmin)
     }
 
     async generateApiKey(adminId: string) {
@@ -56,9 +58,13 @@ export class AdminsService {
             apiKey: apiKey
         }
 
-        const updatedScene = updateIntersection(admin, updateAdmin)
+        const updatedAdmin = updateIntersection(admin, updateAdmin)
 
-        return await this.adminsRepository.update(updatedScene)
+        const savedAdmin = await this.adminsRepository.update(updatedAdmin)
+
+        Assert.deepEquals(savedAdmin, updatedAdmin, 'The result is different from the update request')
+
+        return new AdminDto(savedAdmin)
     }
 
     // TODO
@@ -124,13 +130,5 @@ export class AdminsService {
 
     async validateAdmin(plainPassword: string, hashedPassword: string): Promise<boolean> {
         return validatePassword(plainPassword, hashedPassword)
-    }
-
-    async validateAdminExists(adminId: string) {
-        const adminExists = await this.adminExists(adminId)
-
-        if (!adminExists) {
-            throw new NotFoundException(`Admin with ID "${adminId}" not found.`)
-        }
     }
 }

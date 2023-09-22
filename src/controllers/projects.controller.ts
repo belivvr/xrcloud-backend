@@ -95,6 +95,7 @@ export class ProjectsController {
     }
 
     @Delete(':projectId')
+    @UseGuards(ProjectExistsGuard)
     async removeProject(@Param('projectId') projectId: string) {
         return await this.clearService.clearProject(projectId)
     }

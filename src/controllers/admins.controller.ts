@@ -1,37 +1,26 @@
-import { Body, ConflictException, Controller, Delete, Param, Post, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Param, Post, Req, UseGuards } from '@nestjs/common'
 import { Assert } from 'src/common'
 import { AdminsService } from 'src/services/admins/admins.service'
-import { AdminDto, CreateAdminDto, UpdatePasswordDto } from 'src/services/admins/dto'
+import { CreateAdminDto, UpdatePasswordDto } from 'src/services/admins/dto'
 import { ClearService } from 'src/services/clear/clear.service'
-import { AdminAuthGuard } from './guards'
+import { AdminAuthGuard, AdminExistsGuard, UniqueEmailGuard } from './guards'
 
 @Controller('admins')
 export class AdminsController {
     constructor(private readonly adminsService: AdminsService, private readonly clearService: ClearService) {}
 
     @Post()
+    @UseGuards(UniqueEmailGuard)
     async createAdmin(@Body() createAdminDto: CreateAdminDto) {
-        const emailExists = await this.adminsService.emailExists(createAdminDto.email)
-
-        if (emailExists) {
-            throw new ConflictException(`Admin with email ${createAdminDto.email} already exists.`)
-        }
-
-        const admin = await this.adminsService.createAdmin(createAdminDto)
-
-        return new AdminDto(admin)
+        return await this.adminsService.createAdmin(createAdminDto)
     }
 
     @Post('update-password')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminAuthGuard, AdminExistsGuard)
     async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto, @Req() req: any) {
         Assert.defined(req.user, 'Authentication failed. req.user is null.')
 
-        await this.adminsService.validateAdminExists(req.user.adminId)
-
-        const admin = await this.adminsService.updatePassword(updatePasswordDto, req.user.adminId)
-
-        return new AdminDto(admin)
+        return await this.adminsService.updatePassword(updatePasswordDto, req.user.adminId)
     }
 
     @Post('generate-api-key')
@@ -39,13 +28,11 @@ export class AdminsController {
     async generateApiKey(@Req() req: any) {
         Assert.defined(req.user, 'Authentication failed. req.user is null.')
 
-        const admin = await this.adminsService.generateApiKey(req.user.adminId)
-
-        return new AdminDto(admin)
+        return await this.adminsService.generateApiKey(req.user.adminId)
     }
 
     @Delete(':adminId')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(AdminAuthGuard, AdminExistsGuard)
     async removeAdmin(@Param('adminId') adminId: string, @Req() req: any) {
         Assert.defined(req.user, 'Authentication failed. req.user is null.')
 
