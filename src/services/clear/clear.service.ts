@@ -15,8 +15,6 @@ export class ClearService {
     ) {}
 
     async clearAdmin(adminId: string) {
-        await this.adminsService.validateAdminExists(adminId)
-
         try {
             await this._clearProjects(adminId)
 
@@ -27,8 +25,6 @@ export class ClearService {
     }
 
     async clearProject(projectId: string) {
-        await this.projectsService.validateProjectExists(projectId)
-
         try {
             await this._clearScenes(projectId)
 
@@ -39,8 +35,6 @@ export class ClearService {
     }
 
     async clearScene(sceneId: string) {
-        await this.scenesService.validateSceneExists(sceneId)
-
         try {
             await this._clearRooms(sceneId)
 
@@ -51,8 +45,6 @@ export class ClearService {
     }
 
     async clearRoom(roomId: string) {
-        await this.roomsService.validateRoomExists(roomId)
-
         try {
             await this.roomsService.removeRoom(roomId)
         } catch (error) {

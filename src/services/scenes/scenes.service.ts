@@ -20,6 +20,7 @@ export class ScenesService {
     async createScene(createSceneDto: CreateSceneDto) {
         const { projectId, infraProjectId, infraSceneId } = createSceneDto
 
+        // TODO
         await this.projectsService.validateProjectExists(projectId)
 
         if (await this.infraSceneExists(infraSceneId)) {
@@ -154,14 +155,6 @@ export class ScenesService {
         const scenes = await this.scenesRepository.findByProjectId(projectId)
 
         return scenes
-    }
-
-    async validateSceneExists(sceneId: string) {
-        const sceneExists = await this.sceneExists(sceneId)
-
-        if (!sceneExists) {
-            throw new NotFoundException(`Scene with ID "${sceneId}" not found.`)
-        }
     }
 
     async getSceneDto(sceneId: string) {
