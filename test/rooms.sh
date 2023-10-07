@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 . ./login.sh
 
 # createRoom
-POST /console/rooms \
+POST /rooms \
     -H "Authorization: Bearer $ACCESS_TOKEN" \
     -H "Content-Type: application/json" \
     -d '{
@@ -22,19 +22,19 @@ POST /console/rooms \
 ROOM_ID=$(echo $BODY | jq -r '.id')
 
 # findRooms
-GET "/console/rooms?sceneId=$SCENE_ID&$PAGE_OPT" \
+GET "/rooms?sceneId=$SCENE_ID&$PAGE_OPT" \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getRoom
-GET /console/rooms/$ROOM_ID \
+GET /rooms/$ROOM_ID \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getOption
-GET /console/rooms/option/$ROOM_ID?type=public
+GET /rooms/option/$ROOM_ID?type=public
 # GET /console/rooms/option/$OPTION_ID?type=public
 
 # updateRoom
-PATCH /console/rooms/$ROOM_ID \
+PATCH /rooms/$ROOM_ID \
     -H "Authorization: Bearer $ACCESS_TOKEN" \
     -H "Content-Type: application/json" \
     -d '{
@@ -43,6 +43,6 @@ PATCH /console/rooms/$ROOM_ID \
             "returnUrl": "https://naver.com"
         }'
 
-# removeRoom
-DELETE /console/rooms/$ROOM_ID \
-    -H "Authorization: Bearer $ACCESS_TOKEN"
+# # removeRoom
+# DELETE /rooms/$ROOM_ID \
+#     -H "Authorization: Bearer $ACCESS_TOKEN"

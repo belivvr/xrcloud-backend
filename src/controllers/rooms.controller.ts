@@ -11,16 +11,22 @@ import {
     UseGuards,
     forwardRef
 } from '@nestjs/common'
-import { SkipAuth } from 'src/common'
+import { PublicApi, SkipAuth } from 'src/common'
 import { ClearService } from 'src/services/clear/clear.service'
 import { ManageAssetService } from 'src/services/manage-asset/manage-asset.service'
-import { CreateRoomDto, OptionQueryDto, RoomsQueryDto, UpdateRoomDto } from 'src/services/rooms/dto'
+import {
+    CreateRoomDto,
+    OptionQueryDto,
+    RoomQueryDto,
+    RoomsQueryDto,
+    UpdateRoomDto
+} from 'src/services/rooms/dto'
 import { RoomsService } from 'src/services/rooms/rooms.service'
-import { AdminAuthGuard, ProjectExistsGuard, SceneExistsGuard } from './guards'
+import { HeaderAuthGuard, ProjectExistsGuard, SceneExistsGuard } from './guards'
 import { RoomExistsGuard } from './guards/room-exists.guard'
 
-@Controller('console/rooms')
-@UseGuards(AdminAuthGuard)
+@Controller('rooms')
+@UseGuards(HeaderAuthGuard)
 export class RoomsController {
     constructor(
         private readonly roomsService: RoomsService,
@@ -30,20 +36,23 @@ export class RoomsController {
     ) {}
 
     @Post()
+    @PublicApi()
     @UseGuards(ProjectExistsGuard, SceneExistsGuard)
     async createRoom(@Body() createRoomDto: CreateRoomDto) {
         return await this.manageAssetService.createRoom(createRoomDto)
     }
 
     @Get()
+    @PublicApi()
     async findRooms(@Query() queryDto: RoomsQueryDto) {
         return await this.roomsService.findRooms(queryDto)
     }
 
     @Get(':roomId')
+    @PublicApi()
     @UseGuards(RoomExistsGuard)
-    async getRoom(@Param('roomId') roomId: string) {
-        return await this.roomsService.getRoomDto(roomId)
+    async getRoom(@Param('roomId') roomId: string, @Query() queryDto: RoomQueryDto) {
+        return await this.roomsService.getRoomDto(roomId, queryDto.userId)
     }
 
     @Get('option/:optionId')
@@ -53,12 +62,14 @@ export class RoomsController {
     }
 
     @Patch(':roomId')
+    @PublicApi()
     @UseGuards(RoomExistsGuard)
     async updateRoom(@Param('roomId') roomId: string, @Body() updateRoomDto: UpdateRoomDto) {
         return await this.manageAssetService.updateRoom(roomId, updateRoomDto)
     }
 
     @Delete(':roomId')
+    @PublicApi()
     @UseGuards(RoomExistsGuard)
     async removeRoom(@Param('roomId') roomId: string) {
         return await this.clearService.clearRoom(roomId)

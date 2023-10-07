@@ -3,7 +3,7 @@ import { Assert } from 'src/common'
 import { AdminsService } from 'src/services/admins/admins.service'
 import { AdminDto } from 'src/services/admins/dto'
 import { AuthService } from 'src/services/auth/auth.service'
-import { AdminAuthGuard, LocalAuthGuard } from './guards'
+import { HeaderAuthGuard, LocalAuthGuard } from './guards'
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +18,7 @@ export class AuthController {
     }
 
     @Get('profile')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(HeaderAuthGuard)
     async getProfile(@Req() req: any) {
         Assert.defined(req.user, 'GetProfile failed. req.user is null.')
 

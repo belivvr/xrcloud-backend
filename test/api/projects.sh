@@ -7,5 +7,5 @@ cd "$(dirname "$0")"
 . ../@config.sh
 
 # getProject
-GET /api/projects/$PROJECT_ID \
-    -H "Authorization: Bearer $API_KEY"
+GET /projects/$PROJECT_ID \
+    -H "x-xrcloud-api-key: $API_KEY"

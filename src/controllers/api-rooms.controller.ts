@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common'
 import { ClearService } from 'src/services/clear/clear.service'
 import { ManageAssetService } from 'src/services/manage-asset/manage-asset.service'
-import { ApiRoomQueryDto, ApiRoomsQueryDto, CreateRoomDto, UpdateRoomDto } from 'src/services/rooms/dto'
+import { CreateRoomDto, RoomQueryDto, RoomsQueryDto, UpdateRoomDto } from 'src/services/rooms/dto'
 import { RoomsService } from 'src/services/rooms/rooms.service'
 import { ApiKeyAuthGuard, ProjectExistsGuard, SceneExistsGuard } from './guards'
 import { RoomExistsGuard } from './guards/room-exists.guard'
@@ -35,13 +35,13 @@ export class ApiRoomsController {
     }
 
     @Get()
-    async findRooms(@Query() queryDto: ApiRoomsQueryDto) {
+    async findRooms(@Query() queryDto: RoomsQueryDto) {
         return await this.roomsService.findRooms(queryDto)
     }
 
     @Get(':roomId')
     @UseGuards(RoomExistsGuard)
-    async getRoom(@Param('roomId') roomId: string, @Query() queryDto: ApiRoomQueryDto) {
+    async getRoom(@Param('roomId') roomId: string, @Query() queryDto: RoomQueryDto) {
         return await this.roomsService.getRoomDto(roomId, queryDto.userId)
     }
 

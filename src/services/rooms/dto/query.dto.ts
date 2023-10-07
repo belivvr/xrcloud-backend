@@ -5,19 +5,13 @@ export class RoomsQueryDto extends PaginationOptions {
     @IsNotEmpty()
     @IsUUID()
     sceneId: string
-}
-
-export class ApiRoomsQueryDto extends PaginationOptions {
-    @IsNotEmpty()
-    @IsUUID()
-    sceneId: string
 
     @IsOptional()
     @IsString()
     userId: string
 }
 
-export class ApiRoomQueryDto {
+export class RoomQueryDto {
     @IsOptional()
     @IsString()
     userId: string

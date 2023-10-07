@@ -1,12 +1,12 @@
 import { Controller, Delete, Get, Inject, Param, Patch, Query, UseGuards, forwardRef } from '@nestjs/common'
-import { SkipAuth } from 'src/common'
+import { PublicApi, SkipAuth } from 'src/common'
 import { ClearService } from 'src/services/clear/clear.service'
 import { ScenesQueryDto } from 'src/services/scenes/dto'
 import { ScenesService } from 'src/services/scenes/scenes.service'
-import { AdminAuthGuard, SceneExistsGuard } from './guards'
+import { HeaderAuthGuard, SceneExistsGuard } from './guards'
 
-@Controller('console/scenes')
-@UseGuards(AdminAuthGuard)
+@Controller('scenes')
+@UseGuards(HeaderAuthGuard)
 export class ScenesController {
     constructor(
         private readonly scenesService: ScenesService,
@@ -15,11 +15,13 @@ export class ScenesController {
     ) {}
 
     @Get()
+    @PublicApi()
     async findScenes(@Query() queryDto: ScenesQueryDto) {
         return await this.scenesService.findScenes(queryDto)
     }
 
     @Get(':sceneId')
+    @PublicApi()
     @UseGuards(SceneExistsGuard)
     async getScene(@Param('sceneId') sceneId: string) {
         return await this.scenesService.getSceneDto(sceneId)
@@ -38,6 +40,7 @@ export class ScenesController {
     }
 
     @Delete(':sceneId')
+    @PublicApi()
     @UseGuards(SceneExistsGuard)
     async removeScene(@Param('sceneId') sceneId: string) {
         return await this.clearService.clearScene(sceneId)

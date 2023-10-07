@@ -16,17 +16,17 @@ import {
     forwardRef
 } from '@nestjs/common'
 import { FileFieldsInterceptor } from '@nestjs/platform-express'
-import { Assert } from 'src/common'
+import { Assert, PublicApi } from 'src/common'
 import { FAVICON, LOGO } from 'src/common/constants'
 import { multerOptions } from 'src/middleware'
 import { ClearService } from 'src/services/clear/clear.service'
 import { UploadedFilesType } from 'src/services/manage-asset/types'
 import { CreateProjectDto, ProjectsQueryDto, UpdateProjectDto } from 'src/services/projects/dto'
 import { ProjectsService } from 'src/services/projects/projects.service'
-import { AdminAuthGuard, ProjectExistsGuard } from './guards'
+import { HeaderAuthGuard, ProjectExistsGuard } from './guards'
 
-@Controller('console/projects')
-@UseGuards(AdminAuthGuard)
+@Controller('projects')
+@UseGuards(HeaderAuthGuard)
 export class ProjectsController {
     constructor(
         private readonly projectsService: ProjectsService,
@@ -68,6 +68,7 @@ export class ProjectsController {
     }
 
     @Get(':projectId')
+    @PublicApi()
     @UseGuards(ProjectExistsGuard)
     async getProject(@Param('projectId') projectId: string) {
         return await this.projectsService.getProjectDto(projectId)

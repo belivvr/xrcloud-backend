@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { Assert, hashPassword, makeApikey, updateIntersection, validatePassword } from 'src/common'
 import { AdminsRepository } from './admins.repository'
 import { AdminDto, CreateAdminDto, UpdateAdminDto, UpdatePasswordDto } from './dto'

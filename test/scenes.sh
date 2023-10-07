@@ -8,16 +8,16 @@ cd "$(dirname "$0")"
 . ./login.sh
 
 # findScenes
-GET "/console/scenes?projectId=$PROJECT_ID&$PAGE_OPT" \
+GET "/scenes?projectId=$PROJECT_ID&$PAGE_OPT" \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getScene
-GET /console/scenes/$SCENE_ID \
+GET /scenes/$SCENE_ID \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getOption
-GET /console/scenes/option/$OPTION_ID
+GET /scenes/option/$OPTION_ID
 
-# removeScene
-DELETE /console/scenes/$SCENE_ID \
-    -H "Authorization: Bearer $ACCESS_TOKEN"
+# # removeScene
+# DELETE /scenes/$SCENE_ID \
+#     -H "Authorization: Bearer $ACCESS_TOKEN"

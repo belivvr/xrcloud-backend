@@ -3,7 +3,7 @@ import { Assert } from 'src/common'
 import { CreatePaymentDto } from 'src/services/payments/dto/create-payment.dto'
 import { PaymentsService } from 'src/services/payments/payments.service'
 import { TiersService } from 'src/services/tiers/tiers.service'
-import { AdminAuthGuard } from './guards'
+import { HeaderAuthGuard } from './guards'
 
 @Controller('payments')
 export class PaymentsController {
@@ -13,7 +13,7 @@ export class PaymentsController {
     ) {}
 
     @Post('payment')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(HeaderAuthGuard)
     async createPayment(@Body() createPaymentDto: CreatePaymentDto, @Req() req: any) {
         Assert.defined(req.user, 'Admin authentication failed. req.user is null.')
 

@@ -3,7 +3,7 @@ import { Assert } from 'src/common'
 import { AdminsService } from 'src/services/admins/admins.service'
 import { CreateAdminDto, UpdatePasswordDto } from 'src/services/admins/dto'
 import { ClearService } from 'src/services/clear/clear.service'
-import { AdminAuthGuard, AdminExistsGuard, UniqueEmailGuard } from './guards'
+import { HeaderAuthGuard, AdminExistsGuard, UniqueEmailGuard } from './guards'
 
 @Controller('admins')
 export class AdminsController {
@@ -16,7 +16,7 @@ export class AdminsController {
     }
 
     @Post('update-password')
-    @UseGuards(AdminAuthGuard, AdminExistsGuard)
+    @UseGuards(HeaderAuthGuard, AdminExistsGuard)
     async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto, @Req() req: any) {
         Assert.defined(req.user, 'Authentication failed. req.user is null.')
 
@@ -24,7 +24,7 @@ export class AdminsController {
     }
 
     @Post('generate-api-key')
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(HeaderAuthGuard)
     async generateApiKey(@Req() req: any) {
         Assert.defined(req.user, 'Authentication failed. req.user is null.')
 
@@ -32,7 +32,7 @@ export class AdminsController {
     }
 
     @Delete(':adminId')
-    @UseGuards(AdminAuthGuard, AdminExistsGuard)
+    @UseGuards(HeaderAuthGuard, AdminExistsGuard)
     async removeAdmin(@Param('adminId') adminId: string, @Req() req: any) {
         Assert.defined(req.user, 'Authentication failed. req.user is null.')
 

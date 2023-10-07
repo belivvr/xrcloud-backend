@@ -1,12 +1,14 @@
 #!/bin/bash
+set -e
+cd "$(dirname "$0")"
 
 #
 . ./@env-api.sh
 . ../@config.sh
 
 # createRoom
-POST /api/rooms \
-    -H "Authorization: Bearer $API_KEY" \
+POST /rooms \
+    -H "x-xrcloud-api-key: $API_KEY" \
     -H "Content-Type: application/json" \
     -d '{
             "projectId": "'$PROJECT_ID'",
@@ -19,16 +21,16 @@ POST /api/rooms \
 ROOM_ID=$(echo $BODY | jq -r '.id')
 
 # findRooms
-GET /api/rooms?sceneId=$SCENE_ID&userId=$USER_ID&$PAGE_OPT \
-    -H "Authorization: Bearer $API_KEY"
+GET "/rooms?sceneId=$SCENE_ID&userId=$USER_ID&$PAGE_OPT" \
+    -H "x-xrcloud-api-key: $API_KEY"
 
 # getRoom
-GET /api/rooms/$ROOM_ID?userId=$USER_ID \
-    -H "Authorization: Bearer $API_KEY"
+GET "/rooms/$ROOM_ID?userId=$USER_ID" \
+    -H "x-xrcloud-api-key: $API_KEY"
 
 # updateRoom
-PATCH /api/rooms/$ROOM_ID \
-    -H "Authorization: Bearer $API_KEY" \
+PATCH /rooms/$ROOM_ID \
+    -H "x-xrcloud-api-key: $API_KEY" \
     -H "Content-Type: application/json" \
     -d '{
             "name": "Updated Test Room Name",
@@ -36,6 +38,6 @@ PATCH /api/rooms/$ROOM_ID \
             "returnUrl": "https://naver.com"
         }'
 
-# removeRoom
-DELETE /api/rooms/$ROOM_ID \
-    -H "Authorization: Bearer $API_KEY"
+# # removeRoom
+# DELETE /rooms/$ROOM_ID \
+#     -H "x-xrcloud-api-key: $API_KEY"
