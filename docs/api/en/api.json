@@ -47,7 +47,7 @@
     ],
     
     "paths": {
-        "/api/projects/{project_id}": {
+        "/projects/{project_id}": {
             "get": {
                 "tags": [
                     "project"
@@ -83,7 +83,7 @@
                 }
             }
         },
-        "/api/scenes": {
+        "/scenes": {
             "get": {
                 "tags": [
                     "scene"
@@ -128,7 +128,7 @@
                 }
             }
         },
-        "/api/scenes/{scene_id}": {
+        "/scenes/{scene_id}": {
             "get": {
                 "tags": [
                     "scene"
@@ -191,7 +191,7 @@
                 }
             }
         },
-        "/api/rooms": {
+        "/rooms": {
             "post": {
                 "tags": [
                     "room"
@@ -283,7 +283,7 @@
                 }
             }
         },
-        "/api/rooms/{room_id}": {
+        "/rooms/{room_id}": {
             "get": {
                 "tags": [
                     "room"
@@ -398,12 +398,12 @@
         "parameters": {
             "ApiKey": {
                 "required": true,
-                "name": "authorization",
+                "name": "X-XRCLOUD-API-KEY",
                 "in": "header",
                 "schema": {
                     "type": "string"
                 },
-                "description": "The header must contain the following `Authorization: Bearer {ApiKey}`."
+                "description": "The header must contain the following `X-XRCLOUD-API-KEY: {ApiKey}`."
             },
             "PaginationTake": {
                 "required": false,
@@ -584,10 +584,15 @@
                         "description": "The date and time when the room was last updated.",
                         "example": "2023-07-12T09:27:41.600Z"
                     },
+                    "returnUrl": {
+                        "type": "url",
+                        "description": "The URL to return to when leaving the Room.",
+                        "example": "https://www.google.com/"
+                    },
                     "roomUrl": {
                         "type": "string",
                         "description": "The URL to enter the room.",
-                        "example": "https://xrcloud.app:4000/7UizZDL/example-room-name"
+                        "example": "https://xrcloud.app:4000/7UizZDL/example-room-name?public=35e75895-9db7-4eee-bae3-87e20ee156dc"
                     },
                     "thumbnailUrl": {
                         "type": "string",
@@ -625,7 +630,8 @@
                 "required": [
                     "projectId",
                     "sceneId",
-                    "name"
+                    "name",
+                    "returnUrl"
                 ],
                 "properties": {
                     "projectId": {
@@ -648,6 +654,11 @@
                         "description": "Maximum number of people who can enter a room.",
                         "maximum": 10,
                         "example": 10
+                    },
+                    "returnUrl": {
+                        "type": "url",
+                        "description": "The URL to return to when leaving the Room.",
+                        "example": "https://www.google.com/"
                     }
                 }
             },
@@ -688,6 +699,11 @@
                         "description": "Maximum number of people who can enter a room.",
                         "maximum": 10,
                         "example": 10
+                    },
+                    "returnUrl": {
+                        "type": "url",
+                        "description": "The URL to return to when leaving the Room.",
+                        "example": "https://www.google.com/"
                     }
                 }
             }

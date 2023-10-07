@@ -47,7 +47,7 @@
     ],
     
     "paths": {
-        "/api/projects/{project_id}": {
+        "/projects/{project_id}": {
             "get": {
                 "tags": [
                     "project"
@@ -83,7 +83,7 @@
                 }
             }
         },
-        "/api/scenes": {
+        "/scenes": {
             "get": {
                 "tags": [
                     "scene"
@@ -128,7 +128,7 @@
                 }
             }
         },
-        "/api/scenes/{scene_id}": {
+        "/scenes/{scene_id}": {
             "get": {
                 "tags": [
                     "scene"
@@ -191,7 +191,7 @@
                 }
             }
         },
-        "/api/rooms": {
+        "/rooms": {
             "post": {
                 "tags": [
                     "room"
@@ -283,7 +283,7 @@
                 }
             }
         },
-        "/api/rooms/{room_id}": {
+        "/rooms/{room_id}": {
             "get": {
                 "tags": [
                     "room"
@@ -398,12 +398,12 @@
         "parameters": {
             "ApiKey": {
                 "required": true,
-                "name": "authorization",
+                "name": "X-XRCLOUD-API-KEY",
                 "in": "header",
                 "schema": {
                     "type": "string"
                 },
-                "description": "헤더에 다음과 같은 형태로 인증 키를 포함시켜야합니다. `Authorization: Bearer {ApiKey}`."
+                "description": "헤더에 다음과 같은 형태로 인증 키를 포함시켜야합니다. `X-XRCLOUD-API-KEY: {ApiKey}`."
             },
             "PaginationTake": {
                 "required": false,
@@ -749,10 +749,15 @@
                         "description": "Room을 마지막으로 업데이트한 날짜와 시간입니다.",
                         "example": "2023-07-12T09:27:41.600Z"
                     },
+                    "returnUrl": {
+                        "type": "url",
+                        "description": "Room 퇴장 시 돌아갈 URL입니다.",
+                        "example": "https://www.google.com/"
+                    },
                     "roomUrl": {
                         "type": "string",
                         "description": "Room에 입장할 URL입니다.",
-                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?optId=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=35e75895-9db7-4eee-bae3-87e20ee156dc"
                     },
                     "thumbnailUrl": {
                         "type": "string",
@@ -814,7 +819,8 @@
                 "required": [
                     "projectId",
                     "sceneId",
-                    "name"
+                    "name",
+                    "returnUrl"
                 ],
                 "properties": {
                     "projectId": {
@@ -837,6 +843,11 @@
                         "description": "Room에 입장할 수 있는 최대 인원 수입니다.",
                         "maximum": 10,
                         "example": 10
+                    },
+                    "returnUrl": {
+                        "type": "url",
+                        "description": "Room 퇴장 시 돌아갈 URL입니다.",
+                        "example": "https://www.google.com/"
                     }
                 }
             },
@@ -877,6 +888,11 @@
                         "description": "Room에 입장할 수 있는 최대 인원 수입니다.",
                         "maximum": 10,
                         "example": 10
+                    },
+                    "returnUrl": {
+                        "type": "url",
+                        "description": "Room 퇴장 시 돌아갈 URL입니다.",
+                        "example": "https://www.google.com/"
                     }
                 }
             }
