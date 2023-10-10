@@ -12,9 +12,6 @@ import { ScenesModule } from 'src/services/scenes/scenes.module'
 import { SubscriptionsModule } from 'src/services/subscriptions/subscriptions.module'
 import { TiersModule } from 'src/services/tiers/tiers.module'
 import { AdminsController } from './admins.controller'
-import { ApiProjectsController } from './api-projects.controller'
-import { ApiRoomsController } from './api-rooms.controller'
-import { ApiScenesController } from './api-scenes.controller'
 import { AuthController } from './auth.controller'
 import { EventsController } from './events.controller'
 import { HealthController } from './health.controller'
@@ -43,11 +40,8 @@ const controllers = [
     AuthController,
     AdminsController,
     ProjectsController,
-    ApiProjectsController,
     ScenesController,
-    ApiScenesController,
     RoomsController,
-    ApiRoomsController,
     EventsController,
     HealthController,
     PaymentsController,

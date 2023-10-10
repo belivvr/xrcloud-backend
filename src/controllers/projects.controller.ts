@@ -25,7 +25,7 @@ import { CreateProjectDto, ProjectsQueryDto, UpdateProjectDto } from 'src/servic
 import { ProjectsService } from 'src/services/projects/projects.service'
 import { HeaderAuthGuard, ProjectExistsGuard } from './guards'
 
-@Controller('projects')
+@Controller('api/projects')
 @UseGuards(HeaderAuthGuard)
 export class ProjectsController {
     constructor(

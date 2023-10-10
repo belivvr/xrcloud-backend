@@ -47,7 +47,7 @@
     ],
     
     "paths": {
-        "/projects/{project_id}": {
+        "/api/projects/{project_id}": {
             "get": {
                 "tags": [
                     "project"
@@ -83,7 +83,7 @@
                 }
             }
         },
-        "/scenes": {
+        "/api/scenes": {
             "get": {
                 "tags": [
                     "scene"
@@ -128,7 +128,7 @@
                 }
             }
         },
-        "/scenes/{scene_id}": {
+        "/api/scenes/{scene_id}": {
             "get": {
                 "tags": [
                     "scene"
@@ -191,7 +191,7 @@
                 }
             }
         },
-        "/rooms": {
+        "/api/rooms": {
             "post": {
                 "tags": [
                     "room"
@@ -283,7 +283,7 @@
                 }
             }
         },
-        "/rooms/{room_id}": {
+        "/api/rooms/{room_id}": {
             "get": {
                 "tags": [
                     "room"

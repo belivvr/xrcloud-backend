@@ -19,26 +19,22 @@ export class HeaderAuthGuard extends AuthGuard('jwt') {
 
         const request = context.switchToHttp().getRequest()
 
-        const authHeader = request.header('Authorization')
-        const apiKeyHeader = request.header('X-XRCLOUD-API-KEY')
+        const authValue = request.header('Authorization')
+        const apiKeyValue = request.header('X-XRCLOUD-API-KEY')
 
-        if (!authHeader && !apiKeyHeader) {
-            throw new UnauthorizedException('Authorization header is required.')
-        }
-
-        if (authHeader) {
+        if (authValue) {
             return (await super.canActivate(context)) as boolean
-        } else if (apiKeyHeader) {
+        } else if (apiKeyValue) {
             const isPublicApi = this.reflector.get<boolean>(PUBLIC_API_KEY, context.getHandler())
 
             if (isPublicApi) {
-                return await this.apiKeyAuth(apiKeyHeader)
+                return await this.apiKeyAuth(apiKeyValue)
             } else {
                 throw new UnauthorizedException('API key is not allowed for this route.')
             }
         }
 
-        throw new UnauthorizedException('Invalid authorization method.')
+        throw new UnauthorizedException('Authorization header is required.')
     }
 
     private async apiKeyAuth(apiKey: string): Promise<boolean> {

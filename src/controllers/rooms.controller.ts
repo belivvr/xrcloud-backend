@@ -25,7 +25,7 @@ import { RoomsService } from 'src/services/rooms/rooms.service'
 import { HeaderAuthGuard, ProjectExistsGuard, SceneExistsGuard } from './guards'
 import { RoomExistsGuard } from './guards/room-exists.guard'
 
-@Controller('rooms')
+@Controller('api/rooms')
 @UseGuards(HeaderAuthGuard)
 export class RoomsController {
     constructor(

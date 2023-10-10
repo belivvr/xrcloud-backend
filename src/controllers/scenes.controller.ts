@@ -5,7 +5,7 @@ import { ScenesQueryDto } from 'src/services/scenes/dto'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { HeaderAuthGuard, SceneExistsGuard } from './guards'
 
-@Controller('scenes')
+@Controller('api/scenes')
 @UseGuards(HeaderAuthGuard)
 export class ScenesController {
     constructor(
