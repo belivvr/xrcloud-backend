@@ -24,6 +24,9 @@ commit 3feaa86
 0. 인증 수단 변경 'project key' -> 'api key'
  - project 하나에 하나를 보유할 수 있는 project key로의 인증에서 admin/api key로 인증 수단 변경
 
+1. end-point 분리
+ - console/api
+
 
 ## remove user
 
