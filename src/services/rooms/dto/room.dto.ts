@@ -1,4 +1,5 @@
 import { Room } from '../entities'
+import { RoomUrl } from '../types'
 
 export class RoomDto {
     id: string
@@ -9,7 +10,7 @@ export class RoomDto {
     updatedAt: Date
     isPublic: boolean
     returnUrl: string
-    roomUrl: string
+    roomUrl: RoomUrl
     thumbnailUrl: string
 
     constructor(room: Room) {

@@ -4,10 +4,10 @@ import { FAVICON, LOGO } from 'src/common/constants'
 import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
+import { OptionsService } from '../options/options.service'
 import { CreateRoomDto, OptionQueryDto, RoomDto, RoomsQueryDto, UpdateRoomDto } from './dto'
 import { Room } from './entities'
 import { RoomOption } from './interfaces'
-import { RoomConfigService } from './room-config.service'
 import { RoomsRepository } from './rooms.repository'
 import { RoomOptionType } from './types'
 
@@ -15,11 +15,11 @@ import { RoomOptionType } from './types'
 export class RoomsService {
     constructor(
         private readonly roomsRepository: RoomsRepository,
+        private readonly scenesService: ScenesService,
+        private readonly optionsService: OptionsService,
         private readonly reticulumService: ReticulumService,
         private readonly fileStorageService: FileStorageService,
-        private readonly cacheService: CacheService,
-        private readonly configService: RoomConfigService,
-        private readonly scenesService: ScenesService
+        private readonly cacheService: CacheService
     ) {}
 
     async createRoom(createRoomDto: CreateRoomDto) {
@@ -43,7 +43,6 @@ export class RoomsService {
             slug,
             infraRoomId: infraRoom.hub_id,
             thumbnailId: scene.thumbnailId,
-            // TODO: public
             isPublic: true,
             projectId,
             sceneId: sceneId
@@ -93,21 +92,13 @@ export class RoomsService {
             }
 
             case RoomOptionType.public: {
-                const roomId = optionId
+                const option = await this.optionsService.getOption(optionId)
 
-                await this.validateRoomExists(roomId)
+                if (!option) {
+                    throw new BadRequestException('Invalid optionId.')
+                }
 
-                const room = await this.getRoom(roomId)
-
-                const { faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
-
-                const option = {
-                    faviconUrl: `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`,
-                    logoUrl: `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`,
-                    returnUrl: room.returnUrl
-                } as RoomOption
-
-                return option
+                return option.values
             }
 
             default: {
@@ -188,47 +179,6 @@ export class RoomsService {
         return dto
     }
 
-    async getRoomUrl(roomId: string, userId?: string) {
-        const room = await this.getRoom(roomId)
-
-        const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
-
-        // TODO: public
-        const token = !userId
-            ? await this.reticulumService.getAdminToken(projectId)
-            : await this.reticulumService.getUserToken(projectId, userId)
-
-        // const token =
-        //     room.isPublic || !userId
-        //         ? await this.reticulumService.getAdminToken(projectId)
-        //         : await this.reticulumService.getUserToken(projectId, userId)
-
-        const { url, options } = this.reticulumService.getRoomInfo(room.infraRoomId, room.slug, token)
-
-        return `${url}?public=${room.id}`
-
-        // const extendedOptions = {
-        //     ...options,
-        //     faviconUrl: `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`,
-        //     logoUrl: `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`,
-        //     returnUrl: room.returnUrl
-        // } as RoomOption
-
-        // if (room.isPublic) {
-        //     return `${url}?public=${room.id}`
-        // }
-
-        // const optionId = generateUUID()
-
-        // const key = `option:${optionId}`
-
-        // const expireTime = convertTimeToSeconds(this.configService.roomOptionExpiration)
-
-        // await this.cacheService.set(key, JSON.stringify(extendedOptions), expireTime)
-
-        // return `${url}?private=${optionId}`
-    }
-
     async countRoomsByProjectIds(projectIds: string[]): Promise<number> {
         let totalRooms = 0
 
@@ -239,5 +189,44 @@ export class RoomsService {
         }
 
         return totalRooms
+    }
+
+    private async getRoomUrl(roomId: string, userId?: string) {
+        const room = await this.getRoom(roomId)
+
+        const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
+
+        const token = !userId
+            ? await this.reticulumService.getAdminToken(projectId)
+            : await this.reticulumService.getUserToken(projectId, userId)
+
+        const url = this.reticulumService.generateRoomUrl(room.infraRoomId, room.slug)
+
+        const faviconUrl = `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`
+        const logoUrl = `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
+
+        const roomOption: RoomOption = {
+            token,
+            faviconUrl,
+            logoUrl,
+            returnUrl: room.returnUrl
+        }
+
+        const { hostOptionId, guestOptionId } = await this.setRoomOption(roomId, roomOption)
+
+        return {
+            host: `${url}?public=${hostOptionId}`,
+            guest: `${url}?public=${guestOptionId}`
+        }
+    }
+
+    private async setRoomOption(roomId: string, roomOption: RoomOption) {
+        const options = await this.optionsService.findOptionByRoomId(roomId)
+
+        if (options.length === 0) {
+            return await this.optionsService.createOption(roomId, roomOption)
+        } else {
+            return await this.optionsService.updateOption(roomId, roomOption)
+        }
     }
 }

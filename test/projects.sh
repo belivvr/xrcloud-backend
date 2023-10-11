@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 . ./login.sh
 
 # create
-POST /projects \
+POST /api/projects \
     -H "Authorization: Bearer $ACCESS_TOKEN" \
     -H "Content-Type: multipart/form-data" \
     -F "favicon=@$FILE_PATH/favicon.ico" \
@@ -18,15 +18,15 @@ POST /projects \
 PROJECT_ID=$(echo $BODY | jq -r '.id')
 
 # findProjects
-GET /projects?$PAGE_OPT \
+GET /api/projects?$PAGE_OPT \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getProject
-GET /projects/$PROJECT_ID \
+GET /api/projects/$PROJECT_ID \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # updateProject
-PATCH /projects/$PROJECT_ID \
+PATCH /api/projects/$PROJECT_ID \
     -H "Authorization: Bearer $ACCESS_TOKEN" \
     -H "Content-Type: multipart/form-data" \
     -F "favicon=@$FILE_PATH/favicon.ico" \
@@ -34,5 +34,5 @@ PATCH /projects/$PROJECT_ID \
     -F "name=testName"
 
 # # removeProject
-# DELETE /projects/$PROJECT_ID \
+# DELETE /api/projects/$PROJECT_ID \
 #     -H "Authorization: Bearer $ACCESS_TOKEN"

@@ -140,13 +140,8 @@ export class ReticulumService {
         return response
     }
 
-    getRoomInfo(infraRoomId: string, slug: string, token: string) {
-        const returnValue = {
-            url: `${this.apiHost}/${infraRoomId}/${slug}`,
-            options: { token }
-        }
-
-        return returnValue
+    generateRoomUrl(infraRoomId: string, slug: string) {
+        return `${this.apiHost}/${infraRoomId}/${slug}`
     }
 
     async updateRoom(infraRoomId: string, roomData: RoomData) {
