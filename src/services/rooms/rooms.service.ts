@@ -9,7 +9,7 @@ import { CreateRoomDto, OptionQueryDto, RoomDto, RoomsQueryDto, UpdateRoomDto } 
 import { Room } from './entities'
 import { RoomOption } from './interfaces'
 import { RoomsRepository } from './rooms.repository'
-import { RoomOptionType } from './types'
+import { RoomEntryType } from './types'
 
 @Injectable()
 export class RoomsService {
@@ -79,7 +79,7 @@ export class RoomsService {
         const { type } = queryDto
 
         switch (type) {
-            case RoomOptionType.private: {
+            case RoomEntryType.private: {
                 const key = `option:${optionId}`
 
                 const option = await this.cacheService.get(key)
@@ -91,7 +91,7 @@ export class RoomsService {
                 return JSON.parse(option)
             }
 
-            case RoomOptionType.public: {
+            case RoomEntryType.public: {
                 const option = await this.optionsService.getOption(optionId)
 
                 if (!option) {

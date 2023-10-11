@@ -1,5 +1,4 @@
-// TODO: 변경
-export enum RoomOptionType {
+export enum RoomEntryType {
     private = 'private',
     public = 'public'
 }

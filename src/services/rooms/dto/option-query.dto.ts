@@ -1,8 +1,8 @@
 import { IsEnum, IsNotEmpty } from 'class-validator'
-import { RoomOptionType } from '../types'
+import { RoomEntryType } from '../types'
 
 export class OptionQueryDto {
     @IsNotEmpty()
-    @IsEnum(RoomOptionType)
+    @IsEnum(RoomEntryType)
     type: string
 }
