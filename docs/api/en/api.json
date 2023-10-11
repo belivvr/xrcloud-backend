@@ -590,9 +590,20 @@
                         "example": "https://www.google.com/"
                     },
                     "roomUrl": {
-                        "type": "string",
+                        "type": "object",
                         "description": "The URL to enter the room.",
-                        "example": "https://xrcloud.app:4000/7UizZDL/example-room-name?public=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                        "properties": {
+                            "host": {
+                                "type": "string",
+                                "description": "Host's room url.",
+                                "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                            },
+                            "guest": {
+                                "type": "string",
+                                "description": "Guest's room url.",
+                                "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=a0166051-1eee-44bb-922a-c988d517a0e1"
+                            }
+                        }
                     },
                     "thumbnailUrl": {
                         "type": "string",

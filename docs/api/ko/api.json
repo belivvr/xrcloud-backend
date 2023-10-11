@@ -755,9 +755,20 @@
                         "example": "https://www.google.com/"
                     },
                     "roomUrl": {
-                        "type": "string",
+                        "type": "object",
                         "description": "Room에 입장할 URL입니다.",
-                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                        "properties": {
+                            "host": {
+                                "type": "string",
+                                "description": "호스트의 Room URL입니다.",
+                                "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                            },
+                            "guest": {
+                                "type": "string",
+                                "description": "게스트의 Room URL입니다.",
+                                "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=a0166051-1eee-44bb-922a-c988d517a0e1"
+                            }
+                        }
                     },
                     "thumbnailUrl": {
                         "type": "string",
