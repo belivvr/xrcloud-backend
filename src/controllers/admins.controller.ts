@@ -3,16 +3,21 @@ import { Assert } from 'src/common'
 import { AdminsService } from 'src/services/admins/admins.service'
 import { CreateAdminDto, UpdatePasswordDto } from 'src/services/admins/dto'
 import { ClearService } from 'src/services/clear/clear.service'
-import { HeaderAuthGuard, AdminExistsGuard, UniqueEmailGuard } from './guards'
+import { RegisterService } from 'src/services/register/register.service'
+import { AdminExistsGuard, HeaderAuthGuard, UniqueEmailGuard } from './guards'
 
 @Controller('admins')
 export class AdminsController {
-    constructor(private readonly adminsService: AdminsService, private readonly clearService: ClearService) {}
+    constructor(
+        private readonly adminsService: AdminsService,
+        private readonly registerService: RegisterService,
+        private readonly clearService: ClearService
+    ) {}
 
     @Post()
     @UseGuards(UniqueEmailGuard)
     async createAdmin(@Body() createAdminDto: CreateAdminDto) {
-        return await this.adminsService.createAdmin(createAdminDto)
+        return await this.registerService.createAdmin(createAdminDto)
     }
 
     @Post('update-password')

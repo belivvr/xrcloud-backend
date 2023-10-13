@@ -7,6 +7,7 @@ import { HealthModule } from 'src/services/health/health.module'
 import { ManageAssetModule } from 'src/services/manage-asset/manage-asset.module'
 import { PaymentsModule } from 'src/services/payments/payments.module'
 import { ProjectsModule } from 'src/services/projects/projects.module'
+import { RegisterModule } from 'src/services/register/register.module'
 import { RoomsModule } from 'src/services/rooms/rooms.module'
 import { ScenesModule } from 'src/services/scenes/scenes.module'
 import { SubscriptionsModule } from 'src/services/subscriptions/subscriptions.module'
@@ -33,7 +34,8 @@ const imports = [
     HealthModule,
     TiersModule,
     PaymentsModule,
-    SubscriptionsModule
+    SubscriptionsModule,
+    RegisterModule
 ]
 
 const controllers = [

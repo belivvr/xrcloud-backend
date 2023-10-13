@@ -4,6 +4,7 @@ import { RoomDto } from '../rooms/dto'
 import { ScenesService } from '../scenes/scenes.service'
 import { TiersService } from '../tiers/tiers.service'
 import { SubscriptionsRepository } from './subscriptions.repository'
+import { SubscriptionStatus } from './types'
 
 @Injectable()
 export class SubscriptionsService {
@@ -14,7 +15,25 @@ export class SubscriptionsService {
         private readonly scenesService: ScenesService
     ) {}
 
-    async createSubscription() {}
+    async createSubscription(adminId: string, tierId?: string) {
+        if (!tierId) {
+            tierId = (await this.tiersService.getDefaultTier()).id
+        }
+
+        const startAt = new Date()
+        const endAt = new Date(startAt)
+        endAt.setFullYear(endAt.getFullYear() + 1)
+
+        const createSubscription = {
+            status: SubscriptionStatus.active,
+            startAt,
+            endAt,
+            adminId,
+            tierId
+        }
+
+        await this.subscriptionsRepository.create(createSubscription)
+    }
 
     async updateSubscription() {}
 

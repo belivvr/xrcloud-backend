@@ -24,14 +24,14 @@ POST /admins/update-password \
     -H "Authorization: Bearer $ACCESS_TOKEN" \
     -H "Content-Type: application/json" \
     -d '{
-            "oldPassword": "123123",
-            "newPassword": "112233"
+            "oldPassword": "'$PASSWORD'",
+            "newPassword": "123123a!"
         }'
 
 # generateApiKey
 POST /admins/generate-api-key \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
-# removeAdmin
-DELETE /admins/$ADMIN_ID \
-    -H "Authorization: Bearer $ACCESS_TOKEN"
+# # removeAdmin
+# DELETE /admins/$ADMIN_ID \
+#     -H "Authorization: Bearer $ACCESS_TOKEN"

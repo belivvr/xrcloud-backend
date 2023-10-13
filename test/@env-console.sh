@@ -1,7 +1,7 @@
 #!/bin/bash
 
-EMAIL='zizi2717@belivvr.com'
-PASSWORD='123123'
+EMAIL='zizi@belivvr.com'
+PASSWORD='123123a!'
 
 FILE_PATH='./images'
 PAGE_OPT='take=100&skip=0'
