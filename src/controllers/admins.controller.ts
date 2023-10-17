@@ -20,7 +20,7 @@ export class AdminsController {
         return await this.registerService.createAdmin(createAdminDto)
     }
 
-    @Post('update-password')
+    @Post(':adminId/update-password')
     @UseGuards(HeaderAuthGuard, AdminExistsGuard)
     async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto, @Req() req: any) {
         Assert.defined(req.user, 'Authentication failed. req.user is null.')
@@ -28,8 +28,8 @@ export class AdminsController {
         return await this.adminsService.updatePassword(updatePasswordDto, req.user.adminId)
     }
 
-    @Post('generate-api-key')
-    @UseGuards(HeaderAuthGuard)
+    @Post(':adminId/generate-api-key')
+    @UseGuards(HeaderAuthGuard, AdminExistsGuard)
     async generateApiKey(@Req() req: any) {
         Assert.defined(req.user, 'Authentication failed. req.user is null.')
 

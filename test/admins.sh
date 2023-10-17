@@ -20,7 +20,7 @@ ADMIN_ID=$(echo $BODY | jq -r '.id')
 . ./login.sh
 
 # updatePassword
-POST /admins/update-password \
+POST /admins/$ADMIN_ID/update-password \
     -H "Authorization: Bearer $ACCESS_TOKEN" \
     -H "Content-Type: application/json" \
     -d '{
@@ -29,9 +29,9 @@ POST /admins/update-password \
         }'
 
 # generateApiKey
-POST /admins/generate-api-key \
+POST /admins/$ADMIN_ID/generate-api-key \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
-# # removeAdmin
-# DELETE /admins/$ADMIN_ID \
-#     -H "Authorization: Bearer $ACCESS_TOKEN"
+# removeAdmin
+DELETE /admins/$ADMIN_ID \
+    -H "Authorization: Bearer $ACCESS_TOKEN"
