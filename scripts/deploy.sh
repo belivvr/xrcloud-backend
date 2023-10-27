@@ -17,9 +17,7 @@ docker rm backend || true
 docker build -t "backend-$i" . || exit 1
 
 #
-docker network create \
-    --subnet=172.18.0.0/16 \
-    xrcloud || true
+docker network create xrcloud || true
 
 #
 docker run --restart always -d \
@@ -27,7 +25,7 @@ docker run --restart always -d \
     --name backend \
     --network xrcloud \
     --log-opt max-size=10m \
-    --log-opt max-file=10 \
+    --log-opt max-file=3 \
     -v ~/workspace/xrcloud-backend/.env:/app/.env \
     -v ~/workspace/logs/backend:/app/logs \
     "backend-$i" || exit 1
