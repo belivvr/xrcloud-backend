@@ -14,13 +14,11 @@ import { CacheService, ConfigException, SafeConfigService } from 'src/common'
                 if (type === 'redis') {
                     const host = config.getString('CACHE_HOST')
                     const port = config.getNumber('CACHE_PORT')
-                    const password = config.getString('REDIS_PASSWORD')
 
                     return {
                         store: redisStore,
                         host,
                         port,
-                        password,
                         ttl: 0
                     }
                 } else if (type === 'memory') {
