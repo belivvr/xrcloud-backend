@@ -7,9 +7,6 @@ cd ~/workspace/xrcloud-backend
 git pull origin main || exit 1
 
 #
-cp ~/workspace/envs/.env ./.env || exit 1
-
-#
 docker stop backend || true
 docker rm backend || true
 
