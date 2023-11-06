@@ -1,6 +1,7 @@
 #!/bin/bash
 
 env=$1
+script_dir=$(dirname $(realpath $0))
 
 #
 container_exists=$(docker ps -a -q -f name=cron)
@@ -18,7 +19,7 @@ if [ ! -z "$image_exists" ]; then
 fi
 
 #
-dockerfile="./cron/Dockerfile.$env"
+dockerfile="$script_dir/cron/Dockerfile.$env"
 
 if [ ! -f $dockerfile ]; then
     echo "Error: $dockerfile does not exist."
