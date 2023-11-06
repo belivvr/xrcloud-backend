@@ -12,10 +12,10 @@ if [ ! -z "$container_exists" ]; then
 fi
 
 #
-image_exists=$(docker images -q cron)
+image_exists=$(docker images -q cron:$env)
 
 if [ ! -z "$image_exists" ]; then
-    docker rmi cron
+    docker rmi cron:$env
 fi
 
 #
@@ -27,7 +27,7 @@ if [ ! -f $dockerfile ]; then
 fi
 
 #
-docker build -t cron -f $dockerfile .
+docker build -t cron:$env -f $dockerfile .
 
 docker network create xrcloud || true
 
