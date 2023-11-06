@@ -36,6 +36,7 @@ docker run --restart always -d \
     --network xrcloud \
     --log-opt max-size=10m \
     --log-opt max-file=3 \
+    -v $script_dir/cron/.env:/app/.env \
     cron:$env
 
 #
