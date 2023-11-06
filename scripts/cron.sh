@@ -11,14 +11,14 @@ if [ ! -z "$container_exists" ]; then
 fi
 
 #
-image_exists=$(docker images -q cron:$env)
+image_exists=$(docker images -q cron)
 
 if [ ! -z "$image_exists" ]; then
-    docker rmi cron:$env
+    docker rmi cron
 fi
 
 #
-dockerfile="Dockerfile.$env"
+dockerfile="./cron/Dockerfile.$env"
 
 if [ ! -f $dockerfile ]; then
     echo "Error: $dockerfile does not exist."
@@ -26,19 +26,15 @@ if [ ! -f $dockerfile ]; then
 fi
 
 #
-docker build -t cron:$env -f $dockerfile .
+docker build -t cron -f $dockerfile .
 
-docker network create \
-    --subnet=172.18.0.0/16 \
-    xrcloud || true
+docker network create xrcloud || true
 
 docker run --restart always -d \
     --name cron \
     --network xrcloud \
     --log-opt max-size=10m \
     --log-opt max-file=3 \
-    -v ./cron:/etc/cron \
-    -v ~/var/log/cron:/var/log \
     cron:$env
 
 #
