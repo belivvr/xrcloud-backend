@@ -15,7 +15,7 @@ COPY . .
 RUN npm i node-fetch@2
 RUN npm install dotenv
 
-RUN (echo "* * * * * node /app/health.js >> /var/log/cron.log 2>&1" && \
+RUN (echo "0 0 * * * node /app/health.js >> /var/log/cron.log 2>&1" && \
     echo "0 1 * * 1 node /app/statistics.js >> /var/log/cron.log 2>&1") | crontab -
 
 CMD [ "crond", "-f" ]

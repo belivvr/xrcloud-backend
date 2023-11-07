@@ -13,10 +13,6 @@ const runHealthCheck = async () => {
         
         const dbStatus = healthResponseData.database.status
         const diskUsage = healthResponseData.resources.disk
-
-        if (dbStatus) {
-            return
-        }
         
         const chatMessage = {
             cardsV2: [

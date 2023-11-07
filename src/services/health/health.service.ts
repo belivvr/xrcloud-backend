@@ -17,12 +17,14 @@ export class HealthService {
     async getHealthStatus() {
         const dbStatus = await this.checkTableAndSelectRow()
         const diskUsage = this.checkDiskUsage()
+        const cpuUsage = await this.checkCpuUsage()
 
         return {
             database: {
                 status: dbStatus
             },
             resources: {
+                cpu: cpuUsage,
                 disk: diskUsage
             }
         }
@@ -62,5 +64,38 @@ export class HealthService {
         const memoryUsage = ((totalMemory - freeMemory) / totalMemory) * 100
 
         return `${Math.floor(memoryUsage)}%`
+    }
+
+    private async checkCpuUsage(): Promise<string> {
+        const getAverageLoad = () => {
+            const cpus = os.cpus()
+
+            let totalIdle = 0, totalTick = 0
+
+            cpus.forEach((core) => {
+                const times: { [key: string]: number } = core.times as { [key: string]: number }
+
+                let total = 0
+
+                for (const type in times) {
+                    total += times[type]
+                }
+            })
+
+            return { idle: totalIdle / cpus.length, total: totalTick / cpus.length }
+        }
+
+        const start = getAverageLoad()
+
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
+        const end = getAverageLoad()
+
+        const idleDifference = end.idle - start.idle
+        const totalDifference = end.total - start.total
+
+        const percentageCpu = 100 - ~~(100 * idleDifference / totalDifference)
+
+        return `${percentageCpu}%`
     }
 }

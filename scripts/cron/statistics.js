@@ -49,9 +49,9 @@ const runStatisticsCheck = async () => {
             ],
         }
 
-        const webhookUrl = process.env.GOOGLE_CHAT_STATISTICS_URL
+        const webhookUrl = process.env.GOOGLE_CHAT_MONITORING_URL
         const webhookKey = process.env.GOOGLE_CHAT_WEBHOOK_KEY
-        const webhookToken = process.env.GOOGLE_CHAT_STATISTICS_TOKEN
+        const webhookToken = process.env.GOOGLE_CHAT_MONITORING_TOKEN
 
         const fullWebhookUrl = `${webhookUrl}?key=${webhookKey}&token=${webhookToken}`
 
