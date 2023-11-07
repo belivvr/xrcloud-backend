@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common'
 import { ScenesService } from 'src/services/scenes/scenes.service'
+import { CnuEventService } from '../cnu-event'
 import { SpokeEventDto, SpokeEventName } from './dto'
 import { CreateSceneData, UpdateSceneData } from './interfaces'
 
 @Injectable()
 export class EventsService {
-    constructor(private readonly scenesService: ScenesService) {}
+    constructor(
+        private readonly scenesService: ScenesService,
+        private readonly cnuEventService: CnuEventService
+    ) {}
 
     async createEvent(spokeEventDto: SpokeEventDto) {
         const eventName = spokeEventDto.eventName
@@ -45,7 +49,7 @@ export class EventsService {
         const extraObj: Record<string, string> = {}
 
         if (extraArgs) {
-            const extraParts = extraArgs.split(',')
+            const extraParts = extraArgs.split('&')
 
             for (const part of extraParts) {
                 const [key, value] = part.split(':')
@@ -61,7 +65,17 @@ export class EventsService {
             infraSceneId: infraSceneId
         }
 
-        await this.scenesService.createScene(createData)
+        const scene = await this.scenesService.createScene(createData)
+
+        if (extraObj.userId) {
+            const createCnuEventData = {
+                userId: extraObj.userId,
+                projectId: extraObj.projectId,
+                sceneId: scene.id
+            }
+
+            await this.cnuEventService.createCnuEvent(createCnuEventData)
+        }
     }
 
     async updateScene(updateSceneData: UpdateSceneData) {

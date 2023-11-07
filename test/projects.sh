@@ -13,7 +13,8 @@ POST /api/projects \
     -H "Content-Type: multipart/form-data" \
     -F "favicon=@$FILE_PATH/favicon.ico" \
     -F "logo=@$FILE_PATH/logo.png" \
-    -F "name=testName"
+    -F "name=testName" \
+    -F "label=cnu"
 
 PROJECT_ID=$(echo $BODY | jq -r '.id')
 

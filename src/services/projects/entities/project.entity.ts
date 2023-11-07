@@ -6,6 +6,9 @@ export class Project extends AggregateRoot {
     @Column()
     name: string
 
+    @Column({ nullable: true })
+    label: string
+
     @Column()
     faviconId: string
 

@@ -191,14 +191,14 @@ export class RoomsService {
         return totalRooms
     }
 
-    private async getRoomUrl(roomId: string, userId?: string) {
+    async getRoomUrl(roomId: string, userId?: string) {
         const room = await this.getRoom(roomId)
 
         const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
 
-        const token = !userId
-            ? await this.reticulumService.getAdminToken(projectId)
-            : await this.reticulumService.getUserToken(projectId, userId)
+        const token = userId
+            ? await this.reticulumService.getUserToken(projectId, userId)
+            : await this.reticulumService.getAdminToken(projectId)
 
         const url = this.reticulumService.generateRoomUrl(room.infraRoomId, room.slug)
 

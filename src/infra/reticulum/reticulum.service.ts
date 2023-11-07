@@ -59,10 +59,16 @@ export class ReticulumService {
             throw new InternalServerErrorException('Reticulum: Token is required')
         }
 
-        const callbackUrl = `${this.host}/outdoor/event`
+        const callbackUrl = `${this.host}/events/spoke`
         const encodedCallbackUrl = encodeURIComponent(callbackUrl)
 
-        const extra = `projectId:${extraArgs.projectId}`
+        const extraParts = [`projectId:${extraArgs.projectId}`]
+
+        if (extraArgs.userId) {
+            extraParts.push(`userId:${extraArgs.userId}`)
+        }
+
+        const extra = extraParts.join('&')
 
         const returnValue = {
             url: `${this.apiHost}/spoke/projects/new`,
@@ -99,7 +105,7 @@ export class ReticulumService {
             throw new InternalServerErrorException('Reticulum: Token is required')
         }
 
-        const callbackUrl = `${this.host}/outdoor/event`
+        const callbackUrl = `${this.host}/events/spoke`
         const encodedCallbackUrl = encodeURIComponent(callbackUrl)
 
         const returnValue = {

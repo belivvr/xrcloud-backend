@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { BaseRepository, PaginationResult } from 'src/common'
@@ -27,5 +28,12 @@ export class ProjectsRepository extends BaseRepository<Project> {
             .where('entity.adminId = :adminId', { adminId })
 
         return qb.getMany()
+    }
+
+    async findByLabel(label: string): Promise<Project | null> {
+        const qb = this.createQueryBuilder()
+            .where('entity.label = :label', { label })
+
+        return qb.getOne()
     }
 }

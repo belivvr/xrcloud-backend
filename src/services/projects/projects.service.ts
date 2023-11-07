@@ -125,6 +125,12 @@ export class ProjectsService {
         return projects
     }
 
+    async findProjectByLabel(label: string) {
+        const projects = await this.projectsRepository.findByLabel(label)
+
+        return projects
+    }
+
     async projectExists(projectId: string): Promise<boolean> {
         return this.projectsRepository.exist(projectId)
     }
