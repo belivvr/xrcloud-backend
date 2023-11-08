@@ -13,13 +13,14 @@ const runHealthCheck = async () => {
         
         const dbStatus = healthResponseData.database.status
         const diskUsage = healthResponseData.resources.disk
+        const cpuUsage = healthResponseData.resources.cpu
         
         const chatMessage = {
             cardsV2: [
                 {
                     card: {
                         header: {
-                            title: `Health Check ${env}`,
+                            title: `Health Check: ${env}`,
                         },
                         sections: [
                             {
@@ -42,6 +43,12 @@ const runHealthCheck = async () => {
                                             text: `${diskUsage}`,
                                         },
                                     },
+                                    {
+                                        decoratedText: {
+                                            topLabel: 'CPU Usage',
+                                            text: `${cpuUsage}`,
+                                        },
+                                    }
                                 ],
                             },
                         ],
@@ -69,7 +76,6 @@ const runHealthCheck = async () => {
         } else {
             await fs.promises.appendFile('/var/log/health.log', `${new Date()} - Failed to send POST request: ${webhookResponse.status}\n`)
         }
-
     } catch (error) {
         await fs.promises.appendFile('/var/log/health.log', `${new Date()} - Error: ${error}\n`)
     }

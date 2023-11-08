@@ -27,7 +27,7 @@ if [ ! -f $dockerfile ]; then
 fi
 
 #
-docker build -t cron:$env -f $dockerfile .
+docker build -t cron:$env -f $dockerfile "$script_dir/cron"
 
 docker network create xrcloud || true
 

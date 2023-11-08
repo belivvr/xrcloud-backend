@@ -70,7 +70,8 @@ export class HealthService {
         const getAverageLoad = () => {
             const cpus = os.cpus()
 
-            let totalIdle = 0, totalTick = 0
+            let totalIdle = 0
+            let totalTick = 0
 
             cpus.forEach((core) => {
                 const times: { [key: string]: number } = core.times as { [key: string]: number }
@@ -79,7 +80,12 @@ export class HealthService {
 
                 for (const type in times) {
                     total += times[type]
+                    if (type === 'idle') {
+                        totalIdle += times[type]
+                    }
                 }
+
+                totalTick += total
             })
 
             return { idle: totalIdle / cpus.length, total: totalTick / cpus.length }
@@ -87,14 +93,14 @@ export class HealthService {
 
         const start = getAverageLoad()
 
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        await new Promise((resolve) => setTimeout(resolve, 1000))
 
         const end = getAverageLoad()
 
         const idleDifference = end.idle - start.idle
         const totalDifference = end.total - start.total
 
-        const percentageCpu = 100 - ~~(100 * idleDifference / totalDifference)
+        const percentageCpu = 100 - ~~((100 * idleDifference) / totalDifference)
 
         return `${percentageCpu}%`
     }
