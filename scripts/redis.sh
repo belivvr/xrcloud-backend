@@ -17,9 +17,7 @@ docker run --restart always -d \
     --network xrcloud \
     --log-opt max-size=10m \
     --log-opt max-file=3 \
-    -p 6379:6379 \
-    -v ~/etc/redis/redis.conf:/etc/redis/redis.conf \
-    redis:7.0 redis-server /etc/redis/redis.conf
+    redis:7.0 redis-server
 
 #
 echo "Docker container redis is up and running."
