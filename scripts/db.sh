@@ -23,12 +23,22 @@ if [ "$ENV" = "prod" ]; then
         -e POSTGRES_USER=$TYPEORM_USERNAME \
         -e POSTGRES_PASSWORD=$TYPEORM_PASSWORD \
         -e POSTGRES_INITDB_ARGS=--encoding=UTF-8 \
-        -p 5432:5432 \
         -v /data/postgres/db-data:/var/lib/postgresql/data \
         --network xrcloud \
         postgres:13.11
 
     sleep 5
+else
+    docker run --restart always --name postgres -d \
+        --log-opt max-size=10m \
+        --log-opt max-file=3 \
+        -e POSTGRES_DB=$TYPEORM_DATABASE \
+        -e POSTGRES_USER=$TYPEORM_USERNAME \
+        -e POSTGRES_PASSWORD=$TYPEORM_PASSWORD \
+        -e POSTGRES_INITDB_ARGS=--encoding=UTF-8 \
+        -v /data/postgres/db-data:/var/lib/postgresql/data \
+        --network xrcloud \
+        postgres:13.11
 fi
 
 container_name="postgres"
