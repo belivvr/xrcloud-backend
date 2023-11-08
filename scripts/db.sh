@@ -1,9 +1,11 @@
 #!/bin/sh
-set -ex
 
-cd "$(dirname "$0")"
+HOME_DIR="/home/workspace"
+PROJECT_DIR=$(dirname $(dirname $(realpath $0)))
+PROJECT_NAME=$(basename "$PROJECT_DIR")
+ENV_FILE="$PROJECT_DIR/.env"
 
-source ../.env
+. $ENV_FILE
 
 # sudo apt-get install nfs-common
 
@@ -49,7 +51,7 @@ while ! docker logs "$container_name" 2>&1 | grep -q "$log_message"; do
 done
 
 docker exec postgres psql -U $TYPEORM_USERNAME -c "CREATE DATABASE $TYPEORM_DATABASE;"
-docker exec postgres psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';"
-docker exec postgres psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "ALTER USER $DB_USER WITH SUPERUSER;"
-docker exec postgres psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "GRANT ALL PRIVILEGES ON DATABASE $TYPEORM_DATABASE TO $DB_USER;"
-docker exec postgres psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "GRANT CREATE ON DATABASE $TYPEORM_DATABASE TO $DB_USER;"
+docker exec postgres psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "CREATE USER $TYPEORM_USERNAME WITH PASSWORD '$TYPEORM_PASSWORD';"
+docker exec postgres psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "ALTER USER $TYPEORM_USERNAME WITH SUPERUSER;"
+docker exec postgres psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "GRANT ALL PRIVILEGES ON DATABASE $TYPEORM_DATABASE TO $TYPEORM_USERNAME;"
+docker exec postgres psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "GRANT CREATE ON DATABASE $TYPEORM_DATABASE TO $TYPEORM_USERNAME;"

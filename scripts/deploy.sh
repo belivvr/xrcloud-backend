@@ -23,8 +23,8 @@ docker run --restart always -d \
     --network xrcloud \
     --log-opt max-size=10m \
     --log-opt max-file=3 \
-    -v ~/workspace/xrcloud-backend/.env:/app/.env \
-    -v ~/workspace/logs/backend:/app/logs \
+    -v /home/jdm/workspace/xrcloud-backend/.env:/app/.env \
+    -v /home/jdm/workspace/logs/backend:/app/logs \
     "backend-$i" || exit 1
 
 #
