@@ -20,3 +20,9 @@ export class RoomQueryDto {
     @IsString()
     userId: string
 }
+
+export class RoomAccessQueryDto {
+    @IsOptional()
+    @IsString()
+    userId: string
+}

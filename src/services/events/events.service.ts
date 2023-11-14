@@ -1,17 +1,23 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { CnuEventService } from '../cnu-event'
-import { SpokeEventDto, SpokeEventName } from './dto'
-import { CreateSceneData, UpdateSceneData } from './interfaces'
+import { RoomsService } from '../rooms/rooms.service'
+import { RoomAccessType } from '../rooms/types'
+import { HubEventDto, HubEventName, SpokeEventDto, SpokeEventName } from './dto'
+import { CreateSceneData, ExitRoomData, JoinRoomData, UpdateSceneData } from './interfaces'
 
 @Injectable()
 export class EventsService {
     constructor(
         private readonly scenesService: ScenesService,
+        private readonly roomsService: RoomsService,
         private readonly cnuEventService: CnuEventService
     ) {}
 
-    async createEvent(spokeEventDto: SpokeEventDto) {
+    /*
+     * Spoke
+     */
+    async handleSpokeEvent(spokeEventDto: SpokeEventDto) {
         const eventName = spokeEventDto.eventName
 
         switch (eventName) {
@@ -86,5 +92,86 @@ export class EventsService {
         }
 
         await this.scenesService.updateScene(updateData)
+    }
+
+    /*
+     * Hub
+     */    
+    async handleHubEvent(hubEventDto: HubEventDto) {
+        const eventName = hubEventDto.type
+
+        switch (eventName) {
+            case HubEventName.ROOM_JOIN: {
+                const { roomId, userId, sessionId, eventTime } = hubEventDto
+
+                const joinRoomData: JoinRoomData = {
+                    roomId,
+                    userId,
+                    sessionId,
+                    eventTime
+                }
+
+                await this.joinRoom(joinRoomData)
+
+                break
+            }
+
+            case HubEventName.ROOM_EXIT: {
+                const { sessionId, eventTime } = hubEventDto
+
+                const exitRoomData: ExitRoomData = {
+                    sessionId,
+                    eventTime
+                }
+
+                await this.exitRoom(exitRoomData)
+
+                break
+            }
+        }
+    }
+
+    async joinRoom(joinRoomData: JoinRoomData) {
+        const { roomId: infraRoomId, userId: infraUserId, sessionId, eventTime } = joinRoomData
+
+        const room = await this.roomsService.findRoomByInfraRoomId(infraRoomId)
+
+        if (!room) {
+            Logger.error('Join room event: Failed to find room')
+
+            return
+        }
+
+        const createRoomAccess = {
+            type: RoomAccessType.Join,
+            sessionId: sessionId,
+            createdAt: new Date(eventTime),
+            roomId: room.id,
+            infraUserId: infraUserId
+        }
+
+        await this.roomsService.createRoomAccess(createRoomAccess)
+    }
+
+    async exitRoom(exitRoomData: ExitRoomData) {
+        const { sessionId, eventTime } = exitRoomData
+
+        const roomAccess = await this.roomsService.findRoomAccessBySessionId(sessionId)
+
+        if (!roomAccess) {
+            Logger.error('Exit room event: Failed to find room access')
+
+            return
+        }
+
+        const createRoomAccess = {
+            type: RoomAccessType.Exit,
+            sessionId: sessionId,
+            createdAt: new Date(eventTime),
+            roomId: roomAccess.roomId,
+            infraUserId: roomAccess.infraUserId
+        }
+
+        await this.roomsService.createRoomAccess(createRoomAccess)
     }
 }

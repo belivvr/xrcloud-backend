@@ -5,9 +5,18 @@ import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { OptionsService } from '../options/options.service'
-import { CreateRoomDto, OptionQueryDto, RoomDto, RoomsQueryDto, UpdateRoomDto } from './dto'
+import {
+    CreateRoomAccessDto,
+    CreateRoomDto,
+    OptionQueryDto,
+    RoomAccessQueryDto,
+    RoomDto,
+    RoomsQueryDto,
+    UpdateRoomDto
+} from './dto'
 import { Room } from './entities'
 import { RoomOption } from './interfaces'
+import { RoomAccessRepository } from './room-access.repository'
 import { RoomsRepository } from './rooms.repository'
 import { RoomEntryType } from './types'
 
@@ -15,6 +24,7 @@ import { RoomEntryType } from './types'
 export class RoomsService {
     constructor(
         private readonly roomsRepository: RoomsRepository,
+        private readonly roomAccessRepository: RoomAccessRepository,
         private readonly scenesService: ScenesService,
         private readonly optionsService: OptionsService,
         private readonly reticulumService: ReticulumService,
@@ -152,6 +162,12 @@ export class RoomsService {
         return rooms
     }
 
+    async findRoomByInfraRoomId(infraRoomId: string) {
+        const room = await this.roomsRepository.findByInfraRoomId(infraRoomId)
+
+        return room
+    }
+
     async countRooms() {
         return await this.roomsRepository.count()
     }
@@ -228,5 +244,21 @@ export class RoomsService {
         } else {
             return await this.optionsService.updateOption(roomId, roomOption)
         }
+    }
+
+    async createRoomAccess(createRoomAccessDto: CreateRoomAccessDto) {
+        await this.roomAccessRepository.create(createRoomAccessDto)
+    }
+
+    async findRoomAccess(roomId: string, queryDto: RoomAccessQueryDto) {
+        const roomAccess = await this.roomAccessRepository.findByRoomId(roomId, queryDto)
+
+        return roomAccess
+    }
+
+    async findRoomAccessBySessionId(sessionId: string) {
+        const roomAccess = await this.roomAccessRepository.findBySessionId(sessionId)
+
+        return roomAccess
     }
 }
