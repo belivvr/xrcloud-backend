@@ -11,9 +11,9 @@ export class HeaderAuthGuard extends AuthGuard('jwt') {
     }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const isPublic = this.reflector.get<boolean>(SKIP_AUTH_KEY, context.getHandler())
+        const isSkipAuth = this.reflector.get<boolean>(SKIP_AUTH_KEY, context.getHandler())
 
-        if (isPublic) {
+        if (isSkipAuth) {
             return true
         }
 

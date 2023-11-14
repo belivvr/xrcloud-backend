@@ -1,8 +1,12 @@
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator'
+import { IsOptional, IsString, IsUUID } from 'class-validator'
 import { PaginationOptions } from 'src/common'
 
 export class RoomsQueryDto extends PaginationOptions {
-    @IsNotEmpty()
+    @IsOptional()
+    @IsString()
+    projectId: string
+
+    @IsOptional()
     @IsUUID()
     sceneId: string
 

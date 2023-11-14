@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -45,6 +46,10 @@ export class RoomsController {
     @Get()
     @PublicApi()
     async findRooms(@Query() queryDto: RoomsQueryDto) {
+        if (!queryDto.projectId && !queryDto.sceneId) {
+            throw new BadRequestException('Either projectId or sceneId must be provided')
+        }
+
         return await this.roomsService.findRooms(queryDto)
     }
 
