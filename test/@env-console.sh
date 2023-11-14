@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EMAIL='zizi123@belivvr.com'
+EMAIL='zizi2717@belivvr.com'
 PASSWORD='123123a!'
 
 FILE_PATH='./images'

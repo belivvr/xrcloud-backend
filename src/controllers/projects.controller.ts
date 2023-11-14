@@ -1,6 +1,7 @@
 import {
     BadRequestException,
     Body,
+    ConflictException,
     Controller,
     Delete,
     Get,
@@ -52,6 +53,17 @@ export class ProjectsController {
         @Req() req: any
     ) {
         Assert.defined(req.user, 'Admin authentication failed. req.user is null.')
+
+        if (createProjectDto.label) {
+            const labelExists = await this.projectsService.findProjectByAdminIdAndLabel(
+                req.user.adminId,
+                createProjectDto.label
+            )
+
+            if (labelExists) {
+                throw new ConflictException(`Project with label ${createProjectDto.label} already exists`)
+            }
+        }
 
         if (!files[FAVICON] || !files[LOGO]) {
             throw new BadRequestException('Files is required.')

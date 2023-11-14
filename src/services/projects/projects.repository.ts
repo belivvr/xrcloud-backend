@@ -36,4 +36,12 @@ export class ProjectsRepository extends BaseRepository<Project> {
 
         return qb.getOne()
     }
+
+    async findByAdminIdAndLabel(adminId: string, label: string): Promise<Project | null> {
+        const qb = this.createQueryBuilder()
+            .where('entity.label = :label', { label })
+            .andWhere('entity.adminId = :adminId', { adminId })
+
+        return qb.getOne()
+    }
 }

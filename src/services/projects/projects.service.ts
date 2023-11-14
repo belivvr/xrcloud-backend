@@ -131,6 +131,12 @@ export class ProjectsService {
         return projects
     }
 
+    async findProjectByAdminIdAndLabel(adminId: string, label: string) {
+        const project = await this.projectsRepository.findByAdminIdAndLabel(adminId, label)
+
+        return project
+    }
+
     async projectExists(projectId: string): Promise<boolean> {
         return this.projectsRepository.exist(projectId)
     }

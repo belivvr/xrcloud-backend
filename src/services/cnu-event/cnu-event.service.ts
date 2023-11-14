@@ -39,6 +39,7 @@ export class CnuEventService {
         return cnuEvent as CnuEvent
     }
 
+    // TODO: fix findProjectByLabel
     async getScene(queryDto: CnuEventQueryDto) {
         const { projectLabel: label, userId } = queryDto
 
