@@ -1,5 +1,12 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { Assert, CacheService, getSlug, updateIntersection } from 'src/common'
+import {
+    Assert,
+    CacheService,
+    convertTimeToSeconds,
+    generateUUID,
+    getSlug,
+    updateIntersection
+} from 'src/common'
 import { FAVICON, LOGO } from 'src/common/constants'
 import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
@@ -19,6 +26,7 @@ import {
 import { Room, RoomAccess } from './entities'
 import { RoomOption } from './interfaces'
 import { RoomAccessRepository } from './room-access.repository'
+import { RoomConfigService } from './room-config.service'
 import { RoomsRepository } from './rooms.repository'
 import { RoomEntryType } from './types'
 
@@ -32,7 +40,8 @@ export class RoomsService {
         private readonly reticulumService: ReticulumService,
         private readonly fileStorageService: FileStorageService,
         private readonly cacheService: CacheService,
-        private readonly usersService: UsersService
+        private readonly usersService: UsersService,
+        private readonly configService: RoomConfigService
     ) {}
 
     async createRoom(createRoomDto: CreateRoomDto) {
@@ -92,7 +101,7 @@ export class RoomsService {
         const { type } = queryDto
 
         switch (type) {
-            case RoomEntryType.private: {
+            case RoomEntryType.Private: {
                 const key = `option:${optionId}`
 
                 const option = await this.cacheService.get(key)
@@ -104,7 +113,7 @@ export class RoomsService {
                 return JSON.parse(option)
             }
 
-            case RoomEntryType.public: {
+            case RoomEntryType.Public: {
                 const option = await this.optionsService.getOption(optionId)
 
                 if (!option) {
@@ -211,6 +220,43 @@ export class RoomsService {
     }
 
     async getRoomUrl(roomId: string, userId?: string) {
+        const publicUrl = await this.getPublicUrl(roomId)
+        const privateUrl = await this.getPrivateUrl(roomId, userId)
+
+        return {
+            public: publicUrl,
+            private: privateUrl
+        }
+    }
+
+    private async getPublicUrl(roomId: string) {
+        const room = await this.getRoom(roomId)
+
+        const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
+
+        const token = await this.reticulumService.getAdminToken(projectId)
+
+        const url = this.reticulumService.generateRoomUrl(room.infraRoomId, room.slug)
+
+        const faviconUrl = `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`
+        const logoUrl = `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
+
+        const roomOption = {
+            token,
+            faviconUrl,
+            logoUrl,
+            returnUrl: room.returnUrl
+        }
+
+        const { hostOptionId, guestOptionId } = await this.setRoomOption(roomId, roomOption)
+
+        return {
+            host: `${url}?public=${hostOptionId}`,
+            guest: `${url}?public=${guestOptionId}`
+        }
+    }
+
+    private async getPrivateUrl(roomId: string, userId?: string) {
         const room = await this.getRoom(roomId)
 
         const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
@@ -242,18 +288,35 @@ export class RoomsService {
         const faviconUrl = `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`
         const logoUrl = `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
 
-        const roomOption: RoomOption = {
+        const guestRoomOption = {
             token,
             faviconUrl,
             logoUrl,
             returnUrl: room.returnUrl
         }
 
-        const { hostOptionId, guestOptionId } = await this.setRoomOption(roomId, roomOption)
+        const hostRoomOption = {
+            ...guestRoomOption,
+            funcs: this.optionsService.generateFuncs()
+        }
+
+        const expireTime = convertTimeToSeconds(this.configService.roomOptionExpiration)
+
+        const hostOptionId = generateUUID()
+
+        const hostOptionKey = `option:${hostOptionId}`
+
+        await this.cacheService.set(hostOptionKey, JSON.stringify(hostRoomOption), expireTime)
+
+        const guestOptionId = generateUUID()
+
+        const guestOptionKey = `option:${guestOptionId}`
+
+        await this.cacheService.set(guestOptionKey, JSON.stringify(guestRoomOption), expireTime)
 
         return {
-            host: `${url}?public=${hostOptionId}`,
-            guest: `${url}?public=${guestOptionId}`
+            host: `${url}?private=${hostOptionId}`,
+            guest: `${url}?private=${guestOptionId}`
         }
     }
 

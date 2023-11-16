@@ -1,11 +1,17 @@
 export enum RoomEntryType {
-    private = 'private',
-    public = 'public'
+    Private = 'private',
+    Public = 'public'
 }
 
 export type RoomUrl = {
-    host: string
-    guest: string
+    public: {
+        host: string
+        guest: string
+    }
+    private: {
+        host: string
+        guest: string
+    }
 }
 
 export enum RoomAccessType {

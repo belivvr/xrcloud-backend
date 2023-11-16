@@ -120,7 +120,7 @@ export class OptionsService {
         return option
     }
 
-    private generateFuncs() {
+    generateFuncs() {
         const funcs = {
             'object-button': true,
             'invitation-button': true,

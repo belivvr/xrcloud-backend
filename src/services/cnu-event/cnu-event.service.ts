@@ -72,12 +72,12 @@ export class CnuEventService {
 
             await this.updateCnuEvent(cnuEvent.id, { roomId: room.id })
 
-            return room.roomUrl.host
+            return room.roomUrl.public.host
         }
 
-        const { host: hostUrl } = await this.roomsService.getRoomUrl(cnuEvent.roomId, userId)
+        const { public: publicUrl } = await this.roomsService.getRoomUrl(cnuEvent.roomId, userId)
 
-        return hostUrl
+        return publicUrl.host
     }
 
     async updateCnuEvent(cnuEventId: string, updateCnuEventDto: UpdateCnuEventDto) {

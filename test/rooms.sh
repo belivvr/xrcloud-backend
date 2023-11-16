@@ -30,7 +30,7 @@ GET /api/rooms/$ROOM_ID \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getOption
-GET /api/rooms/option/$OPTION_ID?type=public
+GET /api/rooms/option/$OPTION_ID?type=private
 
 # updateRoom
 PATCH /api/rooms/$ROOM_ID \
