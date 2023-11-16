@@ -18,6 +18,10 @@ export class ProjectsRepository extends BaseRepository<Project> {
         const qb = this.createQueryBuilder(queryDto)
             .where('entity.adminId = :adminId', { adminId })
 
+        if (queryDto.label) {
+            qb.andWhere('entity.label = :label', { label: queryDto.label })
+        }
+
         const [items, total] = await qb.getManyAndCount()
 
         return { items, total, take, skip }

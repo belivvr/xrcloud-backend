@@ -3,11 +3,12 @@ import { RoomsModule } from 'src/services/rooms/rooms.module'
 import { ScenesModule } from 'src/services/scenes/scenes.module'
 import { CnuEventModule } from '../cnu-event'
 import { SubscriptionsModule } from '../subscriptions/subscriptions.module'
+import { UsersModule } from '../users/users.module'
 import { EventConfigService } from './event-config.service'
 import { EventsService } from './events.service'
 
 @Module({
-    imports: [ScenesModule, RoomsModule, SubscriptionsModule, CnuEventModule],
+    imports: [ScenesModule, RoomsModule, SubscriptionsModule, CnuEventModule, UsersModule],
     providers: [EventsService, EventConfigService],
     exports: [EventsService]
 })

@@ -16,7 +16,7 @@ POST /events/hub \
             "sessionId": "e8318120-e2e7-4732-9452-b098de83d30c",
             "eventTime": "2023-08-29 05:10:20.149315",
             "roomId": "3s3Z6iJ",
-            "userId": "test@test.com"
+            "userId": "1561561531351"
         }'
 
 # exitRoom

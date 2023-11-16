@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator"
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator'
 
 export enum HubEventName {
     ROOM_JOIN = 'room-join',

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { CnuEventService } from '../cnu-event'
 import { RoomsService } from '../rooms/rooms.service'
-import { RoomAccessType } from '../rooms/types'
+import { UsersService } from '../users/users.service'
 import { HubEventDto, HubEventName, SpokeEventDto, SpokeEventName } from './dto'
 import { CreateSceneData, ExitRoomData, JoinRoomData, UpdateSceneData } from './interfaces'
 
@@ -11,7 +11,8 @@ export class EventsService {
     constructor(
         private readonly scenesService: ScenesService,
         private readonly roomsService: RoomsService,
-        private readonly cnuEventService: CnuEventService
+        private readonly cnuEventService: CnuEventService,
+        private readonly usersService: UsersService
     ) {}
 
     /*
@@ -96,7 +97,7 @@ export class EventsService {
 
     /*
      * Hub
-     */    
+     */
     async handleHubEvent(hubEventDto: HubEventDto) {
         const eventName = hubEventDto.type
 
@@ -132,7 +133,7 @@ export class EventsService {
     }
 
     async joinRoom(joinRoomData: JoinRoomData) {
-        const { roomId: infraRoomId, userId: infraUserId, sessionId, eventTime } = joinRoomData
+        const { roomId: infraRoomId, userId: reticulumId, sessionId, eventTime } = joinRoomData
 
         const room = await this.roomsService.findRoomByInfraRoomId(infraRoomId)
 
@@ -142,12 +143,19 @@ export class EventsService {
             return
         }
 
+        const user = await this.usersService.findUserByReticulumId(reticulumId)
+
+        if (!user) {
+            Logger.error('Join room event: Failed to find user', reticulumId)
+
+            return
+        }
+
         const createRoomAccess = {
-            type: RoomAccessType.Join,
             sessionId: sessionId,
-            createdAt: new Date(eventTime),
+            joinedAt: new Date(eventTime),
             roomId: room.id,
-            infraUserId: infraUserId
+            infraUserId: user.infraUserId
         }
 
         await this.roomsService.createRoomAccess(createRoomAccess)
@@ -164,14 +172,10 @@ export class EventsService {
             return
         }
 
-        const createRoomAccess = {
-            type: RoomAccessType.Exit,
-            sessionId: sessionId,
-            createdAt: new Date(eventTime),
-            roomId: roomAccess.roomId,
-            infraUserId: roomAccess.infraUserId
+        const updateRoomAccess = {
+            exitedAt: new Date(eventTime)
         }
 
-        await this.roomsService.createRoomAccess(createRoomAccess)
+        await this.roomsService.updateRoomAccess(roomAccess.id, updateRoomAccess)
     }
 }

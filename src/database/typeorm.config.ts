@@ -9,6 +9,7 @@ import { Room, RoomAccess } from 'src/services/rooms/entities'
 import { Scene } from 'src/services/scenes/entities'
 import { Subscription } from 'src/services/subscriptions/entities'
 import { Tier } from 'src/services/tiers/entities'
+import { User } from 'src/services/users/entities'
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions'
 import { Mig1687757321854 } from './migrations/1687757321854-mig'
 import { Mig1687933860267 } from './migrations/1687933860267-mig'
@@ -30,11 +31,12 @@ import { Mig1695282091685 } from './migrations/1695282091685-mig'
 import { Mig1696999381308 } from './migrations/1696999381308-mig'
 import { Mig1699335737649 } from './migrations/1699335737649-mig'
 import { Mig1699335815108 } from './migrations/1699335815108-mig'
-import { Mig1699962579968 } from './migrations/1699962579968-mig'
+import { Mig1700023892103 } from './migrations/1700023892103-mig'
+import { Mig1700038420176 } from './migrations/1700038420176-mig'
 
 dotenv.config()
 
-const entities = [Admin, Project, Scene, Room, Tier, Subscription, Option, CnuEvent, RoomAccess]
+const entities = [Admin, Project, Scene, Room, Tier, Subscription, Option, CnuEvent, RoomAccess, User]
 const migrations = [
     Mig1687757321854,
     Mig1687933860267,
@@ -56,7 +58,8 @@ const migrations = [
     Mig1696999381308,
     Mig1699335737649,
     Mig1699335815108,
-    Mig1699962579968
+    Mig1700023892103,
+    Mig1700038420176
 ]
 
 type SupportedConnectionOptions = PostgresConnectionOptions

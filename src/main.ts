@@ -2,9 +2,12 @@ import { NestFactory } from '@nestjs/core'
 import * as express from 'express'
 import { AppLoggerService, isDevelopment, isProduction } from 'src/common'
 import { AppModule } from './app.module'
+import { NestExpressApplication } from '@nestjs/platform-express'
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule)
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+        rawBody: true
+    })
 
     if (process.env.HTTP_REQUEST_PAYLOAD_LIMIT) {
         const limit = process.env.HTTP_REQUEST_PAYLOAD_LIMIT

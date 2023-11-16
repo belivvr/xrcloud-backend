@@ -50,7 +50,6 @@ export class ReticulumService {
         if (!response || !response.token || typeof response.token !== 'string') {
             throw new InternalServerErrorException('Reticulum: Failed to login')
         }
-
         return response
     }
 
@@ -224,5 +223,16 @@ export class ReticulumService {
         }
 
         return savedToken as string
+    }
+
+    async userLogin(projectId: string, userId: string) {
+        const emailId = `${projectId}:${userId}`
+
+        const { account_id, token } = await this.login(emailId)
+
+        return {
+            reticulumId: account_id,
+            token
+        }
     }
 }

@@ -5,6 +5,7 @@ import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { OptionsService } from '../options/options.service'
+import { UsersService } from '../users/users.service'
 import {
     CreateRoomAccessDto,
     CreateRoomDto,
@@ -12,9 +13,10 @@ import {
     RoomAccessQueryDto,
     RoomDto,
     RoomsQueryDto,
+    UpdateRoomAccessDto,
     UpdateRoomDto
 } from './dto'
-import { Room } from './entities'
+import { Room, RoomAccess } from './entities'
 import { RoomOption } from './interfaces'
 import { RoomAccessRepository } from './room-access.repository'
 import { RoomsRepository } from './rooms.repository'
@@ -29,7 +31,8 @@ export class RoomsService {
         private readonly optionsService: OptionsService,
         private readonly reticulumService: ReticulumService,
         private readonly fileStorageService: FileStorageService,
-        private readonly cacheService: CacheService
+        private readonly cacheService: CacheService,
+        private readonly usersService: UsersService
     ) {}
 
     async createRoom(createRoomDto: CreateRoomDto) {
@@ -212,9 +215,27 @@ export class RoomsService {
 
         const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
 
-        const token = userId
-            ? await this.reticulumService.getUserToken(projectId, userId)
-            : await this.reticulumService.getAdminToken(projectId)
+        let token
+
+        if (userId) {
+            const { reticulumId, token: userToken } = await this.reticulumService.userLogin(projectId, userId)
+
+            const userExist = await this.usersService.findUserByProjectIdAndInfraUserId(projectId, userId)
+
+            if (!userExist) {
+                const createUser = {
+                    projectId,
+                    infraUserId: userId,
+                    reticulumId
+                }
+
+                await this.usersService.createUser(createUser)
+            }
+
+            token = userToken
+        } else {
+            token = await this.reticulumService.getAdminToken(projectId)
+        }
 
         const url = this.reticulumService.generateRoomUrl(room.infraRoomId, room.slug)
 
@@ -256,9 +277,37 @@ export class RoomsService {
         return roomAccess
     }
 
+    async getRoomAccess(roomAccessId: number) {
+        const roomAccess = await this.roomAccessRepository.findById(roomAccessId)
+
+        if (!roomAccess) {
+            throw new NotFoundException(`Room access with ID "${roomAccessId}" not found.`)
+        }
+
+        return roomAccess as RoomAccess
+    }
+
     async findRoomAccessBySessionId(sessionId: string) {
         const roomAccess = await this.roomAccessRepository.findBySessionId(sessionId)
 
         return roomAccess
+    }
+
+    async updateRoomAccess(roomAccessId: number, updateRoomAccessDto: UpdateRoomAccessDto) {
+        const roomAccess = await this.getRoomAccess(roomAccessId)
+
+        const updateRoomAccess = {
+            ...updateRoomAccessDto
+        }
+
+        const updatedRoomAccess = updateIntersection(roomAccess, updateRoomAccess)
+
+        const savedRoomAccess = await this.roomAccessRepository.update(updatedRoomAccess)
+
+        Assert.deepEquals(
+            savedRoomAccess,
+            updatedRoomAccess,
+            'The result is different from the update request'
+        )
     }
 }
