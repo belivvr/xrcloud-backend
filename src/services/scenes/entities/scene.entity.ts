@@ -20,4 +20,7 @@ export class Scene extends AggregateRoot {
 
     @Column()
     projectId: string
+
+    @Column({ nullable: true })
+    creator: string
 }

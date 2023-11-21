@@ -1,9 +1,11 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { Assert, CacheService, generateUUID, updateIntersection } from 'src/common'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
+import { AdminsService } from '../admins/admins.service'
 import { ProjectsService } from '../projects/projects.service'
 import { RoomsService } from '../rooms/rooms.service'
 import { ScenesService } from '../scenes/scenes.service'
+import { CnuEventConfigService } from './cnu-event-config.service'
 import { CnuEventRepository } from './cnu-event.repository'
 import { CnuEventQueryDto, CreateCnuEventDto, UpdateCnuEventDto } from './dto'
 import { CnuEvent } from './entities'
@@ -16,16 +18,18 @@ export class CnuEventService {
         private readonly scenesService: ScenesService,
         private readonly roomsService: RoomsService,
         private readonly reticulumService: ReticulumService,
-        private readonly cacheService: CacheService
+        private readonly cacheService: CacheService,
+        private readonly configService: CnuEventConfigService,
+        private readonly adminsService: AdminsService
     ) {}
 
     async createCnuEvent(createCnuEventDto: CreateCnuEventDto) {
-        const { userId } = createCnuEventDto
+        const { creator } = createCnuEventDto
 
-        const cnuEvent = await this.findCnuEventByUserId(userId)
+        const cnuEvent = await this.findCnuEventByCreator(creator)
 
         if (cnuEvent) {
-            throw new ConflictException(`Cnu-event with userId ${userId} already exists`)
+            throw new ConflictException(`Cnu-event with creator ${creator} already exists`)
         }
 
         await this.cnuEventRepository.create(createCnuEventDto)
@@ -39,32 +43,37 @@ export class CnuEventService {
         return cnuEvent as CnuEvent
     }
 
-    // TODO: fix findProjectByLabel
     async getScene(queryDto: CnuEventQueryDto) {
-        const { projectLabel: label, userId } = queryDto
+        const { projectLabel: label, creator } = queryDto
 
-        const project = await this.projectsService.findProjectByLabel(label)
+        const admin = await this.adminsService.findAdminByEmail(this.configService.cnuAdminEmail)
+
+        if (!admin) {
+            throw new NotFoundException(`Admin with email "${this.configService.cnuAdminEmail}" not found.`)
+        }
+
+        const project = await this.projectsService.findProjectByAdminIdAndLabel(admin.id, label)
 
         if (!project) {
             throw new NotFoundException(`Project with label "${label}" not found.`)
         }
 
-        const cnuEvent = await this.findCnuEventByUserId(userId)
+        const cnuEvent = await this.findCnuEventByCreator(creator)
 
         const url = cnuEvent
-            ? await this.getSceneModificationUrl(project.id, cnuEvent.sceneId, cnuEvent.userId)
-            : await this.getSceneCreationUrl(project.id, userId)
+            ? await this.getSceneUpdateUrl(project.id, cnuEvent.sceneId, cnuEvent.creator)
+            : await this.getSceneCreationUrl(project.id, creator)
 
         return url
     }
 
     async getRoom(queryDto: CnuEventQueryDto) {
-        const { userId } = queryDto
+        const { creator } = queryDto
 
-        const cnuEvent = await this.findCnuEventByUserId(userId)
+        const cnuEvent = await this.findCnuEventByCreator(creator)
 
         if (!cnuEvent) {
-            throw new NotFoundException(`Cnu-event with userId "${userId}" not found.`)
+            throw new NotFoundException(`Cnu-event with creator "${creator}" not found.`)
         }
 
         if (!cnuEvent.roomId) {
@@ -75,7 +84,7 @@ export class CnuEventService {
             return room.roomUrl.public.host
         }
 
-        const { public: publicUrl } = await this.roomsService.getRoomUrl(cnuEvent.roomId, userId)
+        const { public: publicUrl } = await this.roomsService.getRoomUrl(cnuEvent.roomId, creator)
 
         return publicUrl.host
     }
@@ -92,8 +101,8 @@ export class CnuEventService {
         return savedCnuEvent
     }
 
-    async findCnuEventByUserId(userId: string) {
-        const cnuEvent = await this.cnuEventRepository.findByUserId(userId)
+    async findCnuEventByCreator(creator: string) {
+        const cnuEvent = await this.cnuEventRepository.findByCreator(creator)
 
         return cnuEvent
     }
@@ -101,12 +110,13 @@ export class CnuEventService {
     /*
      * private method
      */
-    private async getSceneCreationUrl(projectId: string, userId: string) {
-        const token = await this.reticulumService.getUserToken(projectId, userId)
+    private async getSceneCreationUrl(projectId: string, creator: string) {
+        const token = await this.reticulumService.getUserToken(projectId, creator)
 
         const extraArgs = {
             projectId: projectId,
-            userId: userId
+            creator: creator,
+            extraData: 'cnu'
         }
 
         const { url, options } = await this.reticulumService.getSceneCreationInfo(token, extraArgs)
@@ -122,15 +132,12 @@ export class CnuEventService {
         return sceneCreationUrl
     }
 
-    private async getSceneModificationUrl(projectId: string, sceneId: string, userId: string) {
+    private async getSceneUpdateUrl(projectId: string, sceneId: string, creator: string) {
         const scene = await this.scenesService.getScene(sceneId)
 
-        const token = await this.reticulumService.getUserToken(projectId, userId)
+        const token = await this.reticulumService.getUserToken(projectId, creator)
 
-        const { url, options } = await this.reticulumService.getSceneModificationInfo(
-            scene.infraProjectId,
-            token
-        )
+        const { url, options } = await this.reticulumService.getSceneUpdateInfo(scene.infraProjectId, token)
 
         const optionId = generateUUID()
 
@@ -138,9 +145,9 @@ export class CnuEventService {
 
         await this.cacheService.set(key, JSON.stringify(options))
 
-        const sceneModificationUrl = `${url}?optId=${optionId}`
+        const sceneUpdateUrl = `${url}?optId=${optionId}`
 
-        return sceneModificationUrl
+        return sceneUpdateUrl
     }
 
     private async createRoom(cnuEventId: string) {

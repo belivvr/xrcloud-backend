@@ -7,7 +7,6 @@ export class ProjectDto {
     updatedAt: Date
     faviconUrl: string
     logoUrl: string
-    sceneCreationUrl: string
 
     constructor(project: Project) {
         const { id, name, createdAt, updatedAt } = project

@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString } from 'class-validator'
 export class CreateCnuEventDto {
     @IsNotEmpty()
     @IsString()
-    userId: string
+    creator: string
 
     @IsNotEmpty()
     @IsString()

@@ -1,4 +1,5 @@
 export interface ExtraArgs {
     projectId: string
-    userId?: string
+    creator?: string
+    extraData?: string
 }

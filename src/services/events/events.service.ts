@@ -60,6 +60,7 @@ export class EventsService {
 
             for (const part of extraParts) {
                 const [key, value] = part.split(':')
+
                 if (key && value) {
                     extraObj[key] = value
                 }
@@ -74,9 +75,9 @@ export class EventsService {
 
         const scene = await this.scenesService.createScene(createData)
 
-        if (extraObj.userId) {
+        if (extraObj.extraData && extraObj.extraData === 'cnu') {
             const createCnuEventData = {
-                userId: extraObj.userId,
+                creator: extraObj.creator,
                 projectId: extraObj.projectId,
                 sceneId: scene.id
             }

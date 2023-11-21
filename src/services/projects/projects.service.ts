@@ -4,25 +4,20 @@ import {
     InternalServerErrorException,
     NotFoundException
 } from '@nestjs/common'
-import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
+import { Assert, generateUUID, updateIntersection } from 'src/common'
 import { FAVICON, LOGO } from 'src/common/constants'
 import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
-import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { UploadedFilesType } from '../manage-asset/types'
 import { CreateProjectDto, ProjectDto, ProjectsQueryDto, UpdateProjectDto } from './dto'
 import { Project } from './entities'
 import { FILE_TYPES } from './interfaces'
-import { ProjectConfigService } from './project-config.service'
 import { ProjectsRepository } from './projects.repository'
 
 @Injectable()
 export class ProjectsService {
     constructor(
         private readonly projectsRepository: ProjectsRepository,
-        private readonly fileStorageService: FileStorageService,
-        private readonly reticulumService: ReticulumService,
-        private readonly cacheService: CacheService,
-        private readonly configService: ProjectConfigService
+        private readonly fileStorageService: FileStorageService
     ) {}
 
     async createProject(createProjectDto: CreateProjectDto, files: UploadedFilesType, adminId: string) {
@@ -155,36 +150,11 @@ export class ProjectsService {
         const faviconUrl = this.fileStorageService.getFileUrl(project.faviconId, FAVICON)
         const logoUrl = this.fileStorageService.getFileUrl(project.logoId, LOGO)
 
-        const sceneCreationUrl = await this.getSceneCreationUrl(projectId)
-
         const dto = new ProjectDto(project)
         dto.faviconUrl = `${faviconUrl}.ico`
         dto.logoUrl = `${logoUrl}.jpg`
-        dto.sceneCreationUrl = sceneCreationUrl
 
         return dto
-    }
-
-    async getSceneCreationUrl(projectId: string) {
-        const token = await this.reticulumService.getAdminToken(projectId)
-
-        const extraArgs = {
-            projectId: projectId
-        }
-
-        const { url, options } = await this.reticulumService.getSceneCreationInfo(token, extraArgs)
-
-        const optionId = generateUUID()
-
-        const key = `option:${optionId}`
-
-        const expireTime = convertTimeToSeconds(this.configService.sceneOptionExpiration)
-
-        await this.cacheService.set(key, JSON.stringify(options), expireTime)
-
-        const sceneCreationUrl = `${url}?optId=${optionId}`
-
-        return sceneCreationUrl
     }
 
     private generateFileKey(fileId: string, fileType: string) {

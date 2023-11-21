@@ -7,5 +7,5 @@ export class CnuEventQueryDto {
 
     @IsNotEmpty()
     @IsString()
-    userId: string
+    creator: string
 }

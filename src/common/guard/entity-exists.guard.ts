@@ -11,7 +11,10 @@ export abstract class EntityExistsGuard<T> implements CanActivate {
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest()
-        const entityId = request.params[this.entityIdKey] || request.body[this.entityIdKey]
+        const entityId =
+            request.params[this.entityIdKey] ||
+            request.query[this.entityIdKey] ||
+            request.body[this.entityIdKey]
 
         if (!entityId) {
             throw new NotFoundException(`${this.entityName} not provided in the request`)

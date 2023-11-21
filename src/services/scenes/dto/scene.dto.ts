@@ -4,7 +4,6 @@ export class SceneDto {
     id: string
     name: string
     thumbnailUrl: string
-    sceneModificationUrl: string
 
     constructor(scene: Scene) {
         const { id, name } = scene

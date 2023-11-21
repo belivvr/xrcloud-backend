@@ -11,9 +11,9 @@ export class CnuEventRepository extends BaseRepository<CnuEvent> {
         super(typeorm)
     }
 
-    async findByUserId(userId: string): Promise<CnuEvent | null> {
+    async findByCreator(creator: string): Promise<CnuEvent | null> {
         const qb = this.createQueryBuilder()
-            .where('entity.userId = :userId', { userId })
+            .where('entity.creator = :creator', { creator })
 
         return qb.getOne()
     }
