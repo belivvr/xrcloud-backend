@@ -42,6 +42,6 @@ PATCH /api/rooms/$ROOM_ID \
             "returnUrl": "https://naver.com"
         }'
 
-# # removeRoom
-# DELETE /api/rooms/$ROOM_ID \
-#     -H "Authorization: Bearer $ACCESS_TOKEN"
+# removeRoom
+DELETE /api/rooms/$ROOM_ID \
+    -H "Authorization: Bearer $ACCESS_TOKEN"
