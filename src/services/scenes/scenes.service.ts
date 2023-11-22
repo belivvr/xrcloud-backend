@@ -66,7 +66,7 @@ export class ScenesService {
         const extraArgs = {
             projectId: projectId,
             tag: tag ? tag : 'tag',
-            creator: creator ? creator : `admin@${projectId}`,
+            creator,
             callback
         }
 
