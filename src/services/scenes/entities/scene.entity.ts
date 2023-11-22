@@ -7,6 +7,9 @@ export class Scene extends AggregateRoot {
     name: string
 
     @Column()
+    tag: string
+
+    @Column()
     infraProjectId: string
 
     @Column()

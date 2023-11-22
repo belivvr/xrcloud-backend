@@ -2,18 +2,11 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ProjectsService } from 'src/services/projects/projects.service'
-import {
-    CreateSceneDto,
-    GetSceneCreationUrlDto,
-    GetSceneUpdateUrlDto,
-    SceneDto,
-    ScenesQueryDto,
-    UpdateSceneDto
-} from './dto'
+import { AdminsService } from '../admins/admins.service'
+import { CreateSceneDto, GetSceneCreationUrlDto, SceneDto, ScenesQueryDto, UpdateSceneDto } from './dto'
 import { Scene } from './entities'
 import { SceneConfigService } from './scene-config.service'
 import { ScenesRepository } from './scenes.repository'
-import { AdminsService } from '../admins/admins.service'
 
 @Injectable()
 export class ScenesService {
@@ -29,21 +22,11 @@ export class ScenesService {
     async createScene(createSceneDto: CreateSceneDto) {
         const { projectId, infraSceneId } = createSceneDto
 
-        let { creator } = createSceneDto
-
         // TODO
         await this.projectsService.validateProjectExists(projectId)
 
         if (await this.infraSceneExists(infraSceneId)) {
             throw new ConflictException(`Scene with ID "${infraSceneId}" already exists.`)
-        }
-
-        if (!creator) {
-            const project = await this.projectsService.getProject(projectId)
-
-            const admin = await this.adminsService.getAdmin(project.adminId)
-
-            creator = admin.email
         }
 
         const infraScene = await this.reticulumService.getScene(infraSceneId)
@@ -74,7 +57,7 @@ export class ScenesService {
     }
 
     async getSceneCreationUrl(queryDto: GetSceneCreationUrlDto) {
-        const { projectId, creator, callback } = queryDto
+        const { projectId, tag, callback, creator } = queryDto
 
         const token = creator
             ? await this.reticulumService.getUserToken(projectId, creator)
@@ -82,7 +65,8 @@ export class ScenesService {
 
         const extraArgs = {
             projectId: projectId,
-            creator,
+            tag: tag ? tag : 'tag',
+            creator: creator ? creator : `admin@${projectId}`,
             callback
         }
 
@@ -105,9 +89,11 @@ export class ScenesService {
         const scene = await this.getScene(sceneId)
 
         const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
+        const sceneModificationUrl = await this.getSceneModificationUrl(scene.id)
 
         const dto = new SceneDto(scene)
         dto.thumbnailUrl = thumbnailUrl
+        dto.sceneModificationUrl = sceneModificationUrl
 
         return dto
     }
@@ -120,16 +106,17 @@ export class ScenesService {
         return scene as Scene
     }
 
-    async getSceneUpdateUrl(sceneId: string, queryDto: GetSceneUpdateUrlDto) {
-        const { creator } = queryDto
-
+    async getSceneModificationUrl(sceneId: string) {
         const scene = await this.getScene(sceneId)
 
-        const token = creator
-            ? await this.reticulumService.getUserToken(scene.projectId, creator)
+        const token = scene.creator
+            ? await this.reticulumService.getUserToken(scene.projectId, scene.creator)
             : await this.reticulumService.getAdminToken(scene.projectId)
 
-        const { url, options } = await this.reticulumService.getSceneUpdateInfo(scene.infraProjectId, token)
+        const { url, options } = await this.reticulumService.getSceneModificationInfo(
+            scene.infraProjectId,
+            token
+        )
 
         const optionId = generateUUID()
 
@@ -139,9 +126,9 @@ export class ScenesService {
 
         await this.cacheService.set(key, JSON.stringify(options), expireTime)
 
-        const sceneUpdateUrl = `${url}?optId=${optionId}`
+        const sceneModificationUrl = `${url}?optId=${optionId}`
 
-        return { sceneUpdateUrl }
+        return sceneModificationUrl
     }
 
     async getSceneOption(optionId: string) {

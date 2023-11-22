@@ -12,6 +12,10 @@ export class ScenesQueryDto extends PaginationOptions {
 
     @IsOptional()
     @IsString()
+    tag: string
+
+    @IsOptional()
+    @IsString()
     creator: string
 }
 
@@ -22,15 +26,13 @@ export class GetSceneCreationUrlDto {
 
     @IsOptional()
     @IsString()
+    tag: string
+
+    @IsOptional()
+    @IsString()
     creator: string
 
     @IsOptional()
     @IsString()
     callback: string
-}
-
-export class GetSceneUpdateUrlDto {
-    @IsOptional()
-    @IsString()
-    creator: string
 }

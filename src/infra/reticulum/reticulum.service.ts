@@ -63,6 +63,10 @@ export class ReticulumService {
 
         const extraParts = [`projectId:${extraArgs.projectId}`]
 
+        if (extraArgs.tag) {
+            extraParts.push(`tag:${extraArgs.tag}`)
+        }
+
         if (extraArgs.creator) {
             extraParts.push(`creator:${extraArgs.creator}`)
         }
@@ -103,7 +107,7 @@ export class ReticulumService {
         return response[0]
     }
 
-    async getSceneUpdateInfo(infraProjectId: string, token: string | undefined) {
+    async getSceneModificationInfo(infraProjectId: string, token: string | undefined) {
         if (!token) {
             throw new InternalServerErrorException('Reticulum: Token is required')
         }

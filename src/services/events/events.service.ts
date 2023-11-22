@@ -69,7 +69,8 @@ export class EventsService {
             projectId: extraObj.projectId,
             infraProjectId: infraProjectId,
             infraSceneId: infraSceneId,
-            creator: extraObj.creator
+            creator: extraObj.creator,
+            tag: extraObj.tag
         }
 
         const scene = await this.scenesService.createScene(createData)

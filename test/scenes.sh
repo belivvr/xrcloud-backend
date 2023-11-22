@@ -12,19 +12,15 @@ GET "/api/scenes?projectId=$PROJECT_ID&$PAGE_OPT" \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getSceneCreationUrl
-GET "/api/scenes/get-creation-url?projectId=$PROJECT_ID&creator=$CREATOR" \
+GET "/api/scenes/get-creation-url?projectId=$PROJECT_ID&creator=$CREATOR&tag=testTag" \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getScene
 GET /api/scenes/$SCENE_ID \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
-# getSceneUpdateUrl
-GET /api/scenes/$SCENE_ID/get-update-url?creator=$CREATOR \
-    -H "Authorization: Bearer $ACCESS_TOKEN"
-
-# getOption
-GET /api/scenes/option/$OPTION_ID
+# # getOption
+# GET /api/scenes/option/$OPTION_ID
 
 # removeScene
 DELETE /api/scenes/$SCENE_ID \
