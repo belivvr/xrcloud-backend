@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, IsUUID, IsUrl, Max, Min } from 'class-validator'
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, IsUrl, Max, Min } from 'class-validator'
 
 export class CreateRoomDto {
     @IsNotEmpty()
@@ -22,4 +22,9 @@ export class CreateRoomDto {
     @IsNotEmpty()
     @IsUrl()
     returnUrl: string
+
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    tags: string[]
 }

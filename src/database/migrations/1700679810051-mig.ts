@@ -5,7 +5,7 @@ export class Mig1700679810051 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
-            `ALTER TABLE "main"."rooms" ADD "tag" character varying NOT NULL DEFAULT 'tag'`
+            `ALTER TABLE "main"."rooms" ADD "tags" character varying array NOT NULL DEFAULT '{}'`
         )
     }
 

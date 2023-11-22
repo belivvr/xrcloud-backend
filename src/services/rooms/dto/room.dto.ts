@@ -5,7 +5,7 @@ export class RoomDto {
     id: string
     name: string
     size: number
-    tag: string
+    tags: string[]
     sceneId: string
     createdAt: Date
     updatedAt: Date
@@ -14,13 +14,13 @@ export class RoomDto {
     thumbnailUrl: string
 
     constructor(room: Room) {
-        const { id, name, size, tag, sceneId, createdAt, updatedAt, returnUrl } = room
+        const { id, name, size, tags, sceneId, createdAt, updatedAt, returnUrl } = room
 
         Object.assign(this, {
             id,
             name,
             size,
-            tag,
+            tags,
             sceneId,
             createdAt,
             updatedAt,

@@ -19,7 +19,7 @@ export class ScenesRepository extends BaseRepository<Scene> {
             .where('entity.projectId = :projectId', { projectId })
 
         if (queryDto.name) {
-            qb.where('entity.name LIKE :name', {
+            qb.andWhere('entity.name LIKE :name', {
                 name: `%${queryDto.name}%`
             })
         }

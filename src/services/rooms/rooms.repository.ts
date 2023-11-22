@@ -23,6 +23,16 @@ export class RoomsRepository extends BaseRepository<Room> {
             qb.where('entity.sceneId = :sceneId', { sceneId: queryDto.sceneId })
         }
 
+        if (queryDto.tags && queryDto.tags.length > 0) {
+            qb.andWhere('entity.tags @> :tags', { tags: queryDto.tags })
+        }
+
+        if (queryDto.name) {
+            qb.andWhere('entity.name LIKE :name', {
+                name: `%${queryDto.name}%`
+            })
+        }
+
         const [items, total] = await qb.getManyAndCount()
 
         return { items, total, take, skip }

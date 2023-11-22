@@ -12,8 +12,8 @@ export class Room extends AggregateRoot {
     @Column()
     size: number
 
-    @Column({ default: 'tag' })
-    tag: string
+    @Column('varchar', { array: true, default: '{}' })
+    tags: string[]
 
     @Column()
     infraRoomId: string
