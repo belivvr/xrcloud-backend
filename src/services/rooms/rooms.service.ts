@@ -364,7 +364,7 @@ export class RoomsService {
     }
 
     private async registerUser(projectId: string, userId?: string) {
-        const infraUserId = userId ? userId : `admin@${projectId}`
+        const infraUserId = userId ? userId : 'admin'
 
         const userExist = await this.usersService.findUserByProjectIdAndInfraUserId(projectId, infraUserId)
 
