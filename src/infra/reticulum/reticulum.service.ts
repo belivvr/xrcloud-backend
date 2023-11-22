@@ -249,7 +249,7 @@ export class ReticulumService {
         return savedToken as string
     }
 
-    async getAccountId(projectId: string, userId?: string) {
+    async getAccountId(projectId: string, userId = 'admin') {
         const emailId = `${userId}@${projectId}`
 
         const { account_id } = await this.login(emailId)

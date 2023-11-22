@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator'
+import { IsNotEmpty, IsNotIn, IsOptional, IsString, IsUUID } from 'class-validator'
 import { PaginationOptions } from 'src/common'
 
 export class ScenesQueryDto extends PaginationOptions {
@@ -22,6 +22,7 @@ export class GetSceneCreationUrlDto {
 
     @IsOptional()
     @IsString()
+    @IsNotIn(['admin'])
     creator: string
 
     @IsOptional()

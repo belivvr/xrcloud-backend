@@ -65,7 +65,7 @@ export class ScenesService {
 
         const extraArgs = {
             projectId: projectId,
-            creator,
+            creator: creator ? creator : 'admin',
             callback
         }
 
