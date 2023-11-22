@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, Inject, Param, Patch, Query, UseGuards, forwardRef } from '@nestjs/common'
 import { PublicApi, SkipAuth } from 'src/common'
 import { ClearService } from 'src/services/clear/clear.service'
-import { GetSceneCreationUrlDto, GetSceneUpdateUrlDto, ScenesQueryDto } from 'src/services/scenes/dto'
+import { GetSceneCreationUrlDto, ScenesQueryDto } from 'src/services/scenes/dto'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { HeaderAuthGuard, ProjectExistsGuard, SceneExistsGuard } from './guards'
 
@@ -32,13 +32,6 @@ export class ScenesController {
     @UseGuards(SceneExistsGuard)
     async getScene(@Param('sceneId') sceneId: string) {
         return await this.scenesService.getSceneDto(sceneId)
-    }
-
-    @Get(':sceneId/get-update-url')
-    @PublicApi()
-    @UseGuards(SceneExistsGuard)
-    async getSceneUpdateUrl(@Param('sceneId') sceneId: string, @Query() queryDto: GetSceneUpdateUrlDto) {
-        return await this.scenesService.getSceneUpdateUrl(sceneId, queryDto)
     }
 
     @Get('option/:optionId')
