@@ -4,12 +4,14 @@ export class SceneDto {
     id: string
     name: string
     tag: string
+    createdAt: Date
+    updatedAt: Date
     thumbnailUrl: string
     sceneModificationUrl: string
 
     constructor(scene: Scene) {
-        const { id, name, tag } = scene
+        const { id, name, tag, createdAt, updatedAt } = scene
 
-        Object.assign(this, { id, name, tag })
+        Object.assign(this, { id, name, tag, createdAt, updatedAt })
     }
 }
