@@ -65,7 +65,6 @@ export class RoomsService {
             slug,
             infraRoomId: infraRoom.hub_id,
             thumbnailId: scene.thumbnailId,
-            isPublic: true,
             projectId,
             sceneId: sceneId
         }
@@ -84,7 +83,13 @@ export class RoomsService {
             return { ...rooms, items: [] }
         }
 
-        const dtos = await Promise.all(rooms.items.map((room) => this.getRoomDto(room.id, userId)))
+        const dtos = []
+
+        for (const room of rooms.items) {
+            const dto = await this.getRoomDto(room.id, userId)
+
+            dtos.push(dto)
+        }
 
         return { ...rooms, items: dtos }
     }
@@ -95,6 +100,23 @@ export class RoomsService {
         Assert.defined(room, `Room with ID "${roomId}" not found.`)
 
         return room as Room
+    }
+
+    async getRoomDto(roomId: string, userId?: string) {
+        const room = await this.getRoom(roomId)
+
+        const scene = await this.scenesService.getScene(room.sceneId)
+
+        const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
+        const roomUrl = await this.getRoomUrl(roomId, userId)
+
+        await this.registerUser(room.projectId, userId)
+
+        const dto = new RoomDto(room)
+        dto.roomUrl = roomUrl
+        dto.thumbnailUrl = thumbnailUrl
+
+        return dto
     }
 
     async getRoomOption(optionId: string, queryDto: OptionQueryDto) {
@@ -192,21 +214,6 @@ export class RoomsService {
         }
     }
 
-    async getRoomDto(roomId: string, userId?: string) {
-        const room = await this.getRoom(roomId)
-
-        const scene = await this.scenesService.getScene(room.sceneId)
-
-        const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
-        const roomUrl = await this.getRoomUrl(roomId, userId)
-
-        const dto = new RoomDto(room)
-        dto.roomUrl = roomUrl
-        dto.thumbnailUrl = thumbnailUrl
-
-        return dto
-    }
-
     async countRoomsByProjectIds(projectIds: string[]): Promise<number> {
         let totalRooms = 0
 
@@ -261,27 +268,9 @@ export class RoomsService {
 
         const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
 
-        let token
-
-        if (userId) {
-            const { reticulumId, token: userToken } = await this.reticulumService.userLogin(projectId, userId)
-
-            const userExist = await this.usersService.findUserByProjectIdAndInfraUserId(projectId, userId)
-
-            if (!userExist) {
-                const createUser = {
-                    projectId,
-                    infraUserId: userId,
-                    reticulumId
-                }
-
-                await this.usersService.createUser(createUser)
-            }
-
-            token = userToken
-        } else {
-            token = await this.reticulumService.getAdminToken(projectId)
-        }
+        const token = userId
+            ? await this.reticulumService.getUserToken(projectId, userId)
+            : await this.reticulumService.getAdminToken(projectId)
 
         const url = this.reticulumService.generateRoomUrl(room.infraRoomId, room.slug)
 
@@ -372,5 +361,23 @@ export class RoomsService {
             updatedRoomAccess,
             'The result is different from the update request'
         )
+    }
+
+    private async registerUser(projectId: string, userId?: string) {
+        const infraUserId = userId ? userId : `admin@${projectId}`
+
+        const userExist = await this.usersService.findUserByProjectIdAndInfraUserId(projectId, infraUserId)
+
+        if (!userExist) {
+            const { reticulumId } = await this.reticulumService.getAccountId(projectId, userId)
+
+            const createUser = {
+                projectId: projectId,
+                infraUserId: infraUserId,
+                reticulumId
+            }
+
+            await this.usersService.createUser(createUser)
+        }
     }
 }

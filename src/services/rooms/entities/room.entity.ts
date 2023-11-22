@@ -12,14 +12,14 @@ export class Room extends AggregateRoot {
     @Column()
     size: number
 
+    @Column({ default: 'tag' })
+    tag: string
+
     @Column()
     infraRoomId: string
 
     @Column()
     thumbnailId: string
-
-    @Column({ default: false })
-    isPublic: boolean
 
     @Column({ nullable: true })
     returnUrl: string

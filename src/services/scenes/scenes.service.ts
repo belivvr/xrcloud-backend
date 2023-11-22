@@ -57,7 +57,7 @@ export class ScenesService {
     }
 
     async getSceneCreationUrl(queryDto: GetSceneCreationUrlDto) {
-        const { projectId, tag, callback, creator } = queryDto
+        const { projectId, callback, creator } = queryDto
 
         const token = creator
             ? await this.reticulumService.getUserToken(projectId, creator)
@@ -65,7 +65,6 @@ export class ScenesService {
 
         const extraArgs = {
             projectId: projectId,
-            tag: tag ? tag : 'tag',
             creator,
             callback
         }
@@ -155,22 +154,6 @@ export class ScenesService {
         const updateScene = {
             name: infraScene.name,
             thumbnailId: thumbnailId
-        }
-
-        const updatedScene = updateIntersection(scene, updateScene)
-
-        const savedScene = await this.scenesRepository.update(updatedScene)
-
-        Assert.deepEquals(savedScene, updatedScene, 'The result is different from the update request')
-
-        return this.getSceneDto(savedScene.id)
-    }
-
-    async togglePublicRoom(sceneId: string) {
-        const scene = await this.getScene(sceneId)
-
-        const updateScene = {
-            isPublicRoomOnCreate: !scene.isPublicRoomOnCreate
         }
 
         const updatedScene = updateIntersection(scene, updateScene)

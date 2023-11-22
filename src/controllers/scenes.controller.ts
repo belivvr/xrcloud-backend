@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Inject, Param, Patch, Query, UseGuards, forwardRef } from '@nestjs/common'
+import { Controller, Delete, Get, Inject, Param, Query, UseGuards, forwardRef } from '@nestjs/common'
 import { PublicApi, SkipAuth } from 'src/common'
 import { ClearService } from 'src/services/clear/clear.service'
 import { GetSceneCreationUrlDto, ScenesQueryDto } from 'src/services/scenes/dto'
@@ -38,12 +38,6 @@ export class ScenesController {
     @SkipAuth()
     async getSceneOption(@Param('optionId') optionId: string) {
         return await this.scenesService.getSceneOption(optionId)
-    }
-
-    @Patch(':sceneId/toggle-public-room')
-    @UseGuards(SceneExistsGuard)
-    async togglePublicRoom(@Param('sceneId') sceneId: string) {
-        return await this.scenesService.togglePublicRoom(sceneId)
     }
 
     @Delete(':sceneId')

@@ -7,9 +7,6 @@ export class Scene extends AggregateRoot {
     name: string
 
     @Column()
-    tag: string
-
-    @Column()
     infraProjectId: string
 
     @Column()
@@ -17,9 +14,6 @@ export class Scene extends AggregateRoot {
 
     @Column()
     thumbnailId: string
-
-    @Column({ default: false })
-    isPublicRoomOnCreate: boolean
 
     @Column()
     projectId: string

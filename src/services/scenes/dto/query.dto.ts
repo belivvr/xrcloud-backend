@@ -12,10 +12,6 @@ export class ScenesQueryDto extends PaginationOptions {
 
     @IsOptional()
     @IsString()
-    tag: string
-
-    @IsOptional()
-    @IsString()
     creator: string
 }
 
@@ -23,10 +19,6 @@ export class GetSceneCreationUrlDto {
     @IsNotEmpty()
     @IsUUID()
     projectId: string
-
-    @IsOptional()
-    @IsString()
-    tag: string
 
     @IsOptional()
     @IsString()

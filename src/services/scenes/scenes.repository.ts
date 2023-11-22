@@ -24,10 +24,6 @@ export class ScenesRepository extends BaseRepository<Scene> {
             })
         }
 
-        if (queryDto.tag) {
-            qb.andWhere('entity.creator = :tag', { tag: queryDto.tag })
-        }
-
         if (queryDto.creator) {
             qb.andWhere('entity.creator = :creator', { creator: queryDto.creator })
         }

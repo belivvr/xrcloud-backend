@@ -14,7 +14,7 @@ export class UsersRepository extends BaseRepository<User> {
         return this.typeorm.findOne({
             where: {
                 projectId,
-                infraUserId 
+                infraUserId
             }
         })
     }

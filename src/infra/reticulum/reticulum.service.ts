@@ -63,10 +63,6 @@ export class ReticulumService {
 
         const extraParts = [`projectId:${extraArgs.projectId}`]
 
-        if (extraArgs.tag) {
-            extraParts.push(`tag:${extraArgs.tag}`)
-        }
-
         if (extraArgs.creator) {
             extraParts.push(`creator:${extraArgs.creator}`)
         }
@@ -210,16 +206,14 @@ export class ReticulumService {
     }
 
     async getAdminToken(projectId: string): Promise<string> {
-        return this.getUserToken(projectId, `admin@${projectId}`)
-    }
+        const emailId = `admin@${projectId}`
 
-    async getUserToken(projectId: string, userId: string): Promise<string> {
-        const key = `${projectId}:${userId}`
+        const key = `reticulumToken:${emailId}`
 
         let savedToken = await this.cacheService.get(key)
 
         if (!savedToken) {
-            const { token } = await this.login(userId)
+            const { token } = await this.login(emailId)
 
             const expireTime = this.userTokenExpiration
 
@@ -233,14 +227,35 @@ export class ReticulumService {
         return savedToken as string
     }
 
-    async userLogin(projectId: string, userId: string) {
-        const emailId = `${projectId}:${userId}`
+    async getUserToken(projectId: string, userId: string): Promise<string> {
+        const emailId = `${userId}@${projectId}`
 
-        const { account_id, token } = await this.login(emailId)
+        const key = `reticulumToken:${emailId}`
+
+        let savedToken = await this.cacheService.get(key)
+
+        if (!savedToken) {
+            const { token } = await this.login(emailId)
+
+            const expireTime = this.userTokenExpiration
+
+            const convertExpireTime = convertTimeToSeconds(expireTime)
+
+            await this.cacheService.set(key, token, convertExpireTime)
+
+            savedToken = token
+        }
+
+        return savedToken as string
+    }
+
+    async getAccountId(projectId: string, userId?: string) {
+        const emailId = `${userId}@${projectId}`
+
+        const { account_id } = await this.login(emailId)
 
         return {
-            reticulumId: account_id,
-            token
+            reticulumId: account_id
         }
     }
 }
