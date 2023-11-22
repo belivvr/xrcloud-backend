@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common'
 import { AdminsModule } from 'src/services/admins/admins.module'
 import { AuthModule } from 'src/services/auth/auth.module'
 import { ClearModule } from 'src/services/clear/clear.module'
-import { CnuEventModule } from 'src/services/cnu-event'
 import { EventsModule } from 'src/services/events/events.module'
 import { HealthModule } from 'src/services/health/health.module'
 import { ManageAssetModule } from 'src/services/manage-asset/manage-asset.module'
@@ -15,7 +14,6 @@ import { SubscriptionsModule } from 'src/services/subscriptions/subscriptions.mo
 import { TiersModule } from 'src/services/tiers/tiers.module'
 import { AdminsController } from './admins.controller'
 import { AuthController } from './auth.controller'
-import { CnuEventController } from './cnu-event.controller'
 import { EventsController } from './events.controller'
 import { HealthController } from './health.controller'
 import { PaymentsController } from './payments.controller'
@@ -37,8 +35,7 @@ const imports = [
     TiersModule,
     PaymentsModule,
     SubscriptionsModule,
-    RegisterModule,
-    CnuEventModule
+    RegisterModule
 ]
 
 const controllers = [
@@ -50,8 +47,7 @@ const controllers = [
     EventsController,
     HealthController,
     PaymentsController,
-    SubscriptionsController,
-    CnuEventController
+    SubscriptionsController
 ]
 
 @Module({
