@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator'
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator'
 
 export class CreateSceneDto {
     @IsNotEmpty()
@@ -12,4 +12,8 @@ export class CreateSceneDto {
     @IsNotEmpty()
     @IsString()
     infraSceneId: string
+
+    @IsOptional()
+    @IsString()
+    creator: string
 }

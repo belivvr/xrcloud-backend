@@ -1,17 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ScenesService } from 'src/services/scenes/scenes.service'
-import { CnuEventService } from '../cnu-event'
 import { RoomsService } from '../rooms/rooms.service'
 import { UsersService } from '../users/users.service'
 import { HubEventDto, HubEventName, SpokeEventDto, SpokeEventName } from './dto'
-import { CreateSceneData, ExitRoomData, JoinRoomData, UpdateSceneData } from './interfaces'
+import { CallbackData, CreateSceneData, ExitRoomData, JoinRoomData, UpdateSceneData } from './interfaces'
 
 @Injectable()
 export class EventsService {
     constructor(
         private readonly scenesService: ScenesService,
         private readonly roomsService: RoomsService,
-        private readonly cnuEventService: CnuEventService,
         private readonly usersService: UsersService
     ) {}
 
@@ -70,19 +68,19 @@ export class EventsService {
         const createData = {
             projectId: extraObj.projectId,
             infraProjectId: infraProjectId,
-            infraSceneId: infraSceneId
+            infraSceneId: infraSceneId,
+            creator: extraObj.creator
         }
 
         const scene = await this.scenesService.createScene(createData)
 
-        if (extraObj.extraData && extraObj.extraData === 'cnu') {
-            const createCnuEventData = {
-                creator: extraObj.creator,
-                projectId: extraObj.projectId,
-                sceneId: scene.id
+        if (extraObj.callback) {
+            const callbackData = {
+                sceneId: scene.id,
+                callback: extraObj.callback
             }
 
-            await this.cnuEventService.createCnuEvent(createCnuEventData)
+            await this.callback(callbackData)
         }
     }
 
@@ -94,6 +92,30 @@ export class EventsService {
         }
 
         await this.scenesService.updateScene(updateData)
+    }
+
+    private async callback(callbackData: CallbackData) {
+        const { sceneId, callback } = callbackData
+
+        const fetchBody = {
+            sceneId
+        }
+
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(fetchBody)
+        }
+
+        const response = await fetch(callback, fetchOptions)
+
+        if (300 <= response.status) {
+            const errorData = await response.text()
+
+            Logger.error(`Failed to fetch for "${callback}"`, errorData)
+        }
     }
 
     /*

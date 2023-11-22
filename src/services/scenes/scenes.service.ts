@@ -13,6 +13,7 @@ import {
 import { Scene } from './entities'
 import { SceneConfigService } from './scene-config.service'
 import { ScenesRepository } from './scenes.repository'
+import { AdminsService } from '../admins/admins.service'
 
 @Injectable()
 export class ScenesService {
@@ -21,11 +22,14 @@ export class ScenesService {
         private readonly reticulumService: ReticulumService,
         private readonly cacheService: CacheService,
         private readonly configService: SceneConfigService,
-        private readonly projectsService: ProjectsService
+        private readonly projectsService: ProjectsService,
+        private readonly adminsService: AdminsService
     ) {}
 
     async createScene(createSceneDto: CreateSceneDto) {
-        const { projectId, infraProjectId, infraSceneId } = createSceneDto
+        const { projectId, infraSceneId } = createSceneDto
+
+        let { creator } = createSceneDto
 
         // TODO
         await this.projectsService.validateProjectExists(projectId)
@@ -34,16 +38,22 @@ export class ScenesService {
             throw new ConflictException(`Scene with ID "${infraSceneId}" already exists.`)
         }
 
+        if (!creator) {
+            const project = await this.projectsService.getProject(projectId)
+
+            const admin = await this.adminsService.getAdmin(project.adminId)
+
+            creator = admin.email
+        }
+
         const infraScene = await this.reticulumService.getScene(infraSceneId)
 
         const thumbnailId = await this.reticulumService.getThumbnailId(infraScene.screenshot_owned_file_id)
 
         const createScene = {
             name: infraScene.name,
-            infraSceneId: infraSceneId,
-            infraProjectId: infraProjectId,
             thumbnailId: thumbnailId,
-            projectId: projectId
+            ...createSceneDto
         }
 
         const scene = await this.scenesRepository.create(createScene)
@@ -64,14 +74,16 @@ export class ScenesService {
     }
 
     async getSceneCreationUrl(queryDto: GetSceneCreationUrlDto) {
-        const { projectId, creator } = queryDto
+        const { projectId, creator, callback } = queryDto
 
         const token = creator
             ? await this.reticulumService.getUserToken(projectId, creator)
             : await this.reticulumService.getAdminToken(projectId)
 
         const extraArgs = {
-            projectId: projectId
+            projectId: projectId,
+            creator,
+            callback
         }
 
         const { url, options } = await this.reticulumService.getSceneCreationInfo(token, extraArgs)
@@ -86,7 +98,7 @@ export class ScenesService {
 
         const sceneCreationUrl = `${url}?optId=${optionId}`
 
-        return sceneCreationUrl
+        return { sceneCreationUrl }
     }
 
     async getSceneDto(sceneId: string) {
@@ -129,7 +141,7 @@ export class ScenesService {
 
         const sceneUpdateUrl = `${url}?optId=${optionId}`
 
-        return sceneUpdateUrl
+        return { sceneUpdateUrl }
     }
 
     async getSceneOption(optionId: string) {

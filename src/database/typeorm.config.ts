@@ -2,7 +2,6 @@ import { Logger } from '@nestjs/common'
 import * as dotenv from 'dotenv'
 import { ConfigException, TypeormLogger } from 'src/common'
 import { Admin } from 'src/services/admins/entities'
-import { CnuEvent } from 'src/services/cnu-event/entities'
 import { Option } from 'src/services/options/entities'
 import { Project } from 'src/services/projects/entities'
 import { Room, RoomAccess } from 'src/services/rooms/entities'
@@ -33,12 +32,12 @@ import { Mig1699335737649 } from './migrations/1699335737649-mig'
 import { Mig1699335815108 } from './migrations/1699335815108-mig'
 import { Mig1700023892103 } from './migrations/1700023892103-mig'
 import { Mig1700038420176 } from './migrations/1700038420176-mig'
-import { Mig1700533905262 } from './migrations/1700533905262-mig'
 import { Mig1700534872626 } from './migrations/1700534872626-mig'
+import { Mig1700644851241 } from './migrations/1700644851241-mig'
 
 dotenv.config()
 
-const entities = [Admin, Project, Scene, Room, Tier, Subscription, Option, CnuEvent, RoomAccess, User]
+const entities = [Admin, Project, Scene, Room, Tier, Subscription, Option, RoomAccess, User]
 const migrations = [
     Mig1687757321854,
     Mig1687933860267,
@@ -62,8 +61,8 @@ const migrations = [
     Mig1699335815108,
     Mig1700023892103,
     Mig1700038420176,
-    Mig1700533905262,
-    Mig1700534872626
+    Mig1700534872626,
+    Mig1700644851241
 ]
 
 type SupportedConnectionOptions = PostgresConnectionOptions

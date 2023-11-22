@@ -2,6 +2,12 @@ export interface CreateSceneData {
     projectId: string
     sceneId: string
     extra: string
+    callback?: string
+}
+
+export interface CallbackData {
+    sceneId: string
+    callback: string
 }
 
 export interface UpdateSceneData {

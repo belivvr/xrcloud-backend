@@ -67,8 +67,8 @@ export class ReticulumService {
             extraParts.push(`creator:${extraArgs.creator}`)
         }
 
-        if (extraArgs.extraData) {
-            extraParts.push(`extraData:${extraArgs.extraData}`)
+        if (extraArgs.callback) {
+            extraParts.push(`callback:${extraArgs.callback}`)
         }
 
         const extra = extraParts.join('&')

@@ -5,6 +5,14 @@ export class ScenesQueryDto extends PaginationOptions {
     @IsNotEmpty()
     @IsUUID()
     projectId: string
+
+    @IsOptional()
+    @IsString()
+    name: string
+
+    @IsOptional()
+    @IsString()
+    creator: string
 }
 
 export class GetSceneCreationUrlDto {
@@ -15,6 +23,10 @@ export class GetSceneCreationUrlDto {
     @IsOptional()
     @IsString()
     creator: string
+
+    @IsOptional()
+    @IsString()
+    callback: string
 }
 
 export class GetSceneUpdateUrlDto {

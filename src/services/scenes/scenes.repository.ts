@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { BaseRepository, PaginationResult } from 'src/common'
@@ -16,6 +17,16 @@ export class ScenesRepository extends BaseRepository<Scene> {
 
         const qb = this.createQueryBuilder(queryDto)
             .where('entity.projectId = :projectId', { projectId })
+
+        if (queryDto.name) {
+            qb.where('entity.name LIKE :name', {
+                name: `%${queryDto.name}%`
+            })
+        }
+
+        if (queryDto.creator) {
+            qb.andWhere('entity.creator = :creator', { creator: queryDto.creator })
+        }
 
         const [items, total] = await qb.getManyAndCount()
 
