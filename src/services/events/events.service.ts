@@ -109,7 +109,7 @@ export class EventsService {
             body: JSON.stringify(fetchBody)
         }
 
-        const response = await fetch(callback, fetchOptions)
+        const response = await fetch(decodeURIComponent(callback), fetchOptions)
 
         if (300 <= response.status) {
             const errorData = await response.text()

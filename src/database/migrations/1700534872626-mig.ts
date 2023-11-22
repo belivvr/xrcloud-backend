@@ -4,7 +4,9 @@ export class Mig1700534872626 implements MigrationInterface {
     name = 'Mig1700534872626'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "main"."scenes" ADD "creator" character varying NOT NULL DEFAULT 'admin'`)
+        await queryRunner.query(
+            `ALTER TABLE "main"."scenes" ADD "creator" character varying NOT NULL DEFAULT 'admin'`
+        )
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
