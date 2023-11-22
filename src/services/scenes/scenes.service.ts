@@ -65,7 +65,7 @@ export class ScenesService {
 
         const extraArgs = {
             projectId: projectId,
-            creator: creator ? creator : 'admin',
+            creator,
             callback
         }
 
@@ -108,7 +108,7 @@ export class ScenesService {
     async getSceneModificationUrl(sceneId: string) {
         const scene = await this.getScene(sceneId)
 
-        const token = scene.creator
+        const token = scene.creator !== 'admin'
             ? await this.reticulumService.getUserToken(scene.projectId, scene.creator)
             : await this.reticulumService.getAdminToken(scene.projectId)
 
