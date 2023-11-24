@@ -108,9 +108,10 @@ export class ScenesService {
     async getSceneModificationUrl(sceneId: string) {
         const scene = await this.getScene(sceneId)
 
-        const token = scene.creator !== 'admin'
-            ? await this.reticulumService.getUserToken(scene.projectId, scene.creator)
-            : await this.reticulumService.getAdminToken(scene.projectId)
+        const token =
+            scene.creator !== 'admin'
+                ? await this.reticulumService.getUserToken(scene.projectId, scene.creator)
+                : await this.reticulumService.getAdminToken(scene.projectId)
 
         const { url, options } = await this.reticulumService.getSceneModificationInfo(
             scene.infraProjectId,
@@ -193,6 +194,10 @@ export class ScenesService {
         const scenes = await this.scenesRepository.findByProjectId(projectId)
 
         return scenes
+    }
+
+    async countScenes() {
+        return await this.scenesRepository.count()
     }
 
     async getSceneResources(sceneId: string) {

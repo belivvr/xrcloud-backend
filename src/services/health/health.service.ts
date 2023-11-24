@@ -4,11 +4,13 @@ import * as os from 'os'
 import { AdminsService } from 'src/services/admins/admins.service'
 import { RoomsService } from 'src/services/rooms/rooms.service'
 import { EntityManager } from 'typeorm'
+import { ScenesService } from '../scenes/scenes.service'
 
 @Injectable()
 export class HealthService {
     constructor(
         private readonly adminsService: AdminsService,
+        private readonly scenesService: ScenesService,
         private readonly roomsService: RoomsService,
         @InjectEntityManager()
         private readonly entityManager: EntityManager
@@ -32,11 +34,15 @@ export class HealthService {
 
     async getStatistics() {
         const adminCount = await this.adminsService.countAdmins()
+        const sceneCount = await this.scenesService.countScenes()
         const roomCount = await this.roomsService.countRooms()
+        const roomAccessesCount = await this.roomsService.countRoomAccesses()
 
         return {
             admins: adminCount,
-            rooms: roomCount
+            scenes: sceneCount,
+            rooms: roomCount,
+            roomAccesses: roomAccessesCount
         }
     }
 

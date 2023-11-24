@@ -11,7 +11,9 @@ const runStatisticsCheck = async () => {
         const statisticsData = await statisticsResponse.json()
 
         const countAdmins = statisticsData.admins
+        const countScenes = statisticsData.scenes
         const countRooms = statisticsData.rooms
+        const countRoomAccesses = statisticsData.roomAccesses
 
         const chatMessage = {
             cardsV2: [
@@ -37,8 +39,20 @@ const runStatisticsCheck = async () => {
                                     },
                                     {
                                         decoratedText: {
+                                            topLabel: 'Scenes',
+                                            text: `${countScenes}`,
+                                        },
+                                    },
+                                    {
+                                        decoratedText: {
                                             topLabel: 'Rooms',
                                             text: `${countRooms}`,
+                                        },
+                                    },
+                                    {
+                                        decoratedText: {
+                                            topLabel: 'Room Accesses',
+                                            text: `${countRoomAccesses}`,
                                         },
                                     },
                                 ],
@@ -54,6 +68,8 @@ const runStatisticsCheck = async () => {
         const webhookToken = process.env.GOOGLE_CHAT_MONITORING_TOKEN
 
         const fullWebhookUrl = `${webhookUrl}?key=${webhookKey}&token=${webhookToken}`
+
+        console.log(fullWebhookUrl)
 
         const webhookResponse = await fetch(fullWebhookUrl, {
             method: 'POST',

@@ -49,4 +49,8 @@ export class ScenesRepository extends BaseRepository<Scene> {
             where: { infraSceneId: infraSceneId } as FindOptionsWhere<Scene>
         })
     }
+
+    async count(): Promise<number> {
+        return this.typeorm.count()
+    }
 }

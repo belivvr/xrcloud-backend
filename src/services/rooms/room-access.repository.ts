@@ -26,4 +26,8 @@ export class RoomAccessRepository extends BaseEntityRepository<RoomAccess> {
     async findBySessionId(sessionId: string): Promise<RoomAccess | null> {
         return this.typeorm.findOneBy({ sessionId })
     }
+
+    async count(): Promise<number> {
+        return this.typeorm.count()
+    }
 }

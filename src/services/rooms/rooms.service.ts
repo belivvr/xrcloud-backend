@@ -44,6 +44,9 @@ export class RoomsService {
         private readonly configService: RoomConfigService
     ) {}
 
+    /*
+     * rooms
+     */
     async createRoom(createRoomDto: CreateRoomDto) {
         const { projectId, sceneId, ...createData } = createRoomDto
 
@@ -319,6 +322,9 @@ export class RoomsService {
         }
     }
 
+    /*
+     * room-access
+     */
     async createRoomAccess(createRoomAccessDto: CreateRoomAccessDto) {
         await this.roomAccessRepository.create(createRoomAccessDto)
     }
@@ -361,6 +367,10 @@ export class RoomsService {
             updatedRoomAccess,
             'The result is different from the update request'
         )
+    }
+
+    async countRoomAccesses() {
+        return await this.roomAccessRepository.count()
     }
 
     private async registerUser(projectId: string, userId?: string) {
