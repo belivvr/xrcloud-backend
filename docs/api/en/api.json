@@ -22,7 +22,7 @@
         {
             "name": "scene",
             "x-displayName": "Scene",
-            "description": "Scene Creation: Use the sceneCreationUrl field from the response json of [get project api](#tag/project/operation/GetProject) to create the scene. \n\n Scene Modification: Use the sceneModificationUrl field from the response json of [get scene api](#tag/project/operation/GetScene) to modify the scene. \n\n - The `optId` values are callback values for checking the creation and modification of the Scene in XRCLOUD. Using them with variations may cause errors."
+            "description": "Scene creation: Accessed by the return value of [get creation url](#operation/GetSceneCreationUrl) api and created in the editor (Spoke). \n\n Modify Scene: Modify it using sceneModificationUrl in the response json field of [get scene api](#operation/GetScene). \n\n - The `optId` value is a callback value to confirm the creation and modification of the scene in XRCLOUD. If you use it with variations, an error may occur."
         },
         {
             "name": "room",
@@ -98,6 +98,12 @@
                         "$ref": "#/components/parameters/ProjectId"
                     },
                     {
+                        "$ref": "#/components/parameters/Name"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Creator"
+                    },
+                    {
                         "$ref": "#/components/parameters/PaginationTake"
                     },
                     {
@@ -111,6 +117,51 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/GetScenesSuccessResponse"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/scenes/get-creation-url": {
+            "get": {
+                "tags": [
+                    "scene"
+                ],
+                "operationId": "GetSceneCreationUrl",
+                "summary": "get creation url",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ProjectId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SceneCreateCreator"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SceneCreateCallback"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetSceneCreationUrlSuccessResponse"
                                 }
                             }
                         }
@@ -242,15 +293,22 @@
                 ],
                 "operationId": "GetRooms",
                 "summary": "get rooms",
+                "description": "That API must be called with either a projectId or a sceneId.",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
                     },
                     {
-                        "$ref": "#/components/parameters/SceneId"
+                        "$ref": "#/components/parameters/RoomProjectId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/RoomSceneId"
                     },
                     {
                         "$ref": "#/components/parameters/UserId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Name"
                     },
                     {
                         "$ref": "#/components/parameters/PaginationTake"
@@ -403,7 +461,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "The header must contain the following `X-XRCLOUD-API-KEY: {ApiKey}`."
+                "description": "The header must contain the following `X-XRCLOUD-API-KEY: ${ApiKey}`."
             },
             "PaginationTake": {
                 "required": false,
@@ -440,6 +498,61 @@
                     "type": "uuid"
                 },
                 "description": "The unique ID of the scene."
+            },
+            "RoomProjectId": {
+                "required": false,
+                "name": "projectId",
+                "in": "query",
+                "schema": {
+                    "type": "uuid"
+                },
+                "description": "The unique ID of the project."
+            },
+            "RoomSceneId": {
+                "required": false,
+                "name": "sceneId",
+                "in": "query",
+                "schema": {
+                    "type": "uuid"
+                },
+                "description": "The unique ID of the scene."
+            },
+            "Name": {
+                "required": false,
+                "name": "name",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "(search) Search for Object(s) with that name."
+            },
+            "Creator": {
+                "required": false,
+                "name": "creator",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "(search) Search for Object(s) with that creator."
+            },
+            "SceneCreateCreator": {
+                "required": false,
+                "name": "creator",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "Allows you to specify the creator of the Scene. This is used to distinguish 'My Assets' within the authoring space, and if called to create without including this parameter, the scene will be created identically to the one created by 'Admin'."
+            },
+            "SceneCreateCallback": {
+                "required": false,
+                "name": "callback",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "This is called when a specific behavior is required immediately after a Scene is created, including when a Room is created directly from that Scene. The call on the XRCloud side looks like this. \n\n { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sceneId }) }",
+                "example": "https://api.xrcloud.app/rooms"
             },
             "UserId": {
                 "required": false,
@@ -537,6 +650,18 @@
                         "description": "The name of the scene.",
                         "example": "example scene name"
                     },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The date and time when the scene was created.",
+                        "example": "2023-07-12T09:27:41.600Z"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The date and time when the scene was last updated.",
+                        "example": "2023-07-12T09:27:41.600Z"
+                    },
                     "thumbnailUrl": {
                         "type": "string",
                         "description": "The URL of the scene's thumbnail.",
@@ -567,6 +692,11 @@
                         "description": "Maximum number of people who can enter a room.",
                         "example": 10
                     },
+                    "tags": {
+                        "type": "array",
+                        "description": "(Before Use) Field to identify a specific Room.",
+                        "example": []
+                    },
                     "sceneId": {
                         "type": "string",
                         "description": "Id (uuid) of the XRCLOUD Scene.",
@@ -593,15 +723,35 @@
                         "type": "object",
                         "description": "The URL to enter the room.",
                         "properties": {
-                            "host": {
-                                "type": "string",
-                                "description": "Host's room url.",
-                                "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                            "public": {
+                                "description": "Unable to distinguish between users accessing a public URL whose value does not change.",
+                                "properties": {
+                                    "host": {
+                                        "type": "string",
+                                        "description": "Host's room url.",
+                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                                    },
+                                    "guest": {
+                                        "type": "string",
+                                        "description": "Guest's room url.",
+                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=a0166051-1eee-44bb-922a-c988d517a0e1"
+                                    }
+                                }
                             },
-                            "guest": {
-                                "type": "string",
-                                "description": "Guest's room url.",
-                                "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=a0166051-1eee-44bb-922a-c988d517a0e1"
+                            "private": {
+                                "description": "Differentiate between users accessing a URL that changes every time they get a URL through 'Get Room'.",
+                                "properties": {
+                                    "host": {
+                                        "type": "string",
+                                        "description": "Host's room url.",
+                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                                    },
+                                    "guest": {
+                                        "type": "string",
+                                        "description": "Guest's room url.",
+                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=a0166051-1eee-44bb-922a-c988d517a0e1"
+                                    }
+                                }
                             }
                         }
                     },
@@ -636,6 +786,16 @@
                     }
                 }
             },
+            "GetSceneCreationUrlSuccessResponse": {
+                "type": "object",
+                "properties": {
+                    "sceneCreationUrl": {
+                        "type": "string",
+                        "description": "The URL of the space where you want to create the scene.",
+                        "example": "https://room.xrcloud.app:4000/spoke/projects/new?optId=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                    }
+                }
+            },
             "CreateRoomRequest": {
                 "type": "object",
                 "required": [
@@ -663,7 +823,6 @@
                     "size": {
                         "type": "number",
                         "description": "Maximum number of people who can enter a room.",
-                        "maximum": 10,
                         "example": 10
                     },
                     "returnUrl": {
@@ -708,7 +867,6 @@
                     "size": {
                         "type": "number",
                         "description": "Maximum number of people who can enter a room.",
-                        "maximum": 10,
                         "example": 10
                     },
                     "returnUrl": {

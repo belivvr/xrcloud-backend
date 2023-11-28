@@ -22,7 +22,7 @@
         {
             "name": "scene",
             "x-displayName": "Scene",
-            "description": "Scene 생성: [get project api]([#tag/project/operation/GetProject)의 response json 필드 중 sceneCreationUrl을 사용하여 생성합니다. \n\n Scene 수정: [get scene api]([#tag/project/operation/GetScene)의 response json 필드 중 sceneModificationUrl을 사용하여 수정합니다. \n\n - `optId` 값은 XRCLOUD에서 Scene의 생성 및 수정을 확인하기위한 callback value 입니다. 변형하여 사용하면 오류가 발생할 수 있습니다."
+            "description": "Scene 생성: [get creation url](#operation/GetSceneCreationUrl)api의 response인 sceneCreationUrl으로 접근한 후 에디터(Spoke)에서 생성합니다. \n\n Scene 수정: [get scene api](#operation/GetScene)의 response 중 sceneModificationUrl에 접근하여 수정합니다. \n\n - `optId` 값은 XRCLOUD에서 Scene의 생성 및 수정을 확인하기위한 callback value 입니다. 변형하여 사용하면 오류가 발생할 수 있습니다."
         },
         {
             "name": "room",
@@ -98,6 +98,12 @@
                         "$ref": "#/components/parameters/ProjectId"
                     },
                     {
+                        "$ref": "#/components/parameters/Name"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Creator"
+                    },
+                    {
                         "$ref": "#/components/parameters/PaginationTake"
                     },
                     {
@@ -111,6 +117,51 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/GetScenesSuccessResponse"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/scenes/get-creation-url": {
+            "get": {
+                "tags": [
+                    "scene"
+                ],
+                "operationId": "GetSceneCreationUrl",
+                "summary": "get creation url",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ProjectId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SceneCreateCreator"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SceneCreateCallback"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetSceneCreationUrlSuccessResponse"
                                 }
                             }
                         }
@@ -242,15 +293,22 @@
                 ],
                 "operationId": "GetRooms",
                 "summary": "get rooms",
+                "description": "해당 API는 projectId 또는 sceneId 중 하나를 필수적으로 포함하여 호출해야 합니다.",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
                     },
                     {
-                        "$ref": "#/components/parameters/SceneId"
+                        "$ref": "#/components/parameters/RoomProjectId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/RoomSceneId"
                     },
                     {
                         "$ref": "#/components/parameters/UserId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Name"
                     },
                     {
                         "$ref": "#/components/parameters/PaginationTake"
@@ -403,7 +461,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "헤더에 다음과 같은 형태로 인증 키를 포함시켜야합니다. `X-XRCLOUD-API-KEY: {ApiKey}`."
+                "description": "헤더에 다음과 같은 형태로 인증 키를 포함시켜야합니다. `X-XRCLOUD-API-KEY: ${ApiKey}`."
             },
             "PaginationTake": {
                 "required": false,
@@ -430,7 +488,7 @@
                 "schema": {
                     "type": "uuid"
                 },
-                "description": "Project의 고유 ID입니다."
+                "description": "Project의 고유 ID."
             },
             "SceneId": {
                 "required": true,
@@ -439,7 +497,62 @@
                 "schema": {
                     "type": "uuid"
                 },
-                "description": "Scene의 고유 ID입니다."
+                "description": "Scene의 고유 ID."
+            },
+            "RoomProjectId": {
+                "required": false,
+                "name": "projectId",
+                "in": "query",
+                "schema": {
+                    "type": "uuid"
+                },
+                "description": "Project의 고유 ID."
+            },
+            "RoomSceneId": {
+                "required": false,
+                "name": "sceneId",
+                "in": "query",
+                "schema": {
+                    "type": "uuid"
+                },
+                "description": "Scene의 고유 ID."
+            },
+            "Name": {
+                "required": false,
+                "name": "name",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "(search) 해당 이름을 가진 Object 조회."
+            },
+            "Creator": {
+                "required": false,
+                "name": "creator",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "(search) 특정 제작자의 Object 조회."
+            },
+            "SceneCreateCreator": {
+                "required": false,
+                "name": "creator",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "Scene의 제작자를 지정할 수 있습니다. 제작 공간 안의 'My Assets'를 구분하는 데에 쓰이며 해당 파라미터를 포함하지 않고 호출하여 제작하는 경우 'Admin'이 제작한 것과 동일하게 Scene이 만들어집니다."
+            },
+            "SceneCreateCallback": {
+                "required": false,
+                "name": "callback",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "Scene 제작 직후에 특정 동작이 필요한 경우(해당 Scene으로 곧장 Room을 제작하는 경우 등) 포함하여 호출합니다. XRCloud 측에서의 호출은 아래와 같이 이루어집니다. \n\n { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sceneId }) }",
+                "example": "https://api.xrcloud.app/rooms"
             },
             "UserId": {
                 "required": false,
@@ -448,7 +561,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "Project(app)의 사용자입니다. Room에 입장하는 사용자를 구분하기 위해 사용됩니다."
+                "description": "Project(app)의 사용자. Room에 입장하는 사용자를 구분하기 위해 사용됩니다."
             }
         },
         "schemas": {
@@ -467,183 +580,18 @@
                     },
                     "url": {
                         "type": "string",
-                        "description": "이 오류를 반환한 엔드포인트입니다. 이 값은 엔드포인트에 따라 달라집니다.",
+                        "description": "이 오류를 반환한 엔드포인트. 이 값은 엔드포인트에 따라 달라집니다.",
                         "example": "/example/endpoint"
                     },
                     "body": {
                         "type": "object",
-                        "description": "오류를 일으킨 요청 본문에 전송된 원본 데이터입니다. 실제 값은 요청에 따라 달라집니다.",
+                        "description": "오류를 일으킨 요청 본문에 전송된 원본 데이터. 실제 값은 요청에 따라 달라집니다.",
                         "example": { "key": "value" }
                     },
                     "message": {
                         "type": "string",
-                        "description": "오류를 설명하는 자세한 오류 메시지입니다.",
+                        "description": "오류를 설명하는 자세한 오류 메시지.",
                         "example": "Detailed error messages"
-                    }
-                }
-            },
-            "CreateAdminRequest": {
-                "type": "object",
-                "required": [
-                    "email",
-                    "password"
-                ],
-                "properties": {
-                    "email": {
-                        "description": "인증할 XRCLOUD Developers 계정의 이메일입니다.",
-                        "type": "string",
-                        "example": "xrcloud@belivvr.com"
-                    },
-                    "password": {
-                        "description": "인증할 XRCLOUD Developers 계정의 비밀번호입니다.",
-                        "type": "string",
-                        "example": "examPassword12!"
-                    }
-                }
-            },
-            "CreateAdminSuccessResponse": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "example": "389f0854-231e-4f9e-a0dc-8f801a41fd6a"
-                    },
-                    "email": {
-                        "type": "string",
-                        "example": "xrcloud@belivvr.com"
-                    }
-                }
-            },
-            "CreateAdminErrorResponse": {
-                "type": "object",
-                "properties": {
-                    "statusCode": {
-                        "type": "number",
-                        "example": "409"
-                    },
-                    "method": {
-                        "type": "string",
-                        "example": "POST"
-                    },
-                    "url": {
-                        "type": "string",
-                        "example": "/admins"
-                    },
-                    "body": {
-                        "type": "object",
-                        "example": {}
-                    },
-                    "message": {
-                        "type": "string",
-                        "example": "Admin with email xrcloud@belivvr.com already exists"
-                    }
-                }
-            },
-            "LoginRequest": {
-                "type": "object",
-                "required": [
-                    "email",
-                    "password"
-                ],
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "description": "인증할 XRCLOUD Developers 계정의 이메일입니다.",
-                        "example": "xrcloud@belivvr.com"
-                    },
-                    "password": {
-                        "type": "string",
-                        "description": "인증할 XRCLOUD Developers 계정의 비밀번호입니다.",
-                        "example": "examPassword12!"
-                    }
-                }
-            },
-            "LoginSuccessResponse": {
-                "type": "object",
-                "properties": {
-                    "accessToken": {
-                        "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.66jdjBjjKZlsiUuNlMZ20W_zl2ADyT49USZiiENwDCw"
-                    },
-                    "refreshToken": {
-                        "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.vH8jp9p1RJF5lalQ8dCNatVXFbUfPZQByOs20HUwlFw"
-                    }
-                }
-            },
-            "LoginErrorResponse": {
-                "type": "object",
-                "properties": {
-                    "statusCode": {
-                        "type": "number",
-                        "example": "401"
-                    },
-                    "method": {
-                        "type": "string",
-                        "example": "POST"
-                    },
-                    "url": {
-                        "type": "string",
-                        "example": "/auth/login"
-                    },
-                    "body": {
-                        "type": "object",
-                        "example": {}
-                    },
-                    "message": {
-                        "type": "string",
-                        "example": "Unauthorized"
-                    }
-                }
-            },
-            "RefreshAccessTokenRequest": {
-                "type": "object",
-                "required": [
-                    "refreshToken"
-                ],
-                "properties": {
-                    "refreshToken": {
-                        "description": "[로그인](#tag/authentication/operation/Login) 시 발급된 토큰입니다.",
-                        "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.7YlBlmZz5v66QaUEidurmkT254FCvFlbdxSjI9u9u4g"
-                    }
-                }
-            },
-            "RefreshAccessTokenSuccessResponse": {
-                "type": "object",
-                "properties": {
-                    "accessToken": {
-                        "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.66jdjBjjKZlsiUuNlMZ20W_zl2ADyT49USZiiENwDCw"
-                    },
-                    "refreshToken": {
-                        "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.vH8jp9p1RJF5lalQ8dCNatVXFbUfPZQByOs20HUwlFw"
-                    }
-                }
-            },
-            "RefreshAccessTokenErrorResponse": {
-                "type": "object",
-                "properties": {
-                    "statusCode": {
-                        "type": "number",
-                        "example": "401"
-                    },
-                    "method": {
-                        "type": "string",
-                        "example": "POST"
-                    },
-                    "url": {
-                        "type": "string",
-                        "example": "/auth/refresh"
-                    },
-                    "body": {
-                        "type": "object",
-                        "example": {}
-                    },
-                    "message": {
-                        "type": "string",
-                        "example": "Unauthorized"
                     }
                 }
             },
@@ -652,40 +600,35 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "(project_id) Project의 고유 ID입니다.",
+                        "description": "(project_id) Project의 고유 ID.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
                         "type": "string",
-                        "description": "Project의 이름입니다.",
+                        "description": "Project의 이름.",
                         "example": "example project name"
                     },
                     "createdAt": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "Project가 생성된 날짜와 시간입니다.",
+                        "description": "Project가 생성된 날짜와 시간.",
                         "example": "2023-07-12T09:27:41.600Z"
                     },
                     "updatedAt": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "Project가 마지막으로 업데이트된 날짜와 시간입니다.",
+                        "description": "Project가 마지막으로 업데이트된 날짜와 시간.",
                         "example": "2023-07-12T09:27:41.600Z"
                     },
                     "faviconUrl": {
                         "type": "string",
-                        "description": "Project의 파비콘 URL입니다.",
+                        "description": "Project의 파비콘 URL.",
                         "example": "https://kr.object.ncloudstorage.com/favicon/4a3/4a3e946e-2776-4182-afb7-204d982b727d.ico"
                     },
                     "logoUrl": {
                         "type": "string",
-                        "description": "Project 로고의 URL입니다.",
+                        "description": "Project 로고의 URL.",
                         "example": "https://kr.object.ncloudstorage.com/favicon/51d/51dc73cc-36db-4046-af8d-1e61e4b59c19.jpg"
-                    },
-                    "sceneCreationUrl": {
-                        "type": "string",
-                        "description": "Scene을 생성할 공간의 URL입니다.",
-                        "example": "https://room.xrcloud.app:4000/spoke/projects/new?optId=35e75895-9db7-4eee-bae3-87e20ee156dc"
                     }
                 }
             },
@@ -694,22 +637,34 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "(scene_id) Scene의 고유 ID입니다.",
+                        "description": "(scene_id) Scene의 고유 ID.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
                         "type": "string",
-                        "description": "Scene의 이름입니다.",
+                        "description": "Scene의 이름.",
                         "example": "example scene name"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Scene이 생성된 날짜와 시간.",
+                        "example": "2023-07-12T09:27:41.600Z"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Scene이 마지막으로 업데이트된 날짜와 시간.",
+                        "example": "2023-07-12T09:27:41.600Z"
                     },
                     "thumbnailUrl": {
                         "type": "string",
-                        "description": "Scene의 thumbnail URL입니다.",
+                        "description": "Scene의 thumbnail URL.",
                         "example": "https://api.xrcloud.app/files/852a6f47-3978-4201-a637-9699d7845266.jpg"
                     },
                     "sceneModificationUrl": {
                         "type": "string",
-                        "description": "Scene을 수정할 공간의 URL입니다.",
+                        "description": "Scene을 수정할 공간의 URL.",
                         "example": "https://room.xrcloud.app:4000/spoke/projects/ASJCJK1?optId=35e75895-9db7-4eee-bae3-87e20ee156dc"
                     }
                 }
@@ -719,60 +674,85 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "(room_id) Room의 고유 ID입니다.",
+                        "description": "(room_id) Room의 고유 ID.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
                         "type": "string",
-                        "description": "Room의 이름입니다.",
+                        "description": "Room의 이름.",
                         "example": "example room name"
                     },
                     "size": {
                         "type": "number",
-                        "description": "Room에 입장할 수 있는 최대 인원 수입니다.",
+                        "description": "Room에 입장할 수 있는 최대 인원 수.",
                         "example": 10
+                    },
+                    "tags": {
+                        "type": "array",
+                        "description": "(Before Use) 특정 Room을 구분하기 위한 필드.",
+                        "example": []
                     },
                     "sceneId": {
                         "type": "string",
-                        "description": "Scene의 ID(uuid)입니다.",
+                        "description": "Scene의 ID(uuid).",
                         "example": "c322b49b-6e12-47d9-b293-b5ab3727459c"
                     },
                     "createdAt": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "Room이 생성된 날짜와 시간입니다.",
+                        "description": "Room이 생성된 날짜와 시간.",
                         "example": "2023-07-12T09:27:41.600Z"
                     },
                     "updatedAt": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "Room을 마지막으로 업데이트한 날짜와 시간입니다.",
+                        "description": "Room을 마지막으로 업데이트한 날짜와 시간.",
                         "example": "2023-07-12T09:27:41.600Z"
                     },
                     "returnUrl": {
                         "type": "url",
-                        "description": "Room 퇴장 시 돌아갈 URL입니다.",
+                        "description": "Room 퇴장 시 돌아갈 URL.",
                         "example": "https://www.google.com/"
                     },
                     "roomUrl": {
                         "type": "object",
-                        "description": "Room에 입장할 URL입니다.",
+                        "description": "Room 입장 URL.",
                         "properties": {
-                            "host": {
-                                "type": "string",
-                                "description": "호스트의 Room URL입니다.",
-                                "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                            "public": {
+                                "description": "값이 변하지 않는 공개 URL로 접근하는 유저의 구분이 불가.",
+                                "properties": {
+                                    "host": {
+                                        "type": "string",
+                                        "description": "호스트의 Room URL.",
+                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                                    },
+                                    "guest": {
+                                        "type": "string",
+                                        "description": "게스트의 Room URL.",
+                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=a0166051-1eee-44bb-922a-c988d517a0e1"
+                                    }
+                                }
                             },
-                            "guest": {
-                                "type": "string",
-                                "description": "게스트의 Room URL입니다.",
-                                "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=a0166051-1eee-44bb-922a-c988d517a0e1"
+                            "private": {
+                                "description": "'Get Room'을 통해 URL을 얻을 때마다 변하는 URL로 접근하는 유저의 구분이 가능.",
+                                "properties": {
+                                    "host": {
+                                        "type": "string",
+                                        "description": "호스트의 Room URL.",
+                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                                    },
+                                    "guest": {
+                                        "type": "string",
+                                        "description": "게스트의 Room URL.",
+                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=a0166051-1eee-44bb-922a-c988d517a0e1"
+                                    }
+                                }
                             }
                         }
                     },
                     "thumbnailUrl": {
                         "type": "string",
-                        "description": "Room의 thumbnail URL입니다.",
+                        "description": "Room의 thumbnail URL.",
                         "example": "https://api.xrcloud.app/files/852a6f47-3978-4201-a637-9699d7845266.jpg"
                     }
                 }
@@ -785,19 +765,19 @@
                         "items": {
                             "$ref": "#/components/schemas/Project"
                         },
-                        "description": "Project 목록입니다."
+                        "description": "Project 목록."
                     },
                     "total": {
                         "type": "number",
-                        "description": "총 Project의 갯수입니다."
+                        "description": "총 Project의 갯수."
                     },
                     "skip": {
                         "type": "number",
-                        "description": "Pagination을 위해 건너뛴 항목 수입니다."
+                        "description": "Pagination을 위해 건너뛴 항목 수."
                     },
                     "take": {
                         "type": "number",
-                        "description": "Pagination을 적용해 가져온 항목 수입니다."
+                        "description": "Pagination을 적용해 가져온 항목 수."
                     }
                 }
             },
@@ -809,19 +789,29 @@
                         "items": {
                             "$ref": "#/components/schemas/Scene"
                         },
-                        "description": "Scene의 목록입니다."
+                        "description": "Scene의 목록."
                     },
                     "total": {
                         "type": "number",
-                        "description": "총 Scene의 갯수입니다."
+                        "description": "총 Scene의 갯수."
                     },
                     "skip": {
                         "type": "number",
-                        "description": "Pagination을 위해 건너뛴 항목 수입니다."
+                        "description": "Pagination을 위해 건너뛴 항목 수."
                     },
                     "take": {
                         "type": "number",
-                        "description": "Pagination을 적용해 가져온 항목 수입니다."
+                        "description": "Pagination을 적용해 가져온 항목 수."
+                    }
+                }
+            },
+            "GetSceneCreationUrlSuccessResponse": {
+                "type": "object",
+                "properties": {
+                    "sceneCreationUrl": {
+                        "type": "string",
+                        "description": "Scene을 생성할 공간의 URL.",
+                        "example": "https://room.xrcloud.app:4000/spoke/projects/new?optId=35e75895-9db7-4eee-bae3-87e20ee156dc"
                     }
                 }
             },
@@ -836,28 +826,27 @@
                 "properties": {
                     "projectId": {
                         "type": "uuid",
-                        "description": "Project의 고유 ID입니다.",
+                        "description": "Project의 고유 ID.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "sceneId": {
                         "type": "uuid",
-                        "description": "Scene의 고유 ID입니다.",
+                        "description": "Scene의 고유 ID.",
                         "example": "1234e5ba-5678-4f7a-86ed-abcd95ea1efg"
                     },
                     "name": {
                         "type": "string",
-                        "description": "Room의 이름입니다.",
+                        "description": "Room의 이름.",
                         "example": "example room name"
                     },
                     "size": {
                         "type": "number",
-                        "description": "Room에 입장할 수 있는 최대 인원 수입니다.",
-                        "maximum": 10,
+                        "description": "Room에 입장할 수 있는 최대 인원 수.",
                         "example": 10
                     },
                     "returnUrl": {
                         "type": "url",
-                        "description": "Room 퇴장 시 돌아갈 URL입니다.",
+                        "description": "Room 퇴장 시 돌아갈 URL.",
                         "example": "https://www.google.com/"
                     }
                 }
@@ -870,19 +859,19 @@
                         "items": {
                             "$ref": "#/components/schemas/Room"
                         },
-                        "description": "Room의 목록입니다."
+                        "description": "Room의 목록."
                     },
                     "total": {
                         "type": "number",
-                        "description": "총 Room의 갯수입니다."
+                        "description": "총 Room의 갯수."
                     },
                     "skip": {
                         "type": "number",
-                        "description": "Pagination을 위해 건너뛴 항목 수입니다."
+                        "description": "Pagination을 위해 건너뛴 항목 수."
                     },
                     "take": {
                         "type": "number",
-                        "description": "Pagination을 적용해 가져온 항목 수입니다."
+                        "description": "Pagination을 적용해 가져온 항목 수."
                     }
                 }
             },
@@ -891,18 +880,17 @@
                 "properties": {
                     "name": {
                         "type": "string",
-                        "description": "Room의 이름입니다.",
+                        "description": "Room의 이름.",
                         "example": "example room name"
                     },
                     "size": {
                         "type": "number",
-                        "description": "Room에 입장할 수 있는 최대 인원 수입니다.",
-                        "maximum": 10,
+                        "description": "Room에 입장할 수 있는 최대 인원 수.",
                         "example": 10
                     },
                     "returnUrl": {
                         "type": "url",
-                        "description": "Room 퇴장 시 돌아갈 URL입니다.",
+                        "description": "Room 퇴장 시 돌아갈 URL.",
                         "example": "https://www.google.com/"
                     }
                 }
