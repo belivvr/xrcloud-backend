@@ -102,4 +102,8 @@ export class AuthService {
     private async getRefreshToken(adminId: string): Promise<string | undefined> {
         return this.cacheService.get(`refreshToken:${adminId}`)
     }
+
+    async logout(adminId: string) {
+        await this.cacheService.delete(`refreshToken:${adminId}`)
+    }
 }
