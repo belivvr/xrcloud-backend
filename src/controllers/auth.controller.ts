@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Logger, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common'
 import { Assert } from 'src/common'
 import { AdminsService } from 'src/services/admins/admins.service'
 import { AdminDto } from 'src/services/admins/dto'
@@ -13,6 +13,8 @@ export class AuthController {
     @UseGuards(LocalAuthGuard)
     async login(@Req() req: any) {
         Assert.defined(req.user, 'Login failed. req.user is null.')
+
+        Logger.log(`Login success for email: ${req.user.email}`, 'Auth: login')
 
         return this.authService.login(req.user)
     }
@@ -36,5 +38,15 @@ export class AuthController {
         }
 
         return payload
+    }
+
+    @Post('logout')
+    @UseGuards(HeaderAuthGuard)
+    async logout(@Req() req: any) {
+        Assert.defined(req.user, 'Logout failed. req.user is null.')
+
+        Logger.log(`Logout success for email: ${req.user.email}`, 'Auth: logout')
+
+        await this.authService.logout(req.user.adminId)
     }
 }
