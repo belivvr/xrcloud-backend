@@ -3,7 +3,7 @@
 EMAIL='cnu1@belivvr.si'
 PASSWORD='123123a!'
 
-FILE_PATH='./images'
+FILE_PATH='./files'
 PAGE_OPT='take=100&skip=0'
 
 PROJECT_ID='bb87f0df-82e1-4fea-9cf5-c85a85b5505d'
