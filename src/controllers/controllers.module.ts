@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { AdminsModule } from 'src/services/admins/admins.module'
+import { AssetsModule } from 'src/services/assets/assets.module'
 import { AuthModule } from 'src/services/auth/auth.module'
 import { ClearModule } from 'src/services/clear/clear.module'
 import { EventsModule } from 'src/services/events/events.module'
@@ -13,6 +14,7 @@ import { ScenesModule } from 'src/services/scenes/scenes.module'
 import { SubscriptionsModule } from 'src/services/subscriptions/subscriptions.module'
 import { TiersModule } from 'src/services/tiers/tiers.module'
 import { AdminsController } from './admins.controller'
+import { AssetsController } from './assets.controller'
 import { AuthController } from './auth.controller'
 import { EventsController } from './events.controller'
 import { HealthController } from './health.controller'
@@ -35,7 +37,8 @@ const imports = [
     TiersModule,
     PaymentsModule,
     SubscriptionsModule,
-    RegisterModule
+    RegisterModule,
+    AssetsModule
 ]
 
 const controllers = [
@@ -47,7 +50,8 @@ const controllers = [
     EventsController,
     HealthController,
     PaymentsController,
-    SubscriptionsController
+    SubscriptionsController,
+    AssetsController
 ]
 
 @Module({

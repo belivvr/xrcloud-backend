@@ -1,15 +1,74 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { BadRequestException } from '@nestjs/common'
 import { extname } from 'path'
 
 export const multerOptions = {
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    imageFilter: (req: Express.Request, file: Express.Multer.File, cb: Function) => {
+    imageFilter: (req: Express.Request, file: Express.Multer.File, callback: Function) => {
         const ext = extname(file.originalname).toLowerCase()
 
         if (!['.ico', '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp'].includes(ext)) {
-            return cb(new BadRequestException('Only image files are allowed'), false)
+            return callback(new BadRequestException('Only image files are allowed'), false)
         }
 
-        cb(null, true)
+        callback(null, true)
+    },
+    assetFilter: (req: Request, file: Express.Multer.File, callback: Function) => {
+        if (!file) {
+            return callback(new BadRequestException('File is invalid or not present.'), false)
+        }
+
+        const forbiddenTypes = [
+            'text/html',
+            'text/javascript',
+            'application/javascript',
+            'application/x-javascript',
+            'application/xhtml+xml'
+        ]
+
+        if (forbiddenTypes.includes(file.mimetype)) {
+            return callback(new BadRequestException('Forbidden file type.'), false)
+        }
+
+        const allowTypes = [
+            '.mp3',
+            'audio/mpeg',
+            '.mp4',
+            'video/mp4',
+            '.png',
+            '.jpeg',
+            '.jpg',
+            '.gif',
+            'image/png',
+            'image/jpeg',
+            'image/gif',
+            '.glb',
+            'model/gltf-binary'
+        ]
+
+        const matchesFileTypes = (file: Express.Multer.File, fileTypes: string[]) => {
+            for (const pattern of fileTypes) {
+                if (pattern.startsWith('.')) {
+                    if (file.originalname.toLowerCase().endsWith(pattern)) {
+                        return true
+                    }
+                } else if (file.mimetype.startsWith(pattern)) {
+                    return true
+                }
+            }
+            return false
+        }
+
+        if (!matchesFileTypes(file, allowTypes)) {
+            return callback(
+                new BadRequestException(
+                    `"${
+                        file.originalname
+                    }" does not match the following mime types or extensions: ${allowTypes.join(', ')}`
+                ),
+                false
+            )
+        }
+
+        callback(null, true)
     }
 }
