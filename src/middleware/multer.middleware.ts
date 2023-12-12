@@ -17,6 +17,12 @@ export const multerOptions = {
             return callback(new BadRequestException('File is invalid or not present.'), false)
         }
 
+        const customMimeType = getCustomMimeType(file.originalname, file.mimetype)
+
+        if (customMimeType) {
+            file.mimetype = customMimeType
+        }
+
         const forbiddenTypes = [
             'text/html',
             'text/javascript',
@@ -71,4 +77,14 @@ export const multerOptions = {
 
         callback(null, true)
     }
+}
+
+function getCustomMimeType(filename: string, mimetype: string): string | null {
+    const ext = extname(filename).toLowerCase()
+
+    if (ext === '.glb' && mimetype === 'application/octet-stream') {
+        return 'model/gltf-binary'
+    }
+
+    return null
 }

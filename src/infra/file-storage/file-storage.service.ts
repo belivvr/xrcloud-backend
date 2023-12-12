@@ -25,7 +25,7 @@ export class FileStorageService {
         this.storage = `${this.cdnPath}/${this.bucket}`
     }
 
-    async saveFile(file: Buffer, key: string | undefined) {
+    async saveFile(file: Buffer, key: string | undefined, contentType?: string) {
         if (!key) {
             throw new InternalServerErrorException('Key for uploading files is required.')
         }
@@ -35,7 +35,8 @@ export class FileStorageService {
                 Bucket: this.configService.bucket,
                 Key: `${key}`,
                 Body: file,
-                ACL: 'public-read'
+                ACL: 'public-read',
+                ContentType: contentType
             }
 
             return await this.s3.upload(uploadParams).promise()

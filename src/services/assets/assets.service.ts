@@ -14,7 +14,7 @@ export class AssetsService {
 
         const fileKey = `assets/${uuid.slice(0, 3)}/${uuid}.${fileExtension}`
 
-        const result = await this.fileStorageService.saveFile(file.buffer, fileKey)
+        const result = await this.fileStorageService.saveFile(file.buffer, fileKey, file.mimetype)
 
         const fileUrl = result.Location
 
