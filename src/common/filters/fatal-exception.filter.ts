@@ -91,9 +91,9 @@ export class FatalExceptionFilter implements ExceptionFilter {
 
         // email notification
         const to = 'dev_team@belivvr.com'
-        const title = 'FatalException Occurred'
+        const templateId = process.env.FATAL_EXCEPTION_TEMPLATE_ID || '11780'
 
-        const createEmailData = {
+        const sendEmailData = {
             date: getServerDate(),
             url: `[${additionalInfo.method}] ${additionalInfo.url}`,
             body: JSON.stringify(additionalInfo.body),
@@ -101,7 +101,7 @@ export class FatalExceptionFilter implements ExceptionFilter {
         }
 
         try {
-            await this.emailService.sendEmail(to, title, createEmailData)
+            await this.emailService.sendEmailWithTemplate(to, templateId, sendEmailData)
         } catch (error) {
             Logger.error('Failed to send Google Mail', error.message)
         }

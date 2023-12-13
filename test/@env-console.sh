@@ -1,11 +1,16 @@
 #!/bin/bash
 
-EMAIL='zizi123@belivvr.com'
-PASSWORD='123123a!'
+EMAIL='zizi2717@belivvr.com'
+PASSWORD='123123a!@'
 
 FILE_PATH='./images'
 PAGE_OPT='take=100&skip=0'
 
-PROJECT_ID='fe75f432-dc5e-489d-9e72-3cd7da71ae26'
-SCENE_ID='93a1e0cf-ae24-4e75-bb18-1b3498eb1649'
-OPTION_ID='1a165251-e16d-44de-af7d-c53db990e02f'
+ADMIN_ID='24198a53-b4a6-4548-b560-10da80b7d0e1'
+PROJECT_ID='bb87f0df-82e1-4fea-9cf5-c85a85b5505d'
+SCENE_ID='243ed8b2-de99-44b3-96c8-655c18b2c663'
+ROOM_ID='18795235-34db-41fd-b2e3-413ff8b20d8e'
+OPTION_ID='66f1381c-ef4b-4691-92c0-474676f0d5df'
+
+USER_ID='test@test.com'
+CREATOR='test@belivvr.com'

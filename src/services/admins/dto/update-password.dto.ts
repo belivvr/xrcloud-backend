@@ -7,8 +7,8 @@ export class UpdatePasswordDto {
 
     @IsNotEmpty()
     @IsString()
-    @Length(8)
-    @Matches(/^(?=.*\d)(?=.*[!@#$%^&*()])[\d!@#$%^&*()A-Za-z]{8,}$/, {
+    @Length(9)
+    @Matches(/^(?=.*\d)(?=.*[A-Za-z])(?=.*[!@#$%^&*()\-=])[\d!@#$%^&*()\-=A-Za-z]{9,}$/, {
         message: 'Invalid password'
     })
     newPassword: string
