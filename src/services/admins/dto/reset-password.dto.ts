@@ -1,7 +1,11 @@
 import { Transform } from 'class-transformer'
-import { IsEmail, IsNotEmpty, IsOptional, IsString, Length, Matches } from 'class-validator'
+import { IsEmail, IsNotEmpty, IsString, Length, Matches } from 'class-validator'
 
-export class CreateAdminDto {
+export class ResetPasswordDto {
+    @IsNotEmpty()
+    @IsString()
+    code: string
+
     @IsNotEmpty()
     @IsEmail()
     @Transform(({ value }) => value.toLowerCase())
@@ -14,8 +18,4 @@ export class CreateAdminDto {
         message: 'Invalid password'
     })
     password: string
-
-    @IsOptional()
-    @IsString()
-    name?: string = 'name'
 }

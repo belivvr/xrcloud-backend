@@ -24,8 +24,24 @@ POST /admins/$ADMIN_ID/update-password \
     -H "Authorization: Bearer $ACCESS_TOKEN" \
     -H "Content-Type: application/json" \
     -d '{
-            "oldPassword": "'$PASSWORD'",
-            "newPassword": "123123a!"
+            "oldPassword": "123123a!@",
+            "newPassword": "123123a!@"
+        }'
+
+# findPassword
+POST /admins/find-password \
+    -H "Content-Type: application/json" \
+    -d '{
+            "email": "zizi2717@belivvr.com"
+        }'
+
+# resetPassword
+POST /admins/reset-password \
+    -H "Content-Type: application/json" \
+    -d '{
+            "code": "7290",
+            "email": "zizi2717@belivvr.com",
+            "password": "123123a!"
         }'
 
 # generateApiKey

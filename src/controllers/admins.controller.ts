@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Param, Post, Req, UseGuards } from '@nestjs/common'
 import { Assert } from 'src/common'
 import { AdminsService } from 'src/services/admins/admins.service'
-import { CreateAdminDto, UpdatePasswordDto } from 'src/services/admins/dto'
+import { CreateAdminDto, FindPasswordDto, ResetPasswordDto, UpdatePasswordDto } from 'src/services/admins/dto'
 import { ClearService } from 'src/services/clear/clear.service'
 import { RegisterService } from 'src/services/register/register.service'
 import { AdminExistsGuard, HeaderAuthGuard, UniqueEmailGuard } from './guards'
@@ -22,10 +22,8 @@ export class AdminsController {
 
     @Post(':adminId/update-password')
     @UseGuards(HeaderAuthGuard, AdminExistsGuard)
-    async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto, @Req() req: any) {
-        Assert.defined(req.user, 'Authentication failed. req.user is null.')
-
-        return await this.adminsService.updatePassword(updatePasswordDto, req.user.adminId)
+    async updatePassword(@Param('adminId') adminId: string, @Body() updatePasswordDto: UpdatePasswordDto) {
+        return await this.adminsService.updatePassword(adminId, updatePasswordDto)
     }
 
     @Post(':adminId/generate-api-key')
@@ -36,11 +34,19 @@ export class AdminsController {
         return await this.adminsService.generateApiKey(req.user.adminId)
     }
 
+    @Post('find-password')
+    async findPassword(@Body() findPasswordDto: FindPasswordDto) {
+        return await this.adminsService.findPassword(findPasswordDto)
+    }
+
+    @Post('reset-password')
+    async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+        return await this.adminsService.resetPassword(resetPasswordDto)
+    }
+
     @Delete(':adminId')
     @UseGuards(HeaderAuthGuard, AdminExistsGuard)
-    async removeAdmin(@Param('adminId') adminId: string, @Req() req: any) {
-        Assert.defined(req.user, 'Authentication failed. req.user is null.')
-
+    async removeAdmin(@Param('adminId') adminId: string) {
         return await this.clearService.clearAdmin(adminId)
     }
 }

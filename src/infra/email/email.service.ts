@@ -17,18 +17,22 @@ export class EmailService {
         this.sender = this.configService.sender
     }
 
-    async sendEmail(to: string, title: string, sendEmailData: object) {
-        const timestamp = Date.now().toString()
-
-        const signature = this.makeSignature('POST', '/api/v1/mails', timestamp)
-
-        const headers = {
-            'Content-Type': 'application/json',
-            'x-ncp-apigw-timestamp': timestamp,
-            'x-ncp-iam-access-key': this.accessKeyId,
-            'x-ncp-apigw-signature-v2': signature
+    async sendEmailWithTemplate(to: string, templateId: string, parameters: object) {
+        const recipient = {
+            address: to,
+            type: 'R'
         }
 
+        const data = {
+            templateSid: templateId,
+            parameters: parameters,
+            recipients: [recipient]
+        }
+
+        await this.sendEmail(data)
+    }
+
+    async sendEmailWithoutTemplate(to: string, title: string, sendEmailData: object) {
         const recipient = {
             address: to,
             type: 'R'
@@ -41,11 +45,26 @@ export class EmailService {
             recipients: [recipient]
         }
 
+        await this.sendEmail(data)
+    }
+
+    private async sendEmail(sendMailData: object) {
+        const timestamp = Date.now().toString()
+
+        const signature = this.makeSignature('POST', '/api/v1/mails', timestamp)
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'x-ncp-apigw-timestamp': timestamp,
+            'x-ncp-iam-access-key': this.accessKeyId,
+            'x-ncp-apigw-signature-v2': signature
+        }
+
         try {
             const response = await fetch(`${this.endpoint}/mails`, {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify(data)
+                body: JSON.stringify(sendMailData)
             })
 
             if (!response.ok) {
