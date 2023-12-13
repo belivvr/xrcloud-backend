@@ -5,6 +5,10 @@ import { AppModule } from './app.module'
 import { NestExpressApplication } from '@nestjs/platform-express'
 
 async function bootstrap() {
+    if (process.env.NODE_TLS_REJECT_UNAUTHORIZED) {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+    }
+
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         rawBody: true
     })
