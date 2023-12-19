@@ -1,5 +1,4 @@
-import { compare, hash } from 'bcrypt'
-import { createHash, randomUUID } from 'crypto'
+import { createHash, randomBytes, randomUUID } from 'crypto'
 import { LogicException } from '../exceptions'
 import { Coordinate } from '../types'
 
@@ -63,14 +62,23 @@ export function convertTimeToSeconds(timeString: string): number {
 export function notUsed(_message?: string) {}
 
 export async function hashPassword(password: string): Promise<string> {
-    const saltRounds = 10
+    const salt = randomBytes(16).toString('hex')
 
-    const hashedPassword = await hash(password, saltRounds)
-    return hashedPassword
+    const hashedPassword: string = createHash('sha256')
+        .update(password + salt)
+        .digest('hex')
+
+    return `${salt}:${hashedPassword}`
 }
 
 export async function validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    return compare(plainPassword, hashedPassword)
+    const [salt, originalHash] = hashedPassword.split(':')
+
+    const newHash = createHash('sha256')
+        .update(plainPassword + salt)
+        .digest('hex')
+
+    return newHash === originalHash
 }
 
 export function addQuotesToNumbers(text: string) {
