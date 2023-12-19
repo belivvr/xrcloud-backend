@@ -111,22 +111,6 @@ export class ScenesService {
         return this.getSceneDto(savedScene.id)
     }
 
-    async togglePublicRoom(sceneId: string) {
-        const scene = await this.getScene(sceneId)
-
-        const updateScene = {
-            isPublicRoomOnCreate: !scene.isPublicRoomOnCreate
-        }
-
-        const updatedScene = updateIntersection(scene, updateScene)
-
-        const savedScene = await this.scenesRepository.update(updatedScene)
-
-        Assert.deepEquals(savedScene, updatedScene, 'The result is different from the update request')
-
-        return this.getSceneDto(savedScene.id)
-    }
-
     async removeScene(sceneId: string) {
         const scene = await this.getScene(sceneId)
 

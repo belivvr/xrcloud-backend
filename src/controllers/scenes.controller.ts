@@ -33,12 +33,6 @@ export class ScenesController {
         return await this.scenesService.getSceneOption(optionId)
     }
 
-    @Patch(':sceneId/toggle-public-room')
-    @UseGuards(SceneExistsGuard)
-    async togglePublicRoom(@Param('sceneId') sceneId: string) {
-        return await this.scenesService.togglePublicRoom(sceneId)
-    }
-
     @Delete(':sceneId')
     @PublicApi()
     @UseGuards(SceneExistsGuard)
