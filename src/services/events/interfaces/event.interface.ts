@@ -1,3 +1,5 @@
+import { RoomAccessType } from 'src/services/rooms/types'
+
 export interface CreateSceneData {
     projectId: string
     sceneId: string
@@ -7,7 +9,7 @@ export interface CreateSceneData {
 
 export interface CallbackData {
     sceneId: string
-    callback: string
+    callbackUrl: string
 }
 
 export interface UpdateSceneData {
@@ -26,13 +28,10 @@ export interface ExitRoomData {
     eventTime: string
 }
 
-export interface UserDetails {
-    infraUserId: string
-}
-
-export interface RoomDetails {
-    projectId: string
-    roomId: string
-    userCount: number
-    users: UserDetails[]
+export interface WebhookData {
+    webhookUrl: string
+    infraUserId?: string
+    roomId?: string
+    roomAccessType?: RoomAccessType
+    roomAccessTime?: Date
 }

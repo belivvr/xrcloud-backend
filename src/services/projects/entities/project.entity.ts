@@ -9,6 +9,9 @@ export class Project extends AggregateRoot {
     @Column({ nullable: true })
     label: string
 
+    @Column({ nullable: true })
+    webhookUrl: string
+
     @Column()
     faviconId: string
 

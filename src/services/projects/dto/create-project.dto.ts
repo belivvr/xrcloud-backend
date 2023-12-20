@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
+import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator'
 
 export class CreateProjectDto {
     @IsNotEmpty()
@@ -8,4 +8,8 @@ export class CreateProjectDto {
     @IsOptional()
     @IsString()
     label?: string
+
+    @IsOptional()
+    @IsUrl()
+    webhookUrl?: string
 }

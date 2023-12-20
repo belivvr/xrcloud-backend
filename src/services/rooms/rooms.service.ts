@@ -326,7 +326,7 @@ export class RoomsService {
      * room-access
      */
     async createRoomAccess(createRoomAccessDto: CreateRoomAccessDto) {
-        await this.roomAccessRepository.create(createRoomAccessDto)
+        return await this.roomAccessRepository.create(createRoomAccessDto)
     }
 
     async findRoomAccess(roomId: string, queryDto: RoomAccessQueryDto) {
@@ -367,6 +367,8 @@ export class RoomsService {
             updatedRoomAccess,
             'The result is different from the update request'
         )
+
+        return savedRoomAccess
     }
 
     async countRoomAccesses() {

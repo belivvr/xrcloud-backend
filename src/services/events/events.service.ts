@@ -1,16 +1,26 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ScenesService } from 'src/services/scenes/scenes.service'
+import { ProjectsService } from '../projects/projects.service'
 import { RoomsService } from '../rooms/rooms.service'
+import { RoomAccessType } from '../rooms/types'
 import { UsersService } from '../users/users.service'
 import { HubEventDto, HubEventName, SpokeEventDto, SpokeEventName } from './dto'
-import { CallbackData, CreateSceneData, ExitRoomData, JoinRoomData, UpdateSceneData } from './interfaces'
+import {
+    CallbackData,
+    CreateSceneData,
+    ExitRoomData,
+    JoinRoomData,
+    UpdateSceneData,
+    WebhookData
+} from './interfaces'
 
 @Injectable()
 export class EventsService {
     constructor(
+        private readonly usersService: UsersService,
+        private readonly projectsService: ProjectsService,
         private readonly scenesService: ScenesService,
-        private readonly roomsService: RoomsService,
-        private readonly usersService: UsersService
+        private readonly roomsService: RoomsService
     ) {}
 
     /*
@@ -77,7 +87,7 @@ export class EventsService {
         if (extraObj.callback) {
             const callbackData = {
                 sceneId: scene.id,
-                callback: extraObj.callback
+                callbackUrl: extraObj.callback
             }
 
             await this.callback(callbackData)
@@ -95,7 +105,7 @@ export class EventsService {
     }
 
     private async callback(callbackData: CallbackData) {
-        const { sceneId, callback } = callbackData
+        const { sceneId, callbackUrl } = callbackData
 
         const fetchBody = {
             sceneId
@@ -109,12 +119,12 @@ export class EventsService {
             body: JSON.stringify(fetchBody)
         }
 
-        const response = await fetch(decodeURIComponent(callback), fetchOptions)
+        const response = await fetch(decodeURIComponent(callbackUrl), fetchOptions)
 
         if (300 <= response.status) {
             const errorData = await response.text()
 
-            Logger.error(`Failed to fetch for "${callback}"`, errorData)
+            Logger.error(`Failed to fetch for callbackUrl: "${callbackUrl}"`, errorData)
         }
     }
 
@@ -181,7 +191,21 @@ export class EventsService {
             infraUserId: user.infraUserId
         }
 
-        await this.roomsService.createRoomAccess(createRoomAccess)
+        const savedRoomAccess = await this.roomsService.createRoomAccess(createRoomAccess)
+
+        const project = await this.projectsService.getProject(room.projectId)
+
+        if (project.webhookUrl) {
+            const webhookData = {
+                webhookUrl: project.webhookUrl,
+                infraUserId: savedRoomAccess.infraUserId,
+                roomId: savedRoomAccess.roomId,
+                roomAccessType: RoomAccessType.Join,
+                roomAccessTime: savedRoomAccess.joinedAt
+            }
+
+            await this.webhook(webhookData)
+        }
     }
 
     async exitRoom(exitRoomData: ExitRoomData) {
@@ -199,6 +223,46 @@ export class EventsService {
             exitedAt: new Date(eventTime)
         }
 
-        await this.roomsService.updateRoomAccess(roomAccess.id, updateRoomAccess)
+        const savedRoomAccess = await this.roomsService.updateRoomAccess(roomAccess.id, updateRoomAccess)
+
+        const room = await this.roomsService.getRoom(savedRoomAccess.roomId)
+
+        const project = await this.projectsService.getProject(room.projectId)
+
+        if (project.webhookUrl) {
+            const webhookData = {
+                webhookUrl: project.webhookUrl,
+                infraUserId: savedRoomAccess.infraUserId,
+                roomId: savedRoomAccess.roomId,
+                roomAccessType: RoomAccessType.Exit,
+                roomAccessTime: savedRoomAccess.exitedAt
+            }
+
+            await this.webhook(webhookData)
+        }
+    }
+
+    private async webhook(webhookData: WebhookData) {
+        const { webhookUrl, ...restWebhookData } = webhookData
+
+        const fetchBody = {
+            ...restWebhookData
+        }
+
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(fetchBody)
+        }
+
+        const response = await fetch(decodeURIComponent(webhookUrl), fetchOptions)
+
+        if (300 <= response.status) {
+            const errorData = await response.text()
+
+            Logger.error(`Failed to fetch for webhookUrl: "${webhookUrl}"`, errorData)
+        }
     }
 }

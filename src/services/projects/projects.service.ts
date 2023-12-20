@@ -77,6 +77,8 @@ export class ProjectsService {
     }
 
     async updateProject(projectId: string, updateProjectDto: UpdateProjectDto, files: UploadedFilesType) {
+        const { webhookUrl, ...updateData } = updateProjectDto
+
         const project = await this.getProject(projectId)
 
         for (const fieldName of [FAVICON, LOGO] as const) {
@@ -96,7 +98,8 @@ export class ProjectsService {
         }
 
         const updateProject = {
-            ...updateProjectDto
+            ...updateData,
+            webhookUrl: webhookUrl ?? null
         }
 
         const updatedProject = updateIntersection(project, updateProject)
