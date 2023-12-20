@@ -608,6 +608,11 @@
                         "description": "The name of the project.",
                         "example": "example project name"
                     },
+                    "webhookUrl": {
+                        "type": "string",
+                        "description": "The endpoint of an external system to which event information is sent when a user enters or exits a room. This URL receives POST requests containing room entry/exit information.",
+                        "example": "https://api.xrcloud.app/events/webhook"
+                    },
                     "createdAt": {
                         "type": "string",
                         "format": "date-time",

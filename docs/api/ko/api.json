@@ -608,6 +608,11 @@
                         "description": "Project의 이름.",
                         "example": "example project name"
                     },
+                    "webhookUrl": {
+                        "type": "string",
+                        "description": "사용자가 Room에 입장하거나 퇴장할 때 해당 이벤트 정보를 전송하기 위한 외부 시스템의 엔드포인트 주소. 이 URL로 Room 입/퇴장 관련 정보가 POST 요청으로 전송됩니다.",
+                        "example": "https://api.xrcloud.app/events/webhook"
+                    },
                     "createdAt": {
                         "type": "string",
                         "format": "date-time",
