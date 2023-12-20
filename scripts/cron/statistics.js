@@ -69,8 +69,6 @@ const runStatisticsCheck = async () => {
 
         const fullWebhookUrl = `${webhookUrl}?key=${webhookKey}&token=${webhookToken}`
 
-        console.log(fullWebhookUrl)
-
         const webhookResponse = await fetch(fullWebhookUrl, {
             method: 'POST',
             headers: {
