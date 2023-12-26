@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString, IsUUID } from 'class-validator'
+import { IsArray, IsOptional, IsString, IsUUID, IsUrl } from 'class-validator'
 import { PaginationOptions } from 'src/common'
 
 export class RoomsQueryDto extends PaginationOptions {
@@ -21,17 +21,25 @@ export class RoomsQueryDto extends PaginationOptions {
 
     @IsOptional()
     @IsString()
-    userId: string
+    userId?: string
+
+    @IsOptional()
+    @IsUrl()
+    avatarUrl?: string
 }
 
 export class RoomQueryDto {
     @IsOptional()
     @IsString()
-    userId: string
+    userId?: string
+
+    @IsOptional()
+    @IsUrl()
+    avatarUrl?: string
 }
 
 export class RoomAccessQueryDto {
     @IsOptional()
     @IsString()
-    userId: string
+    userId?: string
 }

@@ -3,7 +3,7 @@ export type OptionValue = {
     faviconUrl: string
     logoUrl: string
     returnUrl: string
-    funcs?: funcs
+    funcs?: Funcs
 }
 
 export enum OptionRole {
@@ -11,11 +11,11 @@ export enum OptionRole {
     Guest = 'guest'
 }
 
-type funcs = {
+export type Funcs = {
+    '3rd-view': boolean
+    'share-screen': boolean
     'object-button': boolean
     'invitation-button': boolean
-    'place-button': boolean
     'camera-button': boolean
     'left-button': boolean
-    'more-button': boolean
 }

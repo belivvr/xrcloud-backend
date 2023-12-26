@@ -24,7 +24,7 @@ import {
     UpdateRoomDto
 } from './dto'
 import { Room, RoomAccess } from './entities'
-import { RoomOption } from './interfaces'
+import { RoomOption, RoomUrlData } from './interfaces'
 import { RoomAccessRepository } from './room-access.repository'
 import { RoomConfigService } from './room-config.service'
 import { RoomsRepository } from './rooms.repository'
@@ -78,7 +78,7 @@ export class RoomsService {
     }
 
     async findRooms(queryDto: RoomsQueryDto) {
-        const { userId } = queryDto
+        const { userId, avatarUrl } = queryDto
 
         const rooms = await this.roomsRepository.find(queryDto)
 
@@ -89,7 +89,12 @@ export class RoomsService {
         const dtos = []
 
         for (const room of rooms.items) {
-            const dto = await this.getRoomDto(room.id, userId)
+            const roomUrlData: RoomUrlData = {
+                userId,
+                avatarUrl
+            }
+
+            const dto = await this.getRoomDto(room.id, roomUrlData)
 
             dtos.push(dto)
         }
@@ -105,15 +110,16 @@ export class RoomsService {
         return room as Room
     }
 
-    async getRoomDto(roomId: string, userId?: string) {
+    async getRoomDto(roomId: string, roomUrlData?: RoomUrlData) {
         const room = await this.getRoom(roomId)
 
         const scene = await this.scenesService.getScene(room.sceneId)
 
         const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
-        const roomUrl = await this.getRoomUrl(roomId, userId)
 
-        await this.registerUser(room.projectId, userId)
+        const roomUrl = await this.getRoomUrl(roomId, roomUrlData)
+
+        await this.registerUser(room.projectId, roomUrlData?.userId)
 
         const dto = new RoomDto(room)
         dto.roomUrl = roomUrl
@@ -229,9 +235,9 @@ export class RoomsService {
         return totalRooms
     }
 
-    async getRoomUrl(roomId: string, userId?: string) {
-        const publicUrl = await this.getPublicUrl(roomId)
-        const privateUrl = await this.getPrivateUrl(roomId, userId)
+    async getRoomUrl(roomId: string, roomUrlData?: RoomUrlData) {
+        const publicUrl = await this.getPublicUrl(roomId, roomUrlData)
+        const privateUrl = await this.getPrivateUrl(roomId, roomUrlData)
 
         return {
             public: publicUrl,
@@ -239,7 +245,7 @@ export class RoomsService {
         }
     }
 
-    private async getPublicUrl(roomId: string) {
+    private async getPublicUrl(roomId: string, roomUrlData?: RoomUrlData) {
         const room = await this.getRoom(roomId)
 
         const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
@@ -252,10 +258,11 @@ export class RoomsService {
         const logoUrl = `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
 
         const roomOption = {
-            token,
             faviconUrl,
             logoUrl,
-            returnUrl: room.returnUrl
+            returnUrl: room.returnUrl,
+            token,
+            avatarUrl: roomUrlData?.avatarUrl
         }
 
         const { hostOptionId, guestOptionId } = await this.setRoomOption(roomId, roomOption)
@@ -266,13 +273,13 @@ export class RoomsService {
         }
     }
 
-    private async getPrivateUrl(roomId: string, userId?: string) {
+    private async getPrivateUrl(roomId: string, roomUrlData?: RoomUrlData) {
         const room = await this.getRoom(roomId)
 
         const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
 
-        const token = userId
-            ? await this.reticulumService.getUserToken(projectId, userId)
+        const token = roomUrlData?.userId
+            ? await this.reticulumService.getUserToken(projectId, roomUrlData.userId)
             : await this.reticulumService.getAdminToken(projectId)
 
         const url = this.reticulumService.generateRoomUrl(room.infraRoomId, room.slug)
@@ -281,10 +288,11 @@ export class RoomsService {
         const logoUrl = `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
 
         const guestRoomOption = {
-            token,
             faviconUrl,
             logoUrl,
-            returnUrl: room.returnUrl
+            returnUrl: room.returnUrl,
+            token,
+            avatarUrl: roomUrlData?.avatarUrl
         }
 
         const hostRoomOption = {

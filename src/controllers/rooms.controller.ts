@@ -23,6 +23,7 @@ import {
     RoomsQueryDto,
     UpdateRoomDto
 } from 'src/services/rooms/dto'
+import { RoomUrlData } from 'src/services/rooms/interfaces'
 import { RoomsService } from 'src/services/rooms/rooms.service'
 import { HeaderAuthGuard, ProjectExistsGuard, SceneExistsGuard } from './guards'
 import { RoomExistsGuard } from './guards/room-exists.guard'
@@ -58,7 +59,12 @@ export class RoomsController {
     @PublicApi()
     @UseGuards(RoomExistsGuard)
     async getRoom(@Param('roomId') roomId: string, @Query() queryDto: RoomQueryDto) {
-        return await this.roomsService.getRoomDto(roomId, queryDto.userId)
+        const roomUrlData: RoomUrlData = {
+            userId: queryDto.userId,
+            avatarUrl: queryDto.avatarUrl
+        }
+
+        return await this.roomsService.getRoomDto(roomId, roomUrlData)
     }
 
     @Get(':roomId/logs')

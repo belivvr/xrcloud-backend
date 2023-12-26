@@ -3,7 +3,7 @@ import { Assert, updateIntersection } from 'src/common'
 import { RoomOption } from '../rooms/interfaces'
 import { Option } from './entities'
 import { OptionsRepository } from './options.repository'
-import { OptionRole } from './types'
+import { Funcs, OptionRole } from './types'
 
 @Injectable()
 export class OptionsService {
@@ -12,7 +12,7 @@ export class OptionsService {
     async createOption(roomId: string, roomOption: RoomOption) {
         const funcs = this.generateFuncs()
 
-        const hostOptionValue = {
+        const optionValue = {
             ...roomOption,
             funcs
         }
@@ -20,12 +20,12 @@ export class OptionsService {
         const [hostOption, guestOption] = await Promise.all([
             this.optionsRepository.create({
                 role: OptionRole.Host,
-                values: hostOptionValue,
+                values: optionValue,
                 roomId
             }),
             this.optionsRepository.create({
                 role: OptionRole.Guest,
-                values: roomOption,
+                values: optionValue,
                 roomId
             })
         ])
@@ -121,13 +121,13 @@ export class OptionsService {
     }
 
     generateFuncs() {
-        const funcs = {
+        const funcs: Funcs = {
+            '3rd-view': true,
+            'share-screen': true,
             'object-button': true,
             'invitation-button': true,
-            'place-button': true,
             'camera-button': true,
-            'left-button': true,
-            'more-button': true
+            'left-button': true
         }
 
         return funcs

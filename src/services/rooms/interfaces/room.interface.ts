@@ -1,6 +1,12 @@
 export interface RoomOption {
-    token?: string
     faviconUrl: string
     logoUrl: string
     returnUrl: string
+    token?: string
+    avatarUrl?: string
+}
+
+export interface RoomUrlData {
+    userId?: string
+    avatarUrl?: string
 }
