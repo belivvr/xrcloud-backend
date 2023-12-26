@@ -12,12 +12,12 @@
         {
             "name": "authentication",
             "x-displayName": "Authentication",
-            "description": "All API calls in this document require an `ApiKey`. \n\n `ApiKey` can be issued from My page in the upper right corner of the page after logging in to XRCLOUD Developers."
+            "description": "All API calls in this document require an `ApiKey`. \n\n - `ApiKey` can be issued from My page in the upper right corner of the page after logging in to XRCLOUD page."
         },
         {
             "name": "project",
             "x-displayName": "Project",
-            "description": "Project in XRCLOUD, which can be a developer's project, platform, 3rd-party app, etc."
+            "description": "Project in XRCLOUD, which can be a developer's project, platform, 3rd-party app, etc. \n\n - `webhookUrl` can be set when creating a project or modifying information on the XRCLOUD page."
         },
         {
             "name": "scene",
@@ -45,7 +45,6 @@
             ]
         }
     ],
-    
     "paths": {
         "/api/projects/{project_id}": {
             "get": {
@@ -305,10 +304,13 @@
                         "$ref": "#/components/parameters/RoomSceneId"
                     },
                     {
+                        "$ref": "#/components/parameters/Name"
+                    },
+                    {
                         "$ref": "#/components/parameters/UserId"
                     },
                     {
-                        "$ref": "#/components/parameters/Name"
+                        "$ref": "#/components/parameters/AvatarUrl"
                     },
                     {
                         "$ref": "#/components/parameters/PaginationTake"
@@ -450,6 +452,42 @@
                     }
                 }
             }
+        },
+        "/api/rooms/{room_id}/logs": {
+            "get": {
+                "tags": [
+                    "room"
+                ],
+                "operationId": "GetRoomLogs",
+                "summary": "get room logs",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ApiKey"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetRoomLogsSuccessResponse"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -562,6 +600,16 @@
                     "type": "string"
                 },
                 "description": "The user of the project (app). Used to differentiate between users accessing room."
+            },
+            "AvatarUrl": {
+                "required": false,
+                "name": "avatarUrl",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "The path to the avatar file to use in Room.",
+                "example": "https://storage.com/bucket/avatar-file.glb"
             }
         },
         "schemas": {
@@ -634,11 +682,6 @@
                         "type": "string",
                         "description": "The URL of the project's logo.",
                         "example": "https://kr.object.ncloudstorage.com/favicon/51d/51dc73cc-36db-4046-af8d-1e61e4b59c19.jpg"
-                    },
-                    "sceneCreationUrl": {
-                        "type": "string",
-                        "description": "The URL of the space to create the scene.",
-                        "example": "https://xrcloud.app:4000/spoke/projects/new?token=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
                     }
                 }
             },
@@ -858,6 +901,43 @@
                     "take": {
                         "type": "number",
                         "description": "The number of items to take for pagination."
+                    }
+                }
+            },
+            "GetRoomLogsSuccessResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "description": "The unique ID of the room access log.",
+                        "example": "77"
+                    },
+                    "infraUserId": {
+                        "type": "uuid",
+                        "description": "The user id of the third party that accessed the room.",
+                        "example": "1234e5ba-5678-4f7a-86ed-abcd95ea1efg"
+                    },
+                    "roomId": {
+                        "type": "uuid",
+                        "description": "The unique ID of the room.",
+                        "example": "1234e5ba-5678-4f7a-86ed-abcd95ea1efg"
+                    },
+                    "sessionId": {
+                        "type": "uuid",
+                        "description": "The unique ID of the session.",
+                        "example": "4f7edfb6-b8a1-4f58-96ee-1deb4da98740"
+                    },
+                    "joinedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The date and time when user enters a room.",
+                        "example": "2023-12-12T09:27:41.600Z"
+                    },
+                    "exitedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The date and time when user leaves a room.",
+                        "example": "2023-12-12T09:30:41.600Z"
                     }
                 }
             },

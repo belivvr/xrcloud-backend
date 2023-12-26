@@ -12,12 +12,12 @@
         {
             "name": "authentication",
             "x-displayName": "Authentication",
-            "description": "해당 문서의 모든 API의 호출에는 `ApiKey`를 필요로 합니다. \n\n `ApiKey`는 XRCLOUD Developers에 로그인 한 후 페이지 우상단의 My page에서 발급 받을 수 있습니다."
+            "description": "해당 문서의 모든 API의 호출에는 `ApiKey`를 필요로 합니다. \n\n - `ApiKey`는 XRCLOUD 페이지에 로그인 한 후 페이지 우상단의 My page에서 발급 받을 수 있습니다."
         },
         {
             "name": "project",
             "x-displayName": "Project",
-            "description": "개발자의 프로젝트, 플랫폼, 3rd-party app 등이 될 수 있는 XRCLOUD의 Project입니다."
+            "description": "개발자의 프로젝트, 플랫폼, 3rd-party app 등이 될 수 있는 XRCLOUD의 Project입니다. \n\n - `webhookUrl`은 XRCLOUD 페이지에서 Project를 생성하거나 정보를 수정할 때 설정할 수 있습니다."
         },
         {
             "name": "scene",
@@ -45,7 +45,6 @@
             ]
         }
     ],
-    
     "paths": {
         "/api/projects/{project_id}": {
             "get": {
@@ -305,10 +304,13 @@
                         "$ref": "#/components/parameters/RoomSceneId"
                     },
                     {
+                        "$ref": "#/components/parameters/Name"
+                    },
+                    {
                         "$ref": "#/components/parameters/UserId"
                     },
                     {
-                        "$ref": "#/components/parameters/Name"
+                        "$ref": "#/components/parameters/AvatarUrl"
                     },
                     {
                         "$ref": "#/components/parameters/PaginationTake"
@@ -450,6 +452,42 @@
                     }
                 }
             }
+        },
+        "/api/rooms/{room_id}/logs": {
+            "get": {
+                "tags": [
+                    "room"
+                ],
+                "operationId": "GetRoomLogs",
+                "summary": "get room logs",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ApiKey"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetRoomLogsSuccessResponse"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -562,6 +600,16 @@
                     "type": "string"
                 },
                 "description": "Project(app)의 사용자. Room에 입장하는 사용자를 구분하기 위해 사용됩니다."
+            },
+            "AvatarUrl": {
+                "required": false,
+                "name": "avatarUrl",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "Room에서 사용할 아바타 파일의 경로.",
+                "example": "https://storage.com/bucket/avatar-file.glb"
             }
         },
         "schemas": {
@@ -844,15 +892,15 @@
                         "description": "Room의 이름.",
                         "example": "example room name"
                     },
-                    "size": {
-                        "type": "number",
-                        "description": "Room에 입장할 수 있는 최대 인원 수.",
-                        "example": 10
-                    },
                     "returnUrl": {
                         "type": "url",
                         "description": "Room 퇴장 시 돌아갈 URL.",
                         "example": "https://www.google.com/"
+                    },
+                    "size": {
+                        "type": "number",
+                        "description": "Room에 입장할 수 있는 최대 인원 수.",
+                        "example": 10
                     }
                 }
             },
@@ -877,6 +925,43 @@
                     "take": {
                         "type": "number",
                         "description": "Pagination을 적용해 가져온 항목 수."
+                    }
+                }
+            },
+            "GetRoomLogsSuccessResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "number",
+                        "description": "출입 로그의 고유 ID.",
+                        "example": "77"
+                    },
+                    "infraUserId": {
+                        "type": "uuid",
+                        "description": "Room에 출입한 3rd-party app의 사용자 ID.",
+                        "example": "1234e5ba-5678-4f7a-86ed-abcd95ea1efg"
+                    },
+                    "roomId": {
+                        "type": "uuid",
+                        "description": "Room의 고유 ID.",
+                        "example": "1234e5ba-5678-4f7a-86ed-abcd95ea1efg"
+                    },
+                    "sessionId": {
+                        "type": "uuid",
+                        "description": "Session의 고유 ID.",
+                        "example": "4f7edfb6-b8a1-4f58-96ee-1deb4da98740"
+                    },
+                    "joinedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "사용자가 Room에 입장한 날짜와 시간.",
+                        "example": "2023-12-12T09:27:41.600Z"
+                    },
+                    "exitedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "사용자가 Room에서 퇴장한 날짜와 시간.",
+                        "example": "2023-12-12T09:30:41.600Z"
                     }
                 }
             },
