@@ -22,15 +22,15 @@ POST /api/rooms \
 ROOM_ID=$(echo $BODY | jq -r '.id')
 
 # findRooms
-GET "/api/rooms?sceneId=$SCENE_ID&$PAGE_OPT" \
+GET "/api/rooms?sceneId=$SCENE_ID&$PAGE_OPT&avatarUrl=https://kr.object.ncloudstorage.com/econet-front/Crab_001.glb" \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getRoom
-GET /api/rooms/$ROOM_ID \
+GET /api/rooms/$ROOM_ID?avatarUrl=https://kr.object.ncloudstorage.com/econet-front/Crab_001.glb \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
-# # getOption
-# GET /api/rooms/option/$OPTION_ID?type=private
+# getOption
+GET /api/rooms/option/$OPTION_ID?type=private
 
 # updateRoom
 PATCH /api/rooms/$ROOM_ID \
