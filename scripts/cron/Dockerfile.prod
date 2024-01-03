@@ -18,7 +18,7 @@ RUN npm install dotenv
 RUN chmod +x /app/health.js
 RUN chmod +x /app/statistics.js
 
-RUN (echo "0 0 * * * node /app/health.js >> /var/log/cron.log 2>&1" && \
-    echo "0 0 * * * node /app/statistics.js >> /var/log/cron.log 2>&1") | crontab -
+RUN (echo "0 0 * * * /usr/local/bin/node /app/health.js >> /var/log/cron.log 2>&1" && \
+    echo "0 0 * * * /usr/local/bin/node /app/statistics.js >> /var/log/cron.log 2>&1") | crontab -
 
 CMD [ "crond", "-f" ]
