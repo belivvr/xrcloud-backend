@@ -60,11 +60,11 @@ export class OptionsService {
         }
 
         const updateHostOption = {
-            values: hostOptionValue
+            values: { role: OptionRole.Host, ...hostOptionValue }
         }
 
         const updateGuestOption = {
-            values: optionValues
+            values: { role: OptionRole.Guest, ...hostOptionValue }
         }
 
         const updatedHostOption = updateIntersection(hostOption, updateHostOption)
