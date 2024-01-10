@@ -20,12 +20,12 @@ export class OptionsService {
         const [hostOption, guestOption] = await Promise.all([
             this.optionsRepository.create({
                 role: OptionRole.Host,
-                values: optionValue,
+                values: { role: OptionRole.Host, ...optionValue },
                 roomId
             }),
             this.optionsRepository.create({
                 role: OptionRole.Guest,
-                values: optionValue,
+                values: { role: OptionRole.Guest, ...optionValue },
                 roomId
             })
         ])

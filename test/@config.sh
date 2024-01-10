@@ -1,5 +1,5 @@
 #!/bin/bash
-HOST="http://localhost:3001"
+HOST="http://localhost:3000"
 
 CURL() {
     METHOD=$1

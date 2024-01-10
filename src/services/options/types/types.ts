@@ -1,8 +1,9 @@
 export type OptionValue = {
-    token?: string
+    role: OptionRole
     faviconUrl: string
     logoUrl: string
     returnUrl: string
+    token?: string
     funcs?: Funcs
 }
 

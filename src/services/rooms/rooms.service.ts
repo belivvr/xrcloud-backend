@@ -29,6 +29,7 @@ import { RoomAccessRepository } from './room-access.repository'
 import { RoomConfigService } from './room-config.service'
 import { RoomsRepository } from './rooms.repository'
 import { RoomEntryType } from './types'
+import { OptionRole } from '../options/types'
 
 @Injectable()
 export class RoomsService {
@@ -287,16 +288,12 @@ export class RoomsService {
         const faviconUrl = `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`
         const logoUrl = `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
 
-        const guestRoomOption = {
+        const roomOption = {
             faviconUrl,
             logoUrl,
             returnUrl: room.returnUrl,
             token,
-            avatarUrl: roomUrlData?.avatarUrl
-        }
-
-        const hostRoomOption = {
-            ...guestRoomOption,
+            avatarUrl: roomUrlData?.avatarUrl,
             funcs: this.optionsService.generateFuncs()
         }
 
@@ -306,13 +303,21 @@ export class RoomsService {
 
         const hostOptionKey = `option:${hostOptionId}`
 
-        await this.cacheService.set(hostOptionKey, JSON.stringify(hostRoomOption), expireTime)
+        await this.cacheService.set(
+            hostOptionKey,
+            JSON.stringify({ role: OptionRole.Host, ...roomOption }),
+            expireTime
+        )
 
         const guestOptionId = generateUUID()
 
         const guestOptionKey = `option:${guestOptionId}`
 
-        await this.cacheService.set(guestOptionKey, JSON.stringify(guestRoomOption), expireTime)
+        await this.cacheService.set(
+            guestOptionKey,
+            JSON.stringify({ role: OptionRole.Guest, ...roomOption }),
+            expireTime
+        )
 
         return {
             host: `${url}?private=${hostOptionId}`,
