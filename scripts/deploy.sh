@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-HOME_DIR="/home/jdm/workspace"
+HOME_DIR="/home/jdm"
 PROJECT_DIR=$(dirname $(dirname $(realpath $0)))
 PROJECT_NAME=$(basename "$PROJECT_DIR")
 ENV_FILE="$PROJECT_DIR/.env"

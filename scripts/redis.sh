@@ -1,19 +1,14 @@
 #!/bin/bash
 
 #
-container_exists=$(docker ps -a -q -f name=redis)
-
-if [ ! -z "$container_exists" ]; then
-    docker stop redis
-    docker rm redis
-fi
+docker rm -f xrcloud-redis
 
 #
 docker network create xrcloud || true
 
 #
 docker run --restart always -d \
-    --name redis \
+    --name xrcloud-redis \
     --network xrcloud \
     --log-opt max-size=10m \
     --log-opt max-file=3 \
