@@ -12,8 +12,18 @@ const runHealthCheck = async () => {
         const healthResponseData = await healthResponse.json()
         
         const dbStatus = healthResponseData.database.status
-        const diskUsage = healthResponseData.resources.disk
-        const cpuUsage = healthResponseData.resources.cpu
+        const diskUsagePersent = healthResponseData.resources.disk
+        const cpuUsagePersent = healthResponseData.resources.cpu
+
+        const diskUsage = parseInt(diskUsagePersent.replace('%', ''), 10)
+        const cpuUsage = parseInt(cpuUsagePersent.replace('%', ''), 10)
+
+        const diskThreshold = 70
+        const cpuThreshold = 80
+
+        if (dbStatus && diskUsage < diskThreshold && cpuUsage < cpuThreshold) {
+            return;
+        }
         
         const chatMessage = {
             cardsV2: [
@@ -40,13 +50,13 @@ const runHealthCheck = async () => {
                                     {
                                         decoratedText: {
                                             topLabel: 'Disk Usage',
-                                            text: `${diskUsage}`,
+                                            text: `${diskUsagePersent}`,
                                         },
                                     },
                                     {
                                         decoratedText: {
                                             topLabel: 'CPU Usage',
-                                            text: `${cpuUsage}`,
+                                            text: `${cpuUsagePersent}`,
                                         },
                                     }
                                 ],

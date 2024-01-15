@@ -47,9 +47,10 @@ export class HealthService {
     }
 
     private async checkTableAndSelectRow(): Promise<boolean> {
-        const tableName = 'main.admins'
+        const schemaName = 'main'
+        const tableName = 'admins'
 
-        const tableExistsResult = await this.entityManager.query(`SELECT to_regclass('${tableName}');`)
+        const tableExistsResult = await this.entityManager.query(`SELECT to_regclass('${schemaName}.${tableName}');`)
 
         if (!tableExistsResult[0].to_regclass) {
             return false
@@ -86,6 +87,7 @@ export class HealthService {
 
                 for (const type in times) {
                     total += times[type]
+
                     if (type === 'idle') {
                         totalIdle += times[type]
                     }
@@ -106,8 +108,8 @@ export class HealthService {
         const idleDifference = end.idle - start.idle
         const totalDifference = end.total - start.total
 
-        const percentageCpu = 100 - ~~((100 * idleDifference) / totalDifference)
+        const cpuUsage = 100 - ~~((100 * idleDifference) / totalDifference)
 
-        return `${percentageCpu}%`
+        return `${cpuUsage}%`
     }
 }
