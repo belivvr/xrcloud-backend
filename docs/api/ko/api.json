@@ -12,7 +12,7 @@
         {
             "name": "authentication",
             "x-displayName": "Authentication",
-            "description": "해당 문서의 모든 API의 호출에는 `ApiKey`를 필요로 합니다. \n\n - `ApiKey`는 XRCLOUD 페이지에 로그인 한 후 페이지 우상단의 My page에서 발급 받을 수 있습니다."
+            "description": "해당 문서의 모든 API 호출은 `ApiKey`를 필요로 합니다. \n\n - `ApiKey`는 XRCLOUD 페이지에 로그인 한 후 페이지 우상단의 My page에서 발급 받을 수 있습니다."
         },
         {
             "name": "project",
@@ -22,7 +22,7 @@
         {
             "name": "scene",
             "x-displayName": "Scene",
-            "description": "Scene 생성: [get creation url](#operation/GetSceneCreationUrl)api의 response인 sceneCreationUrl으로 접근한 후 에디터(Spoke)에서 생성합니다. \n\n Scene 수정: [get scene api](#operation/GetScene)의 response 중 sceneModificationUrl에 접근하여 수정합니다. \n\n - `optId` 값은 XRCLOUD에서 Scene의 생성 및 수정을 확인하기위한 callback value 입니다. 변형하여 사용하면 오류가 발생할 수 있습니다."
+            "description": "Scene 생성: [get creation url api](#operation/GetSceneCreationUrl)의 response인 sceneCreationUrl으로 접근한 후 에디터(Spoke)에서 생성합니다. \n\n Scene 수정: [get scene api](#operation/GetScene)의 response 중 sceneModificationUrl에 접근하여 수정합니다. \n\n - `optId` 값은 XRCLOUD에서 Scene의 생성 및 수정을 확인하기위한 callback value 입니다. 변형하여 사용하면 오류가 발생할 수 있습니다."
         },
         {
             "name": "room",
@@ -356,6 +356,9 @@
                     },
                     {
                         "$ref": "#/components/parameters/UserId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/AvatarUrl"
                     }
                 ],
                 "responses": {
@@ -467,7 +470,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "성공",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -477,7 +480,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -580,7 +583,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "Scene의 제작자를 지정할 수 있습니다. 제작 공간 안의 'My Assets'를 구분하는 데에 쓰이며 해당 파라미터를 포함하지 않고 호출하여 제작하는 경우 'Admin'이 제작한 것과 동일하게 Scene이 만들어집니다."
+                "description": "Scene의 제작자를 지정할 수 있습니다. 사용자별 'My Assets'를 구분하는 데에 쓰이며 해당 파라미터를 포함하지 않고 호출하여 제작하는 경우 'Admin'이 제작한 것과 동일하게 취급됩니다."
             },
             "SceneCreateCallback": {
                 "required": false,
@@ -658,7 +661,7 @@
                     },
                     "webhookUrl": {
                         "type": "string",
-                        "description": "사용자가 Room에 입장하거나 퇴장할 때 해당 이벤트 정보를 전송하기 위한 외부 시스템의 엔드포인트 주소. 이 URL로 Room 입/퇴장 관련 정보가 POST 요청으로 전송됩니다.",
+                        "description": "사용자가 Room에 입장하거나 퇴장할 때의 이벤트 정보를 전송하기 위한 외부 시스템의 엔드포인트 주소. 설정한 URL로 Room 입/퇴장 정보가 POST 요청으로 전송. \n\n { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sceneId }) }",
                         "example": "https://api.xrcloud.app/events/webhook"
                     },
                     "createdAt": {
@@ -680,7 +683,7 @@
                     },
                     "logoUrl": {
                         "type": "string",
-                        "description": "Project 로고의 URL.",
+                        "description": "Project의 로고의 URL.",
                         "example": "https://kr.object.ncloudstorage.com/favicon/51d/51dc73cc-36db-4046-af8d-1e61e4b59c19.jpg"
                     }
                 }
@@ -763,7 +766,7 @@
                         "example": "2023-07-12T09:27:41.600Z"
                     },
                     "returnUrl": {
-                        "type": "url",
+                        "type": "string",
                         "description": "Room 퇴장 시 돌아갈 URL.",
                         "example": "https://www.google.com/"
                     },
@@ -792,12 +795,12 @@
                                     "host": {
                                         "type": "string",
                                         "description": "호스트의 Room URL.",
-                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=fdc306b9-5129-4d83-86d5-52836afeee7e"
                                     },
                                     "guest": {
                                         "type": "string",
                                         "description": "게스트의 Room URL.",
-                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=a0166051-1eee-44bb-922a-c988d517a0e1"
+                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=72dde871-33d7-4aa3-a8a9-73b8b5f0458d"
                                     }
                                 }
                             }
@@ -807,30 +810,6 @@
                         "type": "string",
                         "description": "Room의 thumbnail URL.",
                         "example": "https://api.xrcloud.app/files/852a6f47-3978-4201-a637-9699d7845266.jpg"
-                    }
-                }
-            },
-            "GetProjectsSuccessResponse": {
-                "type": "object",
-                "properties": {
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Project"
-                        },
-                        "description": "Project 목록."
-                    },
-                    "total": {
-                        "type": "number",
-                        "description": "총 Project의 갯수."
-                    },
-                    "skip": {
-                        "type": "number",
-                        "description": "Pagination을 위해 건너뛴 항목 수."
-                    },
-                    "take": {
-                        "type": "number",
-                        "description": "Pagination을 적용해 가져온 항목 수."
                     }
                 }
             },
@@ -893,7 +872,7 @@
                         "example": "example room name"
                     },
                     "returnUrl": {
-                        "type": "url",
+                        "type": "string",
                         "description": "Room 퇴장 시 돌아갈 URL.",
                         "example": "https://www.google.com/"
                     },
@@ -939,7 +918,7 @@
                     "infraUserId": {
                         "type": "uuid",
                         "description": "Room에 출입한 3rd-party app의 사용자 ID.",
-                        "example": "1234e5ba-5678-4f7a-86ed-abcd95ea1efg"
+                        "example": "user@domain.com"
                     },
                     "roomId": {
                         "type": "uuid",
@@ -979,7 +958,7 @@
                         "example": 10
                     },
                     "returnUrl": {
-                        "type": "url",
+                        "type": "string",
                         "description": "Room 퇴장 시 돌아갈 URL.",
                         "example": "https://www.google.com/"
                     }

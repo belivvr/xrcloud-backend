@@ -356,6 +356,9 @@
                     },
                     {
                         "$ref": "#/components/parameters/UserId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/AvatarUrl"
                     }
                 ],
                 "responses": {
@@ -763,7 +766,7 @@
                         "example": "2023-07-12T09:27:41.600Z"
                     },
                     "returnUrl": {
-                        "type": "url",
+                        "type": "string",
                         "description": "The URL to return to when leaving the Room.",
                         "example": "https://www.google.com/"
                     },
@@ -792,12 +795,12 @@
                                     "host": {
                                         "type": "string",
                                         "description": "Host's room url.",
-                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=35e75895-9db7-4eee-bae3-87e20ee156dc"
+                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=fdc306b9-5129-4d83-86d5-52836afeee7e"
                                     },
                                     "guest": {
                                         "type": "string",
                                         "description": "Guest's room url.",
-                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=a0166051-1eee-44bb-922a-c988d517a0e1"
+                                        "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=72dde871-33d7-4aa3-a8a9-73b8b5f0458d"
                                     }
                                 }
                             }
@@ -868,15 +871,15 @@
                         "description": "The name of the room.",
                         "example": "example room name"
                     },
+                    "returnUrl": {
+                        "type": "string",
+                        "description": "The URL to return to when leaving the Room.",
+                        "example": "https://www.google.com/"
+                    },
                     "size": {
                         "type": "number",
                         "description": "Maximum number of people who can enter a room.",
                         "example": 10
-                    },
-                    "returnUrl": {
-                        "type": "url",
-                        "description": "The URL to return to when leaving the Room.",
-                        "example": "https://www.google.com/"
                     }
                 }
             },
@@ -915,7 +918,7 @@
                     "infraUserId": {
                         "type": "uuid",
                         "description": "The user id of the third party that accessed the room.",
-                        "example": "1234e5ba-5678-4f7a-86ed-abcd95ea1efg"
+                        "example": "user@domain.com"
                     },
                     "roomId": {
                         "type": "uuid",
@@ -955,7 +958,7 @@
                         "example": 10
                     },
                     "returnUrl": {
-                        "type": "url",
+                        "type": "string",
                         "description": "The URL to return to when leaving the Room.",
                         "example": "https://www.google.com/"
                     }
