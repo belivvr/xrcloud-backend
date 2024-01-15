@@ -30,7 +30,7 @@ docker run --restart=always -d --log-opt max-size=10m --log-opt max-file=3 \
     -e POSTGRES_USER=$TYPEORM_USERNAME \
     -e POSTGRES_PASSWORD=$TYPEORM_PASSWORD \
     -e POSTGRES_INITDB_ARGS=--encoding=UTF-8 \
-    -v /data/postgres/xrcloud:/var/lib/postgresql/data \
+    -v "$DB_VOLUME_DIR":/var/lib/postgresql/data \
     postgres:13.11
 
 LOG_MSG="database system is ready to accept connections"
