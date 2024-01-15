@@ -19,7 +19,7 @@ const runHealthCheck = async () => {
         const cpuUsage = parseInt(cpuUsagePersent.replace('%', ''), 10)
 
         const diskThreshold = 70
-        const cpuThreshold = 80
+        const cpuThreshold = 70
 
         if (dbStatus && diskUsage < diskThreshold && cpuUsage < cpuThreshold) {
             return;
