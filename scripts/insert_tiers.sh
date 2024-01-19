@@ -2,6 +2,8 @@
 set -e
 cd "$(dirname "$0")"
 
+. $ENV
+
 PSQL() {
     docker exec -it $TYPEORM_HOST psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "$1"
 }

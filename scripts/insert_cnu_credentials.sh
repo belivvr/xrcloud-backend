@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-. "$(dirname "$0")"/../.env
+. $ENV
 
 EMAIL=$1
 
