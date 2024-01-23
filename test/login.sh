@@ -16,8 +16,3 @@ POST /auth/login \
 
 ACCESS_TOKEN=$(echo $BODY | jq -r '.accessToken')
 REFRESH_TOKEN=$(echo $BODY | jq -r '.refreshToken')
-
-# logout
-POST /auth/logout \
-    -H 'Content-Type: application/json' \
-    -H "Authorization: Bearer $ACCESS_TOKEN"

@@ -1,7 +1,7 @@
-import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import fetch from 'node-fetch'
 import { CacheService, addQuotesToNumbers, convertTimeToSeconds } from 'src/common'
-import { ExtraArgs, RoomData } from './interfaces'
+import { ExtraArgs, NotificationData, RoomData } from './interfaces'
 import { ReticulumConfigService } from './reticulum-config.service'
 
 @Injectable()
@@ -25,15 +25,18 @@ export class ReticulumService {
         const response = await fetch(`${this.apiHost}/${url}`, options)
 
         if (300 <= response.status) {
-            throw new HttpException(
-                `HTTP request failed with status code ${response.status}`,
-                response.status
-            )
+            return
         }
 
-        const responseToText = await response.text()
+        const contentType = response.headers.get('Content-Type')
 
-        return JSON.parse(addQuotesToNumbers(responseToText))
+        if (contentType && contentType.includes('application/json')) {
+            const responseToText = await response.text()
+
+            return JSON.parse(addQuotesToNumbers(responseToText))
+        } else {
+            return response
+        }
     }
 
     async login(userId: string) {
@@ -203,6 +206,66 @@ export class ReticulumService {
         const url = `${this.apiHost}/files/${screenshotFileId}.jpg`
 
         return url
+    }
+
+    async createNoticeForAll(notificationData: NotificationData) {
+        const { payload } = notificationData
+
+        const body = JSON.stringify({
+            payload
+        })
+
+        const response = await this.request('api/v1/belivvr_notices/all', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body
+        })
+
+        if (!response) {
+            throw new InternalServerErrorException(`Reticulum: Failed to create notice for all`)
+        }
+    }
+
+    async createNoticeForScene(notificationData: NotificationData, sceneId: string) {
+        const { payload } = notificationData
+
+        const body = JSON.stringify({
+            payload
+        })
+
+        const response = await this.request(`api/v1/belivvr_notices/scenes/${sceneId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body
+        })
+
+        if (!response) {
+            throw new InternalServerErrorException(`Reticulum: Failed to create notice for scene`)
+        }
+    }
+
+    async createNoticeForRoom(notificationData: NotificationData, roomId: string) {
+        const { payload } = notificationData
+
+        const body = JSON.stringify({
+            payload
+        })
+
+        const response = await this.request(`api/v1/belivvr_notices/hubs/${roomId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body
+        })
+
+        if (!response) {
+            throw new InternalServerErrorException(`Reticulum: Failed to create notice for hub`)
+        }
     }
 
     async getAdminToken(projectId: string): Promise<string> {

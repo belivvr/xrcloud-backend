@@ -23,6 +23,8 @@ import { ProjectsController } from './projects.controller'
 import { RoomsController } from './rooms.controller'
 import { ScenesController } from './scenes.controller'
 import { SubscriptionsController } from './subscriptions.controller'
+import { NotificationsModule } from 'src/services/notifications/notifications.module'
+import { NotificationsController } from './notifications.controller'
 
 const imports = [
     AuthModule,
@@ -38,7 +40,8 @@ const imports = [
     PaymentsModule,
     SubscriptionsModule,
     RegisterModule,
-    AssetsModule
+    AssetsModule,
+    NotificationsModule
 ]
 
 const controllers = [
@@ -51,7 +54,8 @@ const controllers = [
     HealthController,
     PaymentsController,
     SubscriptionsController,
-    AssetsController
+    AssetsController,
+    NotificationsController
 ]
 
 @Module({
