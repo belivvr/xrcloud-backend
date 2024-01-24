@@ -29,6 +29,10 @@ GET "/api/rooms?sceneId=$SCENE_ID&$PAGE_OPT&avatarUrl=https://kr.object.ncloudst
 GET /api/rooms/3141c226-adb5-4c5b-bfdc-ad184b1b3fb6?avatarUrl=https://kr.object.ncloudstorage.com/econet-front/Crab_001.glb \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
+# getInfraRoom
+GET /api/rooms/d6794aa2-6063-4a69-9cba-ce89b8a9c7f7/infra \
+    -H "Authorization: Bearer $ACCESS_TOKEN"
+
 # getOption
 GET /api/rooms/option/$OPTION_ID?type=private
 

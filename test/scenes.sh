@@ -19,8 +19,12 @@ GET "/api/scenes/get-creation-url?projectId=$PROJECT_ID&creator=$CREATOR&tag=tes
 GET /api/scenes/$SCENE_ID \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
-# # getOption
-# GET /api/scenes/option/$OPTION_ID
+# getInfraScene
+GET /api/scenes/e2330a60-c631-4f1b-936d-cede39714b98/infra \
+    -H "Authorization: Bearer $ACCESS_TOKEN"
+
+# getOption
+GET /api/scenes/option/$OPTION_ID
 
 # removeScene
 DELETE /api/scenes/$SCENE_ID \
