@@ -24,17 +24,19 @@ export class ReticulumService {
     private async request(url: string, options?: any) {
         const response = await fetch(`${this.apiHost}/${url}`, options)
 
-        if (300 <= response.status) {
+        if (response.status >= 300) {
             return
         }
 
-        const contentType = response.headers.get('Content-Type')
+        const responseText = await response.text()
 
-        if (contentType && contentType.includes('application/json')) {
-            const responseToText = await response.text()
+        if (!responseText) {
+            return true
+        }
 
-            return JSON.parse(addQuotesToNumbers(responseToText))
-        } else {
+        try {
+            return JSON.parse(addQuotesToNumbers(responseText))
+        } catch (e) {
             return response
         }
     }
@@ -53,6 +55,7 @@ export class ReticulumService {
         if (!response || !response.token || typeof response.token !== 'string') {
             throw new InternalServerErrorException('Reticulum: Failed to login')
         }
+
         return response
     }
 
@@ -174,6 +177,8 @@ export class ReticulumService {
             },
             body
         })
+
+        console.log(response)
 
         if (!response) {
             throw new InternalServerErrorException(`Reticulum: Failed to update room`)
