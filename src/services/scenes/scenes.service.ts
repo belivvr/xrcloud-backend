@@ -105,6 +105,12 @@ export class ScenesService {
         return scene as Scene
     }
 
+    async getInfraScene(sceneId: string) {
+        const scene = await this.getScene(sceneId)
+
+        return scene
+    }
+
     async getSceneModificationUrl(sceneId: string) {
         const scene = await this.getScene(sceneId)
 

@@ -12,6 +12,7 @@ import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { OptionsService } from '../options/options.service'
+import { OptionRole } from '../options/types'
 import { UsersService } from '../users/users.service'
 import {
     CreateRoomAccessDto,
@@ -29,7 +30,6 @@ import { RoomAccessRepository } from './room-access.repository'
 import { RoomConfigService } from './room-config.service'
 import { RoomsRepository } from './rooms.repository'
 import { RoomEntryType } from './types'
-import { OptionRole } from '../options/types'
 
 @Injectable()
 export class RoomsService {
@@ -127,6 +127,12 @@ export class RoomsService {
         dto.thumbnailUrl = thumbnailUrl
 
         return dto
+    }
+
+    async getInfraRoom(roomId: string) {
+        const room = await this.getRoom(roomId)
+
+        return room
     }
 
     async getRoomOption(optionId: string, queryDto: OptionQueryDto) {

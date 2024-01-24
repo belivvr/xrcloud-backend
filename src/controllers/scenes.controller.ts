@@ -34,6 +34,12 @@ export class ScenesController {
         return await this.scenesService.getSceneDto(sceneId)
     }
 
+    @Get(':sceneId/infra')
+    @UseGuards(SceneExistsGuard)
+    async getInfraScene(@Param('sceneId') sceneId: string) {
+        return await this.scenesService.getInfraScene(sceneId)
+    }
+
     @Get('option/:optionId')
     @SkipAuth()
     async getSceneOption(@Param('optionId') optionId: string) {

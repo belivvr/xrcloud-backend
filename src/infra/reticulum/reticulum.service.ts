@@ -159,6 +159,24 @@ export class ReticulumService {
         return `${this.apiHost}/${infraRoomId}/${slug}`
     }
 
+    async getRoom(infraRoomId: string) {
+        const { token } = await this.login(this.adminId)
+
+        const url = `api/postgrest/hubs?hub_sid=eq.${infraRoomId}`
+
+        const response = await this.request(url, {
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        })
+
+        if (response.length === 0) {
+            throw new InternalServerErrorException(`Reticulum: Hub with ID "${infraRoomId}" not found`)
+        }
+
+        return response[0]
+    }
+
     async updateRoom(infraRoomId: string, roomData: RoomData) {
         const { name, size, token } = roomData
 

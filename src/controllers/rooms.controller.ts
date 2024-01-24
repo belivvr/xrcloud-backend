@@ -67,6 +67,12 @@ export class RoomsController {
         return await this.roomsService.getRoomDto(roomId, roomUrlData)
     }
 
+    @Get(':roomId/infra')
+    @UseGuards(RoomExistsGuard)
+    async getInfraRoom(@Param('roomId') roomId: string) {
+        return await this.roomsService.getInfraRoom(roomId)
+    }
+
     @Get(':roomId/logs')
     @PublicApi()
     @UseGuards(RoomExistsGuard)
