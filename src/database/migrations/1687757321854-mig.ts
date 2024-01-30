@@ -4,6 +4,12 @@ export class Mig1687757321854 implements MigrationInterface {
     name = 'Mig1687757321854'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`)
+        await queryRunner.query(`
+            CREATE OR REPLACE FUNCTION main.uuid_generate_v4()
+            RETURNS uuid AS '$libdir/uuid-ossp', 'uuid_generate_v4'
+            LANGUAGE C VOLATILE STRICT;
+        `)
         await queryRunner.query(`SET search_path TO main, public`)
         await queryRunner.query(
             `CREATE TABLE "main"."admins" ("id" uuid NOT NULL DEFAULT main.uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "version" integer NOT NULL, "email" character varying NOT NULL, "password" character varying NOT NULL, CONSTRAINT "PK_e3b38270c97a854c48d2e80874e" PRIMARY KEY ("id"))`
