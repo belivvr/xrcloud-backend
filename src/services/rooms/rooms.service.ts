@@ -79,7 +79,7 @@ export class RoomsService {
     }
 
     async findRooms(queryDto: RoomsQueryDto) {
-        const { userId, avatarUrl } = queryDto
+        const { userId, avatarUrl, extra } = queryDto
 
         const rooms = await this.roomsRepository.find(queryDto)
 
@@ -92,7 +92,8 @@ export class RoomsService {
         for (const room of rooms.items) {
             const roomUrlData: RoomUrlData = {
                 userId,
-                avatarUrl
+                avatarUrl,
+                extra
             }
 
             const dto = await this.getRoomDto(room.id, roomUrlData)
@@ -265,10 +266,10 @@ export class RoomsService {
         const logoUrl = `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
 
         const roomOption = {
+            token,
             faviconUrl,
             logoUrl,
             returnUrl: room.returnUrl,
-            token,
             avatarUrl: roomUrlData?.avatarUrl
         }
 
@@ -294,13 +295,28 @@ export class RoomsService {
         const faviconUrl = `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`
         const logoUrl = `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
 
+        const extraObj: Record<string, string> = {}
+
+        if (roomUrlData?.extra) {
+            const extraParts = roomUrlData.extra.split(',')
+
+            for (const part of extraParts) {
+                const [key, value] = part.split(':')
+
+                if (key && value) {
+                    extraObj[key] = value
+                }
+            }
+        }
+
         const roomOption = {
+            token,
             faviconUrl,
             logoUrl,
             returnUrl: room.returnUrl,
-            token,
             avatarUrl: roomUrlData?.avatarUrl,
-            funcs: this.optionsService.generateFuncs()
+            funcs: this.optionsService.generateFuncs(),
+            extra: extraObj
         }
 
         const expireTime = convertTimeToSeconds(this.configService.roomOptionExpiration)

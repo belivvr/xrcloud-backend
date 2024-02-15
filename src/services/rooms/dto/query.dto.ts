@@ -26,6 +26,10 @@ export class RoomsQueryDto extends PaginationOptions {
     @IsOptional()
     @IsUrl()
     avatarUrl?: string
+
+    @IsOptional()
+    @IsString()
+    extra?: string
 }
 
 export class RoomQueryDto {
@@ -36,6 +40,10 @@ export class RoomQueryDto {
     @IsOptional()
     @IsUrl()
     avatarUrl?: string
+
+    @IsOptional()
+    @IsString()
+    extra?: string
 }
 
 export class RoomAccessQueryDto {
