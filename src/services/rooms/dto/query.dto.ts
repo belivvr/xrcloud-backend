@@ -29,7 +29,7 @@ export class RoomsQueryDto extends PaginationOptions {
 
     @IsOptional()
     @IsString()
-    extra?: string
+    credentials?: string
 }
 
 export class RoomQueryDto {
@@ -43,7 +43,7 @@ export class RoomQueryDto {
 
     @IsOptional()
     @IsString()
-    extra?: string
+    credentials?: string
 }
 
 export class RoomAccessQueryDto {
