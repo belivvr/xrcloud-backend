@@ -17,16 +17,17 @@
         {
             "name": "project",
             "x-displayName": "Project",
-            "description": "Project in XRCLOUD, which can be a developer's project, platform, 3rd-party app, etc. \n\n - `webhookUrl` can be set when creating a project or modifying information on the XRCLOUD page."
+            "description": "A Project in XRCLOUD can be a developer's project, a platform, or a third-party application. It is the unit that manages Scenes and Rooms, and multiple Scenes and Rooms belong to a specific Project. \n\n - `webhookUrl` can be set when creating a project or modifying information on the XRCLOUD page."
         },
         {
             "name": "scene",
             "x-displayName": "Scene",
-            "description": "Scene creation: Accessed by the return value of [get creation url](#operation/GetSceneCreationUrl) api and created in the editor (Spoke). \n\n Modify Scene: Modify it using sceneModificationUrl in the response json field of [get scene api](#operation/GetScene). \n\n - The `optId` value is a callback value to confirm the creation and modification of the scene in XRCLOUD. If you use it with variations, an error may occur."
+            "description": "This is the space required to create a Room, which is a webpage-based 3D virtual space. \n\n You can access 'sceneCreationUrl' among the fields obtained by calling [get-creation-url api](#operation/GetSceneCreationUrl) to access the editor (Spoke) and create a Scene through the Publish Scene button on the top right. You can also access 'sceneModificationUrl' among the fields obtained by calling [get-scene api](#operation/GetScene) to modify it. \n\n - The `optId` value is a callback value to confirm the creation and modification of the Scene in XRCLOUD. Using a variation of it may result in an error."
         },
         {
             "name": "room",
-            "x-displayName": "Room"
+            "x-displayName": "Room",
+            "description": "A Room is a space organized by Scenes created through the Editor (Spoke). \n\n Each Room has a private room URL, which changes with each request for information, and a public room URL, which has a fixed address. These URLs are also separated into a host URL, which grants permissions to the host of the room, and a guest URL, which grants permissions to guests. \n\n The 'returnUrl' is the web address to return to when leaving the room, which can be set in the Rooms tab of XRCloud."
         }
     ],
     "x-tagGroups": [
@@ -46,7 +47,7 @@
         }
     ],
     "paths": {
-        "/api/projects/{project_id}": {
+        "/api/projects/{projectId}": {
             "get": {
                 "tags": [
                     "project"
@@ -178,7 +179,7 @@
                 }
             }
         },
-        "/api/scenes/{scene_id}": {
+        "/api/scenes/{sceneId}": {
             "get": {
                 "tags": [
                     "scene"
@@ -343,7 +344,7 @@
                 }
             }
         },
-        "/api/rooms/{room_id}": {
+        "/api/rooms/{roomId}": {
             "get": {
                 "tags": [
                     "room"
@@ -456,7 +457,7 @@
                 }
             }
         },
-        "/api/rooms/{room_id}/logs": {
+        "/api/rooms/{roomId}/logs": {
             "get": {
                 "tags": [
                     "room"
@@ -651,7 +652,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "(project_id) The unique ID of the project.",
+                        "description": "(projectId) The unique ID of the project.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
@@ -693,7 +694,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "(scene_id) The unique ID of the scene.",
+                        "description": "(sceneId) The unique ID of the scene.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
@@ -730,7 +731,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "(room_id) The unique ID of the room.",
+                        "description": "(roomId) The unique ID of the room.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {

@@ -17,16 +17,17 @@
         {
             "name": "project",
             "x-displayName": "Project",
-            "description": "개발자의 프로젝트, 플랫폼, 3rd-party app 등이 될 수 있는 XRCLOUD의 Project입니다. \n\n - `webhookUrl`은 XRCLOUD 페이지에서 Project를 생성하거나 정보를 수정할 때 설정할 수 있습니다."
+            "description": "XRCLOUD의 Project는 개발자의 프로젝트, 플랫폼, 또는 3rd-party 애플리케이션이 될 수 있습니다. 이는 Scene과 Room을 관리하는 단위로, 여러 Scene과 Room이 특정 Project에 속하게 됩니다. \n\n - `webhookUrl`은 XRCLOUD 페이지에서 Project를 생성하거나 정보를 수정할 때 설정할 수 있습니다."
         },
         {
             "name": "scene",
             "x-displayName": "Scene",
-            "description": "Scene 생성: [get creation url api](#operation/GetSceneCreationUrl)의 response인 sceneCreationUrl으로 접근한 후 에디터(Spoke)에서 생성합니다. \n\n Scene 수정: [get scene api](#operation/GetScene)의 response 중 sceneModificationUrl에 접근하여 수정합니다. \n\n - `optId` 값은 XRCLOUD에서 Scene의 생성 및 수정을 확인하기위한 callback value 입니다. 변형하여 사용하면 오류가 발생할 수 있습니다."
+            "description": "웹페이지 기반의 3D 가상공간을 제작하는 공간으로 Room을 생성할 때 필요한 공간입니다. \n\n [get-creation-url api](#operation/GetSceneCreationUrl)를 호출하면 얻을 수 있는 필드 중 'sceneCreationUrl'에 접속하여 에디터(Spoke)에 접근한 후 우상단의 Publish Scene 버튼을 통해 Scene을 생성할 수 있습니다. 또, [get-scene api](#operation/GetScene)를 호출하면 얻을 수 있는 필드 중 'sceneModificationUrl'에 접근하여 수정합니다. \n\n - `optId` 값은 XRCLOUD에서 Scene의 생성 및 수정을 확인하기위한 callback value 입니다. 변형하여 사용하면 오류가 발생할 수 있습니다."
         },
         {
             "name": "room",
-            "x-displayName": "Room"
+            "x-displayName": "Room",
+            "description": "Room은 에디터(Spoke)를 통해 생성된 Scene으로 구성된 공간입니다. \n\n 각 Room에는 정보 요청 시마다 주소가 변하는 private room URL과 고정된 주소를 가진 public room URL이 있습니다. 이 URL들은 또한 방의 호스트에게 권한을 부여하는 host URL과 게스트 권한을 부여하는 guest URL로 구분됩니다. \n\n 'returnUrl'은 방을 떠날 때 돌아갈 웹 주소를 의미하며, XRCloud의 Rooms 탭에서 설정할 수 있습니다."
         }
     ],
     "x-tagGroups": [
@@ -46,7 +47,7 @@
         }
     ],
     "paths": {
-        "/api/projects/{project_id}": {
+        "/api/projects/{projectId}": {
             "get": {
                 "tags": [
                     "project"
@@ -178,7 +179,7 @@
                 }
             }
         },
-        "/api/scenes/{scene_id}": {
+        "/api/scenes/{sceneId}": {
             "get": {
                 "tags": [
                     "scene"
@@ -343,7 +344,7 @@
                 }
             }
         },
-        "/api/rooms/{room_id}": {
+        "/api/rooms/{roomId}": {
             "get": {
                 "tags": [
                     "room"
@@ -456,7 +457,7 @@
                 }
             }
         },
-        "/api/rooms/{room_id}/logs": {
+        "/api/rooms/{roomId}/logs": {
             "get": {
                 "tags": [
                     "room"
@@ -651,7 +652,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "(project_id) Project의 고유 ID.",
+                        "description": "(projectId) Project의 고유 ID.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
@@ -693,7 +694,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "(scene_id) Scene의 고유 ID.",
+                        "description": "(sceneId) Scene의 고유 ID.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
@@ -730,7 +731,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "(room_id) Room의 고유 ID.",
+                        "description": "(roomId) Room의 고유 ID.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
@@ -917,7 +918,7 @@
                     },
                     "infraUserId": {
                         "type": "uuid",
-                        "description": "Room에 출입한 3rd-party app의 사용자 ID.",
+                        "description": "Room에 출입한 3rd-party 애플리케이션의 사용자 ID.",
                         "example": "user@domain.com"
                     },
                     "roomId": {
