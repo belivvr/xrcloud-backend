@@ -1,11 +1,8 @@
 #!/bin/bash
 set -e
-cd "$(dirname "$0")"
 
-#
-. ./@env-console.sh
-. ./@config.sh
-. ./login.sh
+. "$(dirname "$0")"/@config.sh
+login
 
 # findScenes
 GET "/api/scenes?projectId=$PROJECT_ID&$PAGE_OPT" \

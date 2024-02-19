@@ -1,10 +1,7 @@
 #!/bin/bash
 set -e
-cd "$(dirname "$0")"
 
-#
-. ./@env-console.sh
-. ./@config.sh
+. "$(dirname "$0")"/@config.sh
 
 # create
 POST /assets \

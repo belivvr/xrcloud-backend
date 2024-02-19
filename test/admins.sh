@@ -1,10 +1,7 @@
 #!/bin/bash
 set -e
-cd "$(dirname "$0")"
 
-#
-. ./@config.sh
-. ./@env-console.sh
+. "$(dirname "$0")"/@config.sh
 
 # createAdmin
 POST /admins \
@@ -16,8 +13,7 @@ POST /admins \
 
 ADMIN_ID=$(echo $BODY | jq -r '.id')
 
-#
-. ./login.sh
+login
 
 # updatePassword
 POST /admins/$ADMIN_ID/update-password \

@@ -1,9 +1,8 @@
 #!/bin/bash
+set -e
 
-#
-. ./@env-console.sh
-. ./@config.sh
-. ./login.sh
+. "$(dirname "$0")"/@config.sh
+login
 
 # create
 POST /subscriptions/tier \

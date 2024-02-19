@@ -1,10 +1,8 @@
 #!/bin/bash
 set -e
-cd "$(dirname "$0")"
 
-#
-. ./@config.sh
-. ./login.sh
+. "$(dirname "$0")"/@config.sh
+login
 
 # getProfile
 GET /auth/profile \
