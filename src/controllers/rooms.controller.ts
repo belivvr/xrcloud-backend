@@ -62,7 +62,7 @@ export class RoomsController {
         const roomUrlData: RoomUrlData = {
             userId: queryDto.userId,
             avatarUrl: queryDto.avatarUrl,
-            credentials: queryDto.credentials
+            linkPayload: queryDto.linkPayload
         }
 
         return await this.roomsService.getRoomDto(roomId, roomUrlData)

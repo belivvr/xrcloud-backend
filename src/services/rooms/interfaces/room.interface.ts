@@ -9,5 +9,5 @@ export interface RoomOption {
 export interface RoomUrlData {
     userId?: string
     avatarUrl?: string
-    credentials?: string
+    linkPayload?: string
 }

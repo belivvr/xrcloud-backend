@@ -19,11 +19,11 @@ POST /api/rooms \
 ROOM_ID=$(echo $BODY | jq -r '.id')
 
 # findRooms
-GET "/api/rooms?sceneId=$SCENE_ID&$PAGE_OPT&credentials=cnu%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjoiNmU5YzI1NDYtYzRhNi00ZGNkLWI2NDYtOTRmM2NhYWZlMjE0IiwiZW1haWwiOiJjbnUxQGJlbGl2dnIuc2kiLCJqdGkiOiIxYzAyMzRjNC00ODA2LTQwODAtYTQ3Ny02MmVlMTdlMmJhZmIiLCJpYXQiOjE3MDc5ODEzODIsImV4cCI6MTcwOTcwOTM4Mn0.vPDYUaSxql2hlQL6q_tO1TTHGLMf7s38onkacMenXRI" \
+GET "/api/rooms?sceneId=$SCENE_ID&$PAGE_OPT&linkPayload=cnu%3AeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjoiNmU5YzI1NDYtYzRhNi00ZGNkLWI2NDYtOTRmM2NhYWZlMjE0IiwiZW1haWwiOiJjbnUxQGJlbGl2dnIuc2kiLCJqdGkiOiIxYzAyMzRjNC00ODA2LTQwODAtYTQ3Ny02MmVlMTdlMmJhZmIiLCJpYXQiOjE3MDc5ODEzODIsImV4cCI6MTcwOTcwOTM4Mn0.vPDYUaSxql2hlQL6q_tO1TTHGLMf7s38onkacMenXRI" \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getRoom
-GET /api/rooms/$ROOM_ID?extra=credentials:$REFRESH_TOKEN \
+GET /api/rooms/$ROOM_ID?linkPayload=cnu:$REFRESH_TOKEN \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getInfraRoom
@@ -31,7 +31,7 @@ GET /api/rooms/d6794aa2-6063-4a69-9cba-ce89b8a9c7f7/infra \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getOption
-GET /api/rooms/option/386166d3-7d50-4969-92b3-dd56ce3c1047?type=private
+GET /api/rooms/option/f27668e5-0c8b-4441-81fd-31a154ad4236?type=private
 
 # updateRoom
 PATCH /api/rooms/$ROOM_ID \

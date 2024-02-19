@@ -79,7 +79,7 @@ export class RoomsService {
     }
 
     async findRooms(queryDto: RoomsQueryDto) {
-        const { userId, avatarUrl, credentials } = queryDto
+        const { userId, avatarUrl, linkPayload } = queryDto
 
         const rooms = await this.roomsRepository.find(queryDto)
 
@@ -93,7 +93,7 @@ export class RoomsService {
             const roomUrlData: RoomUrlData = {
                 userId,
                 avatarUrl,
-                credentials
+                linkPayload
             }
 
             const dto = await this.getRoomDto(room.id, roomUrlData)
@@ -295,16 +295,16 @@ export class RoomsService {
         const faviconUrl = `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`
         const logoUrl = `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
 
-        const credentialObj: Record<string, string> = {}
+        const linkPayloadObj: Record<string, string> = {}
 
-        if (roomUrlData?.credentials) {
-            const credentialParts = roomUrlData.credentials.split(',')
+        if (roomUrlData?.linkPayload) {
+            const linkPayloadParts = roomUrlData.linkPayload.split(',')
 
-            for (const part of credentialParts) {
+            for (const part of linkPayloadParts) {
                 const [key, value] = part.split(':')
 
                 if (key && value) {
-                    credentialObj[key] = value
+                    linkPayloadObj[key] = value
                 }
             }
         }
@@ -316,7 +316,7 @@ export class RoomsService {
             returnUrl: room.returnUrl,
             avatarUrl: roomUrlData?.avatarUrl,
             funcs: this.optionsService.generateFuncs(),
-            credentials: credentialObj
+            linkPayload: linkPayloadObj
         }
 
         const expireTime = convertTimeToSeconds(this.configService.roomOptionExpiration)
