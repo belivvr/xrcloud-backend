@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common'
 import * as dotenv from 'dotenv'
-import { ConfigException, TypeormLogger } from 'src/common'
+import { ConfigException, Path, TypeormLogger, isDevelopment, isProduction } from 'src/common'
 import { Admin } from 'src/services/admins/entities'
 import { Option } from 'src/services/options/entities'
 import { Project } from 'src/services/projects/entities'
@@ -109,24 +109,24 @@ const getPoolSize = () => {
 }
 
 const devModeOptions = () => {
-    // const devMode = Path.isExistsSync('@DEV_TYPEORM_AUTO_RESET')
+    const allowSchemaReset = Path.isExistsSync('config/@DEV_ALLOW_SCHEMA_RESET')
 
-    // if (devMode) {
-    //     if (isProduction()) {
-    //         throw new ConfigException(
-    //             'The @DEV_TYPEORM_AUTO_RESET option should not be set to true in a production environment.'
-    //         )
-    //     }
+    if (allowSchemaReset) {
+        if (isProduction()) {
+            throw new ConfigException(
+                'The @DEV_ALLOW_SCHEMA_RESET option should not be set to true in a production environment.'
+            )
+        }
 
-    //     return {
-    //         dropSchema: true,
-    //         synchronize: true
-    //     }
-    // } else if (isDevelopment()) {
-    //     throw new ConfigException(
-    //         'The @DEV_TYPEORM_AUTO_RESET option should be set to true in a development environment.'
-    //     )
-    // }
+        return {
+            dropSchema: true,
+            synchronize: true
+        }
+    } else if (isDevelopment()) {
+        throw new ConfigException(
+            'The @DEV_ALLOW_SCHEMA_RESET option should be set to true in a development environment.'
+        )
+    }
 
     return {}
 }

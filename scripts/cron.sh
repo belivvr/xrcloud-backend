@@ -3,7 +3,6 @@
 env=$1
 script_dir=$(dirname $(realpath $0))
 
-#
 container_exists=$(docker ps -a -q -f name=cron)
 
 if [ ! -z "$container_exists" ]; then
@@ -11,7 +10,6 @@ if [ ! -z "$container_exists" ]; then
     docker rm cron
 fi
 
-#
 image_exists=$(docker images -q cron:$env)
 
 if [ ! -z "$image_exists" ]; then
@@ -26,7 +24,6 @@ if [ ! -f $dockerfile ]; then
     exit 1
 fi
 
-#
 docker build -t cron:$env -f $dockerfile "$script_dir/cron"
 
 docker network create xrcloud || true
@@ -38,6 +35,3 @@ docker run --restart always -d \
     --log-opt max-file=3 \
     -v $script_dir/cron/.env:/app/.env \
     cron:$env
-
-#
-echo "Docker container cron is up and running."

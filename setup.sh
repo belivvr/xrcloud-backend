@@ -4,34 +4,20 @@ cd "$(dirname "$0")"
 
 . $ENV
 
-DOCKER_CONTAINER=$(basename "$PWD")
+if [ -n "$DB_VOLUME_DIR" ]; then
+    sudo mkdir -p "$DB_VOLUME_DIR"
 
-sudo mkdir -p -m 755 "/app/$DOCKER_CONTAINER/logs"
+    sudo mount -t nfs $DB_NAS_LOCATION $DB_VOLUME_DIR
 
-docker rm -f $CACHE_HOST
+    echo "$DB_NAS_LOCATION $DB_VOLUME_DIR nfs, defaults 0 0" | sudo tee -a /etc/fstab
+fi
 
-docker run --restart=always -d --log-opt max-size=10m --log-opt max-file=3 \
-    --name $CACHE_HOST \
-    --network xrcloud \
-    redis:7.0 redis-server
+docker_compose() {
+    docker compose -f ./docker-compose.yml --env-file $ENV $@
+}
 
-docker rm -f $TYPEORM_HOST
-
-sudo mkdir -p "$DB_VOLUME_DIR"
-
-sudo mount -t nfs $DB_NAS_LOCATION $DB_VOLUME_DIR
-
-echo "$DB_NAS_LOCATION $DB_VOLUME_DIR nfs, defaults 0 0" | sudo tee -a /etc/fstab
-
-docker run --restart=always -d --log-opt max-size=10m --log-opt max-file=3 \
-    --name $TYPEORM_HOST \
-    --network xrcloud \
-    -e POSTGRES_DB=$TYPEORM_DATABASE \
-    -e POSTGRES_USER=$TYPEORM_USERNAME \
-    -e POSTGRES_PASSWORD=$TYPEORM_PASSWORD \
-    -e POSTGRES_INITDB_ARGS=--encoding=UTF-8 \
-    -v "$DB_VOLUME_DIR":/var/lib/postgresql/data \
-    postgres:13.11
+docker_compose --profile infra down
+docker_compose --profile infra up -d
 
 LOG_MSG="database system is ready to accept connections"
 
@@ -42,5 +28,7 @@ done
 docker exec $TYPEORM_HOST psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "ALTER USER \"$TYPEORM_USERNAME\" WITH SUPERUSER;"
 docker exec $TYPEORM_HOST psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "GRANT ALL PRIVILEGES ON DATABASE \"$TYPEORM_DATABASE\" TO \"$TYPEORM_USERNAME\";"
 docker exec $TYPEORM_HOST psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "GRANT CREATE ON DATABASE \"$TYPEORM_DATABASE\" TO \"$TYPEORM_USERNAME\";"
+docker exec $TYPEORM_HOST psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "CREATE SCHEMA \"$TYPEORM_SCHEMA\" AUTHORIZATION \"$TYPEORM_USERNAME\";"
+docker exec $TYPEORM_HOST psql -U $TYPEORM_USERNAME -d $TYPEORM_DATABASE -c "GRANT ALL ON SCHEMA \"$TYPEORM_SCHEMA\" TO \"$TYPEORM_USERNAME\" WITH GRANT OPTION;"
 
-. ./scripts/insert_tiers.sh
+# . ./scripts/insert_tiers.sh

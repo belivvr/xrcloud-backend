@@ -23,9 +23,9 @@
     "initializeCommand": "docker network create xrcloud || true",
     "runArgs": [
         "--network",
-        "xrcloud",
+        "vscode",
         "--name",
-        "vscode-${containerWorkspaceFolderBasename}"
+        "${containerWorkspaceFolderBasename}-vscode"
     ],
     "remoteEnv": {
         "WORKSPACE_ROOT": "${containerWorkspaceFolder}",
