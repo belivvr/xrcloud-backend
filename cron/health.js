@@ -22,58 +22,40 @@ const runHealthCheck = async () => {
         const cpuThreshold = 70
 
         if (dbStatus && diskUsage < diskThreshold && cpuUsage < cpuThreshold) {
-            return;
+            return
         }
         
         const chatMessage = {
-            cardsV2: [
+            "@type": "MessageCard",
+            "@context": "http://schema.org/extensions",
+            "themeColor": "0076D7",
+            "summary": "Health Check Summary",
+            "sections": [
                 {
-                    card: {
-                        header: {
-                            title: `Health Check: ${env}`,
+                    "activityTitle": `Health Check: ${env}`,
+                    "activitySubtitle": `${new Date().toISOString().replace('T', ' ').substring(0, 19)} (UTC)`,
+                    "facts": [
+                        {
+                            "name": "Database Status",
+                            "value": `${dbStatus}`
                         },
-                        sections: [
-                            {
-                                widgets: [
-                                    {
-                                        decoratedText: {
-                                            topLabel: 'Date',
-                                            text: `${new Date().toISOString().replace('T', ' ').substring(0, 19)} (UTC)`,
-                                        },
-                                    },
-                                    {
-                                        decoratedText: {
-                                            topLabel: 'Database Status',
-                                            text: `${dbStatus}`,
-                                        },
-                                    },
-                                    {
-                                        decoratedText: {
-                                            topLabel: 'Disk Usage',
-                                            text: `${diskUsagePersent}`,
-                                        },
-                                    },
-                                    {
-                                        decoratedText: {
-                                            topLabel: 'CPU Usage',
-                                            text: `${cpuUsagePersent}`,
-                                        },
-                                    }
-                                ],
-                            },
-                        ],
-                    },
-                },
-            ],
+                        {
+                            "name": "Disk Usage",
+                            "value": `${diskUsagePersent}`
+                        },
+                        {
+                            "name": "CPU Usage",
+                            "value": `${cpuUsagePersent}`
+                        }
+                    ],
+                    "markdown": true
+                }
+            ]
         }
 
-        const webhookUrl = process.env.GOOGLE_CHAT_MONITORING_URL
-        const webhookKey = process.env.GOOGLE_CHAT_WEBHOOK_KEY
-        const webhookToken = process.env.GOOGLE_CHAT_MONITORING_TOKEN
-
-        const fullWebhookUrl = `${webhookUrl}?key=${webhookKey}&token=${webhookToken}`
+        const webhookUrl = process.env.TEAMS_WEBHOOK_URL
         
-        const webhookResponse = await fetch(fullWebhookUrl, {
+        const webhookResponse = await fetch(webhookUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

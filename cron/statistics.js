@@ -16,60 +16,42 @@ const runStatisticsCheck = async () => {
         const countRoomAccesses = statisticsData.roomAccesses
 
         const chatMessage = {
-            cardsV2: [
-                {
-                    card: {
-                        header: {
-                            title: 'XRCLOUD Statistics',
-                        },
-                        sections: [
-                            {
-                                widgets: [
-                                    {
-                                        decoratedText: {
-                                            topLabel: 'Date',
-                                            text: `${new Date().toISOString().replace('T', ' ').substring(0, 19)} (UTC)`,
-                                        },
-                                    },
-                                    {
-                                        decoratedText: {
-                                            topLabel: 'Admins',
-                                            text: `${countAdmins}`,
-                                        },
-                                    },
-                                    {
-                                        decoratedText: {
-                                            topLabel: 'Scenes',
-                                            text: `${countScenes}`,
-                                        },
-                                    },
-                                    {
-                                        decoratedText: {
-                                            topLabel: 'Rooms',
-                                            text: `${countRooms}`,
-                                        },
-                                    },
-                                    {
-                                        decoratedText: {
-                                            topLabel: 'Room Accesses',
-                                            text: `${countRoomAccesses}`,
-                                        },
-                                    },
-                                ],
-                            },
-                        ],
+            "@type": "MessageCard",
+            "@context": "http://schema.org/extensions",
+            "themeColor": "0072C6",
+            "summary": "XRCLOUD Statistics Summary",
+            "sections": [{
+                "activityTitle": "XRCLOUD Statistics",
+                "activitySubtitle": `${new Date().toISOString().replace('T', ' ').substring(0, 19)} (UTC)`,
+                "facts": [
+                    {
+                        "name": "Date",
+                        "value": `${new Date().toISOString().replace('T', ' ').substring(0, 19)} (UTC)`
                     },
-                },
-            ],
+                    {
+                        "name": "Admins",
+                        "value": `${countAdmins}`
+                    },
+                    {
+                        "name": "Scenes",
+                        "value": `${countScenes}`
+                    },
+                    {
+                        "name": "Rooms",
+                        "value": `${countRooms}`
+                    },
+                    {
+                        "name": "Room Accesses",
+                        "value": `${countRoomAccesses}`
+                    }
+                ],
+                "markdown": true
+            }]
         }
 
-        const webhookUrl = process.env.GOOGLE_CHAT_MONITORING_URL
-        const webhookKey = process.env.GOOGLE_CHAT_WEBHOOK_KEY
-        const webhookToken = process.env.GOOGLE_CHAT_MONITORING_TOKEN
+        const webhookUrl = process.env.TEAMS_WEBHOOK_URL
 
-        const fullWebhookUrl = `${webhookUrl}?key=${webhookKey}&token=${webhookToken}`
-
-        const webhookResponse = await fetch(fullWebhookUrl, {
+        const webhookResponse = await fetch(webhookUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
