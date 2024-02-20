@@ -1,5 +1,4 @@
 export * from './admin-exists.guard'
-export * from './api-key-auth.guard'
 export * from './header-auth.guard'
 export * from './local-auth.guard'
 export * from './project-exists.guard'

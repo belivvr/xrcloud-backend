@@ -5,7 +5,7 @@ require('dotenv').config({ path: '/app/.env' })
 
 const runHealthCheck = async () => {
     try {
-        const env = process.env.NODE_ENV || ''
+        const env = process.env.ENV || ''
         const host = process.env.HOST
 
         const healthResponse = await fetch(`${host}/health`)

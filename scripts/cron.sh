@@ -1,37 +1,33 @@
 #!/bin/bash
+set -e
 
-env=$1
-script_dir=$(dirname $(realpath $0))
+ENV=$1
 
-container_exists=$(docker ps -a -q -f name=cron)
-
-if [ ! -z "$container_exists" ]; then
-    docker stop cron
-    docker rm cron
-fi
-
-image_exists=$(docker images -q cron:$env)
-
-if [ ! -z "$image_exists" ]; then
-    docker rmi cron:$env
-fi
-
-#
-dockerfile="$script_dir/cron/Dockerfile.$env"
-
-if [ ! -f $dockerfile ]; then
-    echo "Error: $dockerfile does not exist."
+if [ ! -f $ENV ]; then
+    echo "Error: $ENV does not exist."
     exit 1
 fi
 
-docker build -t cron:$env -f $dockerfile "$script_dir/cron"
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+
+docker rm -f cron || true
+
+DOCKER_FILE="$SCRIPT_DIR/../cron/Dockerfile.$ENV"
+
+if [ ! -f $DOCKER_FILE ]; then
+    echo "Error: $DOCKER_FILE does not exist."
+    exit 1
+fi
+
+DOCKER_CONTAINER='cron'
+DOCKER_IMAGE="$DOCKER_CONTAINER:$(date +%s)"
+
+docker build -t $DOCKER_IMAGE -f $DOCKER_FILE "$SCRIPT_DIR/../cron"
 
 docker network create xrcloud || true
 
-docker run --restart always -d \
-    --name cron \
+docker run --restart always -d --log-opt max-size=10m --log-opt max-file=3 \
+    --name $DOCKER_CONTAINER \
     --network xrcloud \
-    --log-opt max-size=10m \
-    --log-opt max-file=3 \
-    -v $script_dir/cron/.env:/app/.env \
-    cron:$env
+    -v $SCRIPT_DIR/../cron/.env:/app/.env \
+    $DOCKER_IMAGE
