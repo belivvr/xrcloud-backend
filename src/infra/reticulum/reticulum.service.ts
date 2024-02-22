@@ -196,8 +196,6 @@ export class ReticulumService {
             body
         })
 
-        console.log(response)
-
         if (!response) {
             throw new InternalServerErrorException(`Reticulum: Failed to update room`)
         }
