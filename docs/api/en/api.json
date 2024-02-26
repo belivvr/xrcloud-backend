@@ -314,6 +314,9 @@
                         "$ref": "#/components/parameters/AvatarUrl"
                     },
                     {
+                        "$ref": "#/components/parameters/LinkPayload"
+                    },
+                    {
                         "$ref": "#/components/parameters/PaginationTake"
                     },
                     {
@@ -360,6 +363,9 @@
                     },
                     {
                         "$ref": "#/components/parameters/AvatarUrl"
+                    },
+                    {
+                        "$ref": "#/components/parameters/LinkPayload"
                     }
                 ],
                 "responses": {
@@ -614,6 +620,16 @@
                 },
                 "description": "The path to the avatar file to use in Room.",
                 "example": "https://storage.com/bucket/avatar-file.glb"
+            },
+            "LinkPayload": {
+                "required": false,
+                "name": "linkPayload",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "Values to pass to the 'inline viewer', an element in the Scene. Each key maps to the name of the 'inline viewer' and is separated by a comma (,), and the key and value are separated by a colon (:).",
+                "example": "belivvr:eyJhbGciOiJIUzI1,test:NiIsInR5cCI6IkpXVCJ9,xrcloud:testValue"
             }
         },
         "schemas": {

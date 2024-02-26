@@ -314,6 +314,9 @@
                         "$ref": "#/components/parameters/AvatarUrl"
                     },
                     {
+                        "$ref": "#/components/parameters/LinkPayload"
+                    },
+                    {
                         "$ref": "#/components/parameters/PaginationTake"
                     },
                     {
@@ -360,6 +363,9 @@
                     },
                     {
                         "$ref": "#/components/parameters/AvatarUrl"
+                    },
+                    {
+                        "$ref": "#/components/parameters/LinkPayload"
                     }
                 ],
                 "responses": {
@@ -614,6 +620,16 @@
                 },
                 "description": "Room에서 사용할 아바타 파일의 경로.",
                 "example": "https://storage.com/bucket/avatar-file.glb"
+            },
+            "LinkPayload": {
+                "required": false,
+                "name": "linkPayload",
+                "in": "query",
+                "schema": {
+                    "type": "string"
+                },
+                "description": "Scene의 element인 'inline viewer'에 전달할 값. 각각의 key는 'inline viewer'의 name과 맵핑되며 쉼표(,)로 구분되고 key와 value는 콜론(:)으로 구분됩니다.",
+                "example": "belivvr:eyJhbGciOiJIUzI1,test:NiIsInR5cCI6IkpXVCJ9,xrcloud:testValue"
             }
         },
         "schemas": {
