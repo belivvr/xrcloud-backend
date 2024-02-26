@@ -5,6 +5,7 @@ export type OptionValue = {
     returnUrl: string
     token?: string
     funcs?: Funcs
+    linkPayload?: string
 }
 
 export enum OptionRole {
