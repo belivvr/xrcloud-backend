@@ -16,7 +16,7 @@ services:
             POSTGRES_USER: ${TYPEORM_USERNAME}
             POSTGRES_PASSWORD: ${TYPEORM_PASSWORD}
         volumes:
-            - ${DB_VOLUME_DIR:-/data/postgres/xrcloud}:/app/.env
+            - ${DB_VOLUME_DIR:-/data/postgres/xrcloud}:/var/lib/postgresql/data
         logging: *default-logging
         networks:
             - default
