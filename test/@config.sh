@@ -2,7 +2,7 @@
 HOST="http://localhost:3000"
 
 EMAIL='cnu1@belivvr.si'
-PASSWORD='123123a!'
+PASSWORD='cnu1234!@'
 
 FILE_PATH='./files'
 PAGE_OPT='take=100&skip=0'
