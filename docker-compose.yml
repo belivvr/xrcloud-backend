@@ -41,6 +41,7 @@ services:
         volumes:
             - ${ENV}:/app/.env
             - ${LOGS_DIR:-./logs}:/app/logs
+            - ${STORAGE_DIR:-./app/storage}:/app/storage
         logging: *default-logging
         networks:
             - default

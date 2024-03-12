@@ -4,7 +4,7 @@ import {
     InternalServerErrorException,
     NotFoundException
 } from '@nestjs/common'
-import { Assert, generateUUID, updateIntersection } from 'src/common'
+import { Assert, FileStorage, generateUUID, updateIntersection } from 'src/common'
 import { FAVICON, LOGO } from 'src/common/constants'
 import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { UploadedFilesType } from '../manage-asset/types'
@@ -33,12 +33,12 @@ export class ProjectsService {
         let uploadedFavicon
 
         try {
-            uploadedFavicon = await this.fileStorageService.saveFile(faviconFile.buffer, faviconKey)
+            uploadedFavicon = await FileStorage.save(faviconFile.buffer, faviconKey)
 
-            await this.fileStorageService.saveFile(logoFile.buffer, logoKey)
+            await FileStorage.save(logoFile.buffer, logoKey)
         } catch (error) {
             if (uploadedFavicon) {
-                await this.fileStorageService.removeFile(faviconKey)
+                await FileStorage.remove(faviconKey)
             }
 
             throw new InternalServerErrorException(`Failed to upload files: ${error.message}.`)
@@ -93,7 +93,7 @@ export class ProjectsService {
                     fileKey = this.generateFileKey(project.logoId, fieldName)
                 }
 
-                await this.fileStorageService.saveFile(file.buffer, fileKey)
+                await FileStorage.save(file.buffer, fileKey)
             }
         }
 

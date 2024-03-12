@@ -1,22 +1,19 @@
 import { Injectable } from '@nestjs/common'
 import { extname } from 'path'
-import { generateUUID } from 'src/common'
-import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
+import { FileStorage, generateUUID } from 'src/common'
 
 @Injectable()
 export class AssetsService {
-    constructor(private readonly fileStorageService: FileStorageService) {}
+    constructor() {}
 
-    async uploadFile(file: Express.Multer.File) {
+    async uploadFile(file: Express.Multer.File): Promise<{ fileUrl: string }> {
         const uuid = generateUUID()
 
         const fileExtension = extname(file.originalname).toLowerCase().slice(1)
 
         const fileKey = `assets/${uuid.slice(0, 3)}/${uuid}.${fileExtension}`
 
-        const result = await this.fileStorageService.saveFile(file.buffer, fileKey, file.mimetype)
-
-        const fileUrl = result.Location
+        const fileUrl = await FileStorage.save(file.buffer, fileKey)
 
         return { fileUrl }
     }
