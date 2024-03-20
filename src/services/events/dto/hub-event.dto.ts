@@ -2,7 +2,8 @@ import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validato
 
 export enum HubEventName {
     ROOM_JOIN = 'room-join',
-    ROOM_EXIT = 'room-exit'
+    ROOM_EXIT = 'room-exit',
+    CLICK_EVENT = 'click-event'
 }
 
 export class HubEventDto {
@@ -11,12 +12,12 @@ export class HubEventDto {
     type: string
 
     @IsNotEmpty()
-    @IsUUID()
-    sessionId: string
-
-    @IsNotEmpty()
     @IsString()
     eventTime: string
+
+    @IsOptional()
+    @IsUUID()
+    sessionId: string
 
     @IsOptional()
     @IsString()
@@ -25,4 +26,12 @@ export class HubEventDto {
     @IsOptional()
     @IsString()
     userId: string
+
+    @IsOptional()
+    @IsString()
+    eventAction: string
+
+    @IsOptional()
+    @IsString()
+    ip: string
 }

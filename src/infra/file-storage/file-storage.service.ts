@@ -45,12 +45,6 @@ export class FileStorageService {
         }
     }
 
-    getFileUrl(fileId: string, fileType: string) {
-        const prePath = fileId.slice(0, 3)
-
-        return `${this.storage}/${fileType}/${prePath}/${fileId}`
-    }
-
     async removeFile(key: string | undefined) {
         if (!key) {
             throw new InternalServerErrorException('Key for deleting files is required.')

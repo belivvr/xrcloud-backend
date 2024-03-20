@@ -1,4 +1,5 @@
 export * from './create-room-access.dto'
+export * from './create-room-activity.dto'
 export * from './create-room.dto'
 export * from './option-query.dto'
 export * from './query.dto'

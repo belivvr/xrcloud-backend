@@ -2,13 +2,13 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import {
     Assert,
     CacheService,
+    FileStorage,
     convertTimeToSeconds,
     generateUUID,
     getSlug,
     updateIntersection
 } from 'src/common'
 import { FAVICON, LOGO } from 'src/common/constants'
-import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ScenesService } from 'src/services/scenes/scenes.service'
 import { OptionsService } from '../options/options.service'
@@ -16,6 +16,7 @@ import { OptionRole } from '../options/types'
 import { UsersService } from '../users/users.service'
 import {
     CreateRoomAccessDto,
+    CreateRoomActivityDto,
     CreateRoomDto,
     OptionQueryDto,
     RoomAccessQueryDto,
@@ -27,6 +28,7 @@ import {
 import { Room, RoomAccess } from './entities'
 import { RoomOption, RoomUrlData } from './interfaces'
 import { RoomAccessRepository } from './room-access.repository'
+import { RoomActivityRepository } from './room-activity.repository'
 import { RoomConfigService } from './room-config.service'
 import { RoomsRepository } from './rooms.repository'
 import { RoomEntryType } from './types'
@@ -36,10 +38,10 @@ export class RoomsService {
     constructor(
         private readonly roomsRepository: RoomsRepository,
         private readonly roomAccessRepository: RoomAccessRepository,
+        private readonly roomActivityRepository: RoomActivityRepository,
         private readonly scenesService: ScenesService,
         private readonly optionsService: OptionsService,
         private readonly reticulumService: ReticulumService,
-        private readonly fileStorageService: FileStorageService,
         private readonly cacheService: CacheService,
         private readonly usersService: UsersService,
         private readonly configService: RoomConfigService
@@ -262,8 +264,8 @@ export class RoomsService {
 
         const url = this.reticulumService.generateRoomUrl(room.infraRoomId, room.slug)
 
-        const faviconUrl = `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`
-        const logoUrl = `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
+        const faviconUrl = `${FileStorage.getFileUrl(faviconId, FAVICON)}.ico`
+        const logoUrl = `${FileStorage.getFileUrl(logoId, LOGO)}.jpg`
 
         const roomOption = {
             token,
@@ -292,8 +294,8 @@ export class RoomsService {
 
         const url = this.reticulumService.generateRoomUrl(room.infraRoomId, room.slug)
 
-        const faviconUrl = `${this.fileStorageService.getFileUrl(faviconId, FAVICON)}.ico`
-        const logoUrl = `${this.fileStorageService.getFileUrl(logoId, LOGO)}.jpg`
+        const faviconUrl = `${FileStorage.getFileUrl(faviconId, FAVICON)}.ico`
+        const logoUrl = `${FileStorage.getFileUrl(logoId, LOGO)}.jpg`
 
         const linkPayloadObj: Record<string, string> = {}
 
@@ -426,5 +428,12 @@ export class RoomsService {
 
             await this.usersService.createUser(createUser)
         }
+    }
+
+    /*
+     * room-activity
+     */
+    async createRoomActivity(createRoomActivityDto: CreateRoomActivityDto) {
+        return await this.roomActivityRepository.create(createRoomActivityDto)
     }
 }

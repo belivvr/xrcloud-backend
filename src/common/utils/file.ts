@@ -24,6 +24,12 @@ export class FileStorage {
         }
     }
 
+    static getFileUrl(fileId: string, fileType: string) {
+        const prePath = fileId.slice(0, 3)
+
+        return `${serverOptions.host}/storage/${fileType}/${prePath}/${fileId}`
+    }
+
     static async remove(key: string): Promise<void> {
         try {
             const filePath = Path.join(this.uploadDir, key)

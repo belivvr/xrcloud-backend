@@ -7,6 +7,7 @@ import { UsersService } from '../users/users.service'
 import { HubEventDto, HubEventName, SpokeEventDto, SpokeEventName } from './dto'
 import {
     CallbackData,
+    ClickEventData,
     CreateSceneData,
     ExitRoomData,
     JoinRoomData,
@@ -162,6 +163,22 @@ export class EventsService {
 
                 break
             }
+
+            case HubEventName.CLICK_EVENT: {
+                const { ip, roomId, userId, eventTime, eventAction } = hubEventDto
+
+                const clickEventData: ClickEventData = {
+                    ip,
+                    roomId,
+                    userId,
+                    eventTime,
+                    eventAction
+                }
+
+                await this.clickEvent(clickEventData)
+
+                break
+            }
         }
     }
 
@@ -236,6 +253,50 @@ export class EventsService {
                 roomId: savedRoomAccess.roomId,
                 roomAccessType: RoomAccessType.Exit,
                 roomAccessTime: savedRoomAccess.exitedAt
+            }
+
+            await this.webhook(webhookData)
+        }
+    }
+
+    async clickEvent(clickEventData: ClickEventData) {
+        const { roomId: infraRoomId, userId: reticulumId, eventTime, eventAction, ip } = clickEventData
+
+        const room = await this.roomsService.findRoomByInfraRoomId(infraRoomId)
+
+        if (!room) {
+            Logger.error('Room click event: Failed to find room')
+
+            return
+        }
+
+        const user = await this.usersService.findUserByReticulumId(reticulumId)
+
+        if (!user) {
+            Logger.error('Room click event: Failed to find user', reticulumId)
+
+            return
+        }
+
+        const createRoomActivity = {
+            roomId: room.id,
+            infraUserId: user.infraUserId,
+            logMessage: eventAction,
+            createdAt: eventTime,
+            ip
+        }
+
+        const savedRoomActivity = await this.roomsService.createRoomActivity(createRoomActivity)
+
+        const project = await this.projectsService.getProject(room.projectId)
+
+        if (project.webhookUrl) {
+            const webhookData = {
+                webhookUrl: project.webhookUrl,
+                infraUserId: savedRoomActivity.infraUserId,
+                roomId: savedRoomActivity.roomId,
+                eventAction,
+                ip
             }
 
             await this.webhook(webhookData)

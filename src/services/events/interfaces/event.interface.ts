@@ -28,10 +28,20 @@ export interface ExitRoomData {
     eventTime: string
 }
 
+export interface ClickEventData {
+    roomId: string
+    userId: string
+    eventTime: string
+    eventAction: string
+    ip: string
+}
+
 export interface WebhookData {
     webhookUrl: string
-    infraUserId?: string
     roomId?: string
+    infraUserId?: string
     roomAccessType?: RoomAccessType
     roomAccessTime?: Date
+    eventAction?: string
+    ip?: string
 }

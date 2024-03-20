@@ -9,7 +9,7 @@ GET "/api/scenes?projectId=$PROJECT_ID&$PAGE_OPT" \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getSceneCreationUrl
-GET "/api/scenes/get-creation-url?projectId=$PROJECT_ID&creator=$CREATOR&tag=testTag" \
+GET "/api/scenes/get-creation-url?projectId=$PROJECT_ID&creator=$CREATOR" \
     -H "Authorization: Bearer $ACCESS_TOKEN"
 
 # getScene

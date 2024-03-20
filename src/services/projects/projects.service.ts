@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common'
 import { Assert, FileStorage, generateUUID, updateIntersection } from 'src/common'
 import { FAVICON, LOGO } from 'src/common/constants'
-import { FileStorageService } from 'src/infra/file-storage/file-storage.service'
 import { UploadedFilesType } from '../manage-asset/types'
 import { CreateProjectDto, ProjectDto, ProjectsQueryDto, UpdateProjectDto } from './dto'
 import { Project } from './entities'
@@ -15,10 +14,7 @@ import { ProjectsRepository } from './projects.repository'
 
 @Injectable()
 export class ProjectsService {
-    constructor(
-        private readonly projectsRepository: ProjectsRepository,
-        private readonly fileStorageService: FileStorageService
-    ) {}
+    constructor(private readonly projectsRepository: ProjectsRepository) {}
 
     async createProject(createProjectDto: CreateProjectDto, files: UploadedFilesType, adminId: string) {
         const faviconFile = files[FAVICON][0]
@@ -150,8 +146,8 @@ export class ProjectsService {
     async getProjectDto(projectId: string) {
         const project = await this.getProject(projectId)
 
-        const faviconUrl = this.fileStorageService.getFileUrl(project.faviconId, FAVICON)
-        const logoUrl = this.fileStorageService.getFileUrl(project.logoId, LOGO)
+        const faviconUrl = FileStorage.getFileUrl(project.faviconId, FAVICON)
+        const logoUrl = FileStorage.getFileUrl(project.logoId, LOGO)
 
         const dto = new ProjectDto(project)
         dto.faviconUrl = `${faviconUrl}.ico`
