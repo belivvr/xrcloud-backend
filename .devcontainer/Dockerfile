@@ -28,4 +28,4 @@ RUN apk add -f py-pip python3-dev libffi-dev openssl-dev gcc libc-dev make
 # RUN pip install -v docker-compose
 
 # Expose port
-EXPOSE 3001
+EXPOSE 3000
