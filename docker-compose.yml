@@ -18,8 +18,6 @@ services:
         volumes:
             - ${DB_VOLUME_DIR:-/data/postgres/xrcloud}:/var/lib/postgresql/data
         logging: *default-logging
-        ports:
-            - 5732:5432
         networks:
             - default
 
@@ -41,7 +39,7 @@ services:
         volumes:
             - ${ENV}:/app/.env
             - ${LOGS_DIR:-./logs}:/app/logs
-            - ${STORAGE_DIR:-./app/storage}:/app/storage
+            - ${STORAGE_DIR:-./app/xrcloud-backend/storage}:/app/storage
         logging: *default-logging
         networks:
             - default

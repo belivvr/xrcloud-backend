@@ -3,7 +3,7 @@ import { serverOptions } from './options'
 import { Path } from './path'
 
 export class FileStorage {
-    private static readonly uploadDir = '/app/storage'
+    private static readonly uploadDir = '/app/xrcloud-backend/storage'
 
     static async save(fileBuffer: Buffer, key: string | undefined): Promise<string> {
         if (!key) {
