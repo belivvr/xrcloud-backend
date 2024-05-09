@@ -137,9 +137,10 @@ export class EventsService {
 
         switch (eventName) {
             case HubEventName.ROOM_JOIN: {
-                const { roomId, userId, sessionId, eventTime } = hubEventDto
+                const { ip, roomId, userId, sessionId, eventTime } = hubEventDto
 
                 const joinRoomData: JoinRoomData = {
+                    ip,
                     roomId,
                     userId,
                     sessionId,
@@ -152,9 +153,10 @@ export class EventsService {
             }
 
             case HubEventName.ROOM_EXIT: {
-                const { sessionId, eventTime } = hubEventDto
+                const { ip, sessionId, eventTime } = hubEventDto
 
                 const exitRoomData: ExitRoomData = {
+                    ip,
                     sessionId,
                     eventTime
                 }
@@ -183,7 +185,7 @@ export class EventsService {
     }
 
     async joinRoom(joinRoomData: JoinRoomData) {
-        const { roomId: infraRoomId, userId: reticulumId, sessionId, eventTime } = joinRoomData
+        const { ip, roomId: infraRoomId, userId: reticulumId, sessionId, eventTime } = joinRoomData
 
         const room = await this.roomsService.findRoomByInfraRoomId(infraRoomId)
 
@@ -214,6 +216,7 @@ export class EventsService {
 
         if (project.webhookUrl) {
             const webhookData = {
+                ip,
                 webhookUrl: project.webhookUrl,
                 infraUserId: savedRoomAccess.infraUserId,
                 roomId: savedRoomAccess.roomId,
@@ -226,7 +229,7 @@ export class EventsService {
     }
 
     async exitRoom(exitRoomData: ExitRoomData) {
-        const { sessionId, eventTime } = exitRoomData
+        const { ip, sessionId, eventTime } = exitRoomData
 
         const roomAccess = await this.roomsService.findRoomAccessBySessionId(sessionId)
 
@@ -248,6 +251,7 @@ export class EventsService {
 
         if (project.webhookUrl) {
             const webhookData = {
+                ip,
                 webhookUrl: project.webhookUrl,
                 infraUserId: savedRoomAccess.infraUserId,
                 roomId: savedRoomAccess.roomId,
@@ -305,7 +309,7 @@ export class EventsService {
     }
 
     private async webhook(webhookData: WebhookData) {
-        const { webhookUrl, ...restWebhookData } = webhookData
+        const { ip, webhookUrl, ...restWebhookData } = webhookData
 
         const fetchBody = {
             ...restWebhookData
@@ -314,7 +318,8 @@ export class EventsService {
         const fetchOptions = {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-Forwarded-For': ip
             },
             body: JSON.stringify(fetchBody)
         }
