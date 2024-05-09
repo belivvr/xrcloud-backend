@@ -296,6 +296,7 @@ export class EventsService {
                 infraUserId: savedRoomActivity.infraUserId,
                 roomId: savedRoomActivity.roomId,
                 eventAction,
+                eventTime: savedRoomActivity.createdAt,
                 ip
             }
 
