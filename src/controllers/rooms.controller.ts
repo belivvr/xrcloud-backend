@@ -61,10 +61,10 @@ export class RoomsController {
     async getRoom(@Param('roomId') roomId: string, @Query() queryDto: RoomQueryDto) {
         const roomUrlData: RoomUrlData = {
             userId: queryDto.userId,
+            displayName: queryDto.displayName,
             avatarUrl: queryDto.avatarUrl,
             linkPayload: queryDto.linkPayload
         }
-
         return await this.roomsService.getRoomDto(roomId, roomUrlData)
     }
 

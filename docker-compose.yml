@@ -11,6 +11,7 @@ services:
         image: postgres:13.11
         profiles: ['infra']
         container_name: ${TYPEORM_HOST}
+        restart: always
         environment:
             POSTGRES_DB: ${TYPEORM_DATABASE}
             POSTGRES_USER: ${TYPEORM_USERNAME}
@@ -24,6 +25,7 @@ services:
     redis:
         image: redis:7.0
         profiles: ['infra']
+        restart: always
         container_name: ${CACHE_HOST}
         logging: *default-logging
         networks:
@@ -33,6 +35,7 @@ services:
         image: ${DOCKER_IMAGE}
         build: .
         profiles: ['service']
+        restart: always
         container_name: ${DOCKER_CONTAINER}
         environment:
             - NODE_ENV=production

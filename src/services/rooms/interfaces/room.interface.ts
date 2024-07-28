@@ -8,6 +8,7 @@ export interface RoomOption {
 
 export interface RoomUrlData {
     userId?: string
+    displayName? : string
     avatarUrl?: string
     linkPayload?: string
 }

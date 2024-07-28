@@ -151,6 +151,8 @@ export class RoomsService {
                     throw new BadRequestException('Invalid optionId.')
                 }
 
+                console.log("getRoomOption:",JSON.parse(option))
+
                 return JSON.parse(option)
             }
 
@@ -272,6 +274,7 @@ export class RoomsService {
             faviconUrl,
             logoUrl,
             returnUrl: room.returnUrl,
+            displayName: roomUrlData?.displayName,
             avatarUrl: roomUrlData?.avatarUrl
         }
 
@@ -297,19 +300,6 @@ export class RoomsService {
         const faviconUrl = `${FileStorage.getFileUrl(faviconId, FAVICON)}.ico`
         const logoUrl = `${FileStorage.getFileUrl(logoId, LOGO)}.jpg`
 
-        const linkPayloadObj: Record<string, string> = {}
-
-        if (roomUrlData?.linkPayload) {
-            const linkPayloadParts = roomUrlData.linkPayload.split(',')
-
-            for (const part of linkPayloadParts) {
-                const [key, value] = part.split(':')
-
-                if (key && value) {
-                    linkPayloadObj[key] = value
-                }
-            }
-        }
 
         const roomOption = {
             token,
@@ -317,8 +307,9 @@ export class RoomsService {
             logoUrl,
             returnUrl: room.returnUrl,
             avatarUrl: roomUrlData?.avatarUrl,
+            displayName: roomUrlData?.displayName,
             funcs: this.optionsService.generateFuncs(),
-            linkPayload: linkPayloadObj
+            linkPayload: roomUrlData?.linkPayload
         }
 
         const expireTime = convertTimeToSeconds(this.configService.roomOptionExpiration)
@@ -353,6 +344,7 @@ export class RoomsService {
         const options = await this.optionsService.findOptionByRoomId(roomId)
 
         if (options.length === 0) {
+            console.log("setRoomPotion",roomOption)
             return await this.optionsService.createOption(roomId, roomOption)
         } else {
             return await this.optionsService.updateOption(roomId, roomOption)
