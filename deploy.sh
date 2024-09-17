@@ -6,8 +6,8 @@ cd "$(dirname "$0")"
 
 DOCKER_CONTAINER=$(basename "$PWD")
 DOCKER_IMAGE="$DOCKER_CONTAINER:$(date +%s)"
-LOGS_DIR="/app/$DOCKER_CONTAINER/logs"
-STORAGE_DIR="/app/$DOCKER_CONTAINER/storage"
+LOGS_DIR="/home/belivvr/data/xrcloud/logs/backend"
+STORAGE_DIR="/home/belivvr/data/xrcloud/storage"
 
 docker network create xrcloud || true
 
