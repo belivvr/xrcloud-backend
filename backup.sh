@@ -66,7 +66,9 @@ backup_dir() {
     done
 }
 
-# Set paths for backups (백업할 경로 설정)
+# backup
+mkdir -p "$BACKUP_DIR/haio-db"
+mkdir -p "$BACKUP_DIR/xrcloud-db"
 backup_dir "$DATA_DIR/haio/db" "$BACKUP_DIR/haio-db"  # Haio backup
 backup_dir "$DATA_DIR/xrcloud/db" "$BACKUP_DIR/xrcloud-db"  # XRCLOUD backup
 
