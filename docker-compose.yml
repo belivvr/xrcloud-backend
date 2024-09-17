@@ -41,7 +41,7 @@ services:
             - NODE_ENV=production
         volumes:
             - ${ENV}:/app/.env
-            - ${LOGS_DIR:-./logs}:/app/logs
+            - ${LOG_DIRECTORY:-./logs}:/app/logs
             - ${STORAGE_DIR:-./app/xrcloud-backend/storage}:/app/xrcloud-backend/storage
         logging: *default-logging
         networks:

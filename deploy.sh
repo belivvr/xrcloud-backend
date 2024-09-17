@@ -6,13 +6,11 @@ cd "$(dirname "$0")"
 
 DOCKER_CONTAINER=$(basename "$PWD")
 DOCKER_IMAGE="$DOCKER_CONTAINER:$(date +%s)"
-LOGS_DIR="/home/belivvr/data/xrcloud/logs/backend"
-STORAGE_DIR="/home/belivvr/data/xrcloud/storage"
 
 docker network create xrcloud || true
 
 docker_compose() {
-    export ENV DOCKER_CONTAINER DOCKER_IMAGE LOGS_DIR STORAGE_DIR
+    export ENV DOCKER_CONTAINER DOCKER_IMAGE LOG_DIRECTORY STORAGE_DIR
     docker compose -f ./docker-compose.yml --env-file $ENV $@
 }
 
