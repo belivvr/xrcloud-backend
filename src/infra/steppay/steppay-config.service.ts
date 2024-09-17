@@ -8,8 +8,9 @@ export class SteppayConfigService {
     public readonly steppayApiUrl: string
 
     constructor(config: SafeConfigService) {
-        this.steppayPaymentKey = config.getString('STEPPAY_PAYMENT_KEY')
-        this.steppaySecretKey = config.getString('STEPPAY_SECRET_KEY')
-        this.steppayApiUrl = config.getString('STEPPAY_API_URL')
+        // Steppay 서비스는 나중에 다시 검토
+     //   this.steppayPaymentKey = config.getString('STEPPAY_PAYMENT_KEY')
+     //   this.steppaySecretKey = config.getString('STEPPAY_SECRET_KEY')
+     //   this.steppayApiUrl = config.getString('STEPPAY_API_URL')
     }
 }
