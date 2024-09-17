@@ -16,7 +16,7 @@ DATA_DIR="/data"
 BACKUP_DIR="/backup"
 
 # Set log file (로그 파일 설정)
-mkdir -p "$BACKUP_DIR/logs/"
+mkdir -p "$BACKUP_DIR"
 LOG_FILE="$BACKUP_DIR/db_backup.log"
 
 # Record timestamp in log file (로그 파일에 시간 기록)
