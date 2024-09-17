@@ -1,11 +1,23 @@
 #!/bin/bash
 
+# Author : luke.yang (2024-09-17)
+# This script performs daily backups of the xrcloud and haio databases
+# It deletes files older than 7 days, except for weekly and monthly backup files.
+# Weekly backup: Files from Monday, older than 60 days.
+# Monthly backup: Files from the 1st of each month.
+
+# 이 스크립트는 xrcloud와 haio 데이터베이스를 매일 백업합니다.
+# 생성된 지 7일이 지난 파일 중 주간 백업 및 월간 백업 파일을 제외하고 삭제합니다.
+# 주간 백업: 60일 이전의 월요일에 생성된 파일.
+# 월간 백업: 매월 1일에 생성된 파일.
+
 # Set home directory (홈 디렉토리 설정)
 DATA_DIR="/data"
 BACKUP_DIR="/backup"
 
 # Set log file (로그 파일 설정)
-LOG_FILE="$DATA_DIR/logs/db_backup.log"
+mkdir -p "$BACKUP_DIR/logs/"
+LOG_FILE="$BACKUP_DIR/db_backup.log"
 
 # Record timestamp in log file (로그 파일에 시간 기록)
 echo "Backup started at $(date)" >> "$LOG_FILE"
@@ -55,8 +67,8 @@ backup_dir() {
 }
 
 # Set paths for backups (백업할 경로 설정)
-backup_dir "$DATA_DIR/haio/db" "$BACKUP_DIR/backup/haio-db"  # Haio backup
-backup_dir "$DATA_DIR/xrcloud/db" "$BACKUP_DIR/backup/xrcloud-db"  # XRCLOUD backup
+backup_dir "$DATA_DIR/haio/db" "$BACKUP_DIR/haio-db"  # Haio backup
+backup_dir "$DATA_DIR/xrcloud/db" "$BACKUP_DIR/xrcloud-db"  # XRCLOUD backup
 
 # Record completion in log file (로그 파일에 백업 완료 기록)
 echo "Backup completed at $(date)" >> "$LOG_FILE"
