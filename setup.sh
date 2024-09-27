@@ -6,9 +6,7 @@ cd "$(dirname "$0")"
 
 if [ -n "$DB_NAS_LOCATION" ]; then
     sudo mkdir -p "$DB_VOLUME_DIR"
-
     sudo mount -t nfs $DB_NAS_LOCATION $DB_VOLUME_DIR
-
     echo "$DB_NAS_LOCATION $DB_VOLUME_DIR nfs, defaults 0 0" | sudo tee -a /etc/fstab
 fi
 
