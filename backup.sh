@@ -11,17 +11,6 @@
 # 주간 백업: 60일 이전의 월요일에 생성된 파일.
 # 월간 백업: 매월 1일에 생성된 파일.
 
-# Set home directory (홈 디렉토리 설정)
-DATA_DIR="/data"
-BACKUP_DIR="/backup"
-
-# Set log file (로그 파일 설정)
-mkdir -p "$BACKUP_DIR"
-LOG_FILE="$BACKUP_DIR/db_backup.log"
-
-# Record timestamp in log file (로그 파일에 시간 기록)
-echo "Backup started at $(date)" >> "$LOG_FILE"
-
 # Define backup function (백업 함수 정의)
 backup_dir() {
     SRC_DIR="$1"  # Source directory to back up (백업할 소스 디렉토리)
@@ -66,11 +55,20 @@ backup_dir() {
     done
 }
 
+# Set home directory (홈 디렉토리 설정)
+BACKUP_DIR="//mnt/xrcloud-prod-ko/beckup"
+mkdir -p "$BACKUP_DIR"
 # backup
 mkdir -p "$BACKUP_DIR/haio-db"
 mkdir -p "$BACKUP_DIR/xrcloud-db"
-backup_dir "$DATA_DIR/haio/db" "$BACKUP_DIR/haio-db"  # Haio backup
-backup_dir "$DATA_DIR/xrcloud/db" "$BACKUP_DIR/xrcloud-db"  # XRCLOUD backup
+# 로그 파일 설정
+LOG_FILE="$BACKUP_DIR/db_backup.log"
+
+# Record timestamp in log file (로그 파일에 시간 기록)
+echo "Backup started at $(date)" >> "$LOG_FILE"
+
+backup_dir "/app/haio/db" "$BACKUP_DIR/haio-db"  # Haio backup
+backup_dir "/app/xrcloud/db" "$BACKUP_DIR/xrcloud-db"  # XRCLOUD backup
 
 # Record completion in log file (로그 파일에 백업 완료 기록)
 echo "Backup completed at $(date)" >> "$LOG_FILE"
