@@ -4,11 +4,12 @@ import { ConfigException, Path, TypeormLogger, isDevelopment, isProduction } fro
 import { Admin } from 'src/services/admins/entities'
 import { Option } from 'src/services/options/entities'
 import { Project } from 'src/services/projects/entities'
-import { Room, RoomAccess, RoomActivity } from 'src/services/rooms/entities'
+import { Room } from 'src/services/rooms/entities'
 import { Scene } from 'src/services/scenes/entities'
 import { Subscription } from 'src/services/subscriptions/entities'
 import { Tier } from 'src/services/tiers/entities'
 import { User } from 'src/services/users/entities'
+import { RoomLogs, SceneLogs } from 'src/services/logs/entities'
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions'
 import { Mig1687757321854 } from './migrations/1687757321854-mig'
 import { Mig1687933860267 } from './migrations/1687933860267-mig'
@@ -38,10 +39,13 @@ import { Mig1700679810051 } from './migrations/1700679810051-mig'
 import { Mig1700681712529 } from './migrations/1700681712529-mig'
 import { Mig1703050330512 } from './migrations/1703050330512-mig'
 import { Mig1710920009795 } from './migrations/1710920009795-mig'
+import { Mig1732702517416 } from './migrations/1732702517416-mig'
+import { Mig1732864945418 } from './migrations/1732864945418-mig'
+
 
 dotenv.config()
 
-const entities = [Admin, Project, Scene, Room, Tier, Subscription, Option, RoomAccess, RoomActivity, User]
+const entities = [Admin, Project, Scene, Room, Tier, Subscription, Option, User, RoomLogs, SceneLogs]
 const migrations = [
     Mig1687757321854,
     Mig1687933860267,
@@ -70,7 +74,9 @@ const migrations = [
     Mig1700679810051,
     Mig1700681712529,
     Mig1703050330512,
-    Mig1710920009795
+    Mig1710920009795,
+    Mig1732702517416,
+    Mig1732864945418
 ]
 
 type SupportedConnectionOptions = PostgresConnectionOptions

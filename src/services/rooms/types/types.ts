@@ -13,8 +13,3 @@ export type RoomUrl = {
         guest: string
     }
 }
-
-export enum RoomAccessType {
-    Join = 'join',
-    Exit = 'exit'
-}

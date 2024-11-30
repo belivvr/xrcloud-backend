@@ -54,7 +54,7 @@ export class RoomQueryDto {
     linkPayload?: string
 }
 
-export class RoomAccessQueryDto {
+export class RoomLogsQueryDto {
     @IsOptional()
     @IsString()
     userId?: string

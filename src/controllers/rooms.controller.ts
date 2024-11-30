@@ -18,11 +18,12 @@ import { ManageAssetService } from 'src/services/manage-asset/manage-asset.servi
 import {
     CreateRoomDto,
     OptionQueryDto,
-    RoomAccessQueryDto,
+    RoomLogsQueryDto,
     RoomQueryDto,
     RoomsQueryDto,
     UpdateRoomDto
 } from 'src/services/rooms/dto'
+import { RoomDto } from 'src/services/rooms/dto/room.dto'
 import { RoomUrlData } from 'src/services/rooms/interfaces'
 import { RoomsService } from 'src/services/rooms/rooms.service'
 import { HeaderAuthGuard, ProjectExistsGuard, SceneExistsGuard } from './guards'
@@ -77,8 +78,8 @@ export class RoomsController {
     @Get(':roomId/logs')
     @PublicApi()
     @UseGuards(RoomExistsGuard)
-    async findRoomAccess(@Param('roomId') roomId: string, @Query() queryDto: RoomAccessQueryDto) {
-        return await this.roomsService.findRoomAccess(roomId, queryDto)
+    async findRoomAccess(@Param('roomId') roomId: string, @Query() roomLogQuery: RoomLogsQueryDto) {
+        return await this.roomsService.getRoomLogs(roomId, roomLogQuery)
     }
 
     @Get('option/:optionId')

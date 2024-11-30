@@ -47,6 +47,115 @@
         }
     ],
     "paths": {
+        "/api/projects": {
+            "get": {
+                "tags": [
+                    "project"
+                ],
+                "operationId": "GetProjectsByLabel",
+                "summary": "Get projects by label",
+                "description": "Retrieve projects optionally filtered by a label. Use the `label` query parameter to filter projects by their label.",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "name": "label",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The label of the project to filter by. If not provided, all projects will be returned."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Project"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "project"
+                ],
+                "operationId": "CreateProject",
+                "summary": "Create project",
+                "description": "You can create a project using the following format:\n\n```\nRES=$(curl -s -X POST \"$XRCLOUD_HOST/api/projects\" \\\n    -H \"Authorization: Bearer $ACCESS_TOKEN\" \\\n    -H \"Content-Type: multipart/form-data\" \\\n    -F \"favicon=@$FILE_DIR/favicon.ico\" \\\n    -F \"logo=@$FILE_DIR/logo.png\" \\\n    -F \"name=lms\" \\\n    -F \"label=lms\"\n)\n```\n\nThis API creates a project with a favicon, logo, name, and label using `multipart/form-data` format.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "favicon": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "The favicon file for the project."
+                                    },
+                                    "logo": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "The logo file for the project."
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the project."
+                                    },
+                                    "label": {
+                                        "type": "string",
+                                        "description": "The label of the project."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Project created successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Project"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}": {
             "get": {
                 "tags": [

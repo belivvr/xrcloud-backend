@@ -36,8 +36,7 @@ export class HealthService {
         const adminCount = await this.adminsService.countAdmins()
         const sceneCount = await this.scenesService.countScenes()
         const roomCount = await this.roomsService.countRooms()
-        const roomAccessesCount = await this.roomsService.countRoomAccesses()
-
+        const roomAccessesCount = await this.roomsService.countRoomAccesses()        
         return {
             admins: adminCount,
             scenes: sceneCount,

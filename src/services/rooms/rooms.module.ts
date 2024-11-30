@@ -5,16 +5,16 @@ import { AdminsModule } from 'src/services/admins/admins.module'
 import { ScenesModule } from 'src/services/scenes/scenes.module'
 import { OptionsModule } from '../options/options.module'
 import { UsersModule } from '../users/users.module'
-import { Room, RoomAccess, RoomActivity } from './entities'
-import { RoomAccessRepository } from './room-access.repository'
-import { RoomActivityRepository } from './room-activity.repository'
+import { Room } from './entities'
+import { RoomLogs } from '../logs/entities/room-logs.entity'
+import { RoomLogsRepository } from '../logs/room-logs.repository'
 import { RoomConfigService } from './room-config.service'
 import { RoomsRepository } from './rooms.repository'
 import { RoomsService } from './rooms.service'
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Room, RoomAccess, RoomActivity]),
+        TypeOrmModule.forFeature([Room, RoomLogs]),
         AdminsModule,
         InfraModule,
         ScenesModule,
@@ -25,8 +25,7 @@ import { RoomsService } from './rooms.service'
         RoomsService,
         RoomsRepository,
         RoomConfigService,
-        RoomAccessRepository,
-        RoomActivityRepository
+        RoomLogsRepository,        
     ],
     exports: [RoomsService]
 })

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common'
 import fetch from 'node-fetch'
 import { CacheService, addQuotesToNumbers, convertTimeToSeconds } from 'src/common'
 import { ExtraArgs, NotificationData, RoomData } from './interfaces'
@@ -159,7 +159,8 @@ export class ReticulumService {
         return `${this.apiHost}/${infraRoomId}/${slug}`
     }
 
-    async getRoom(infraRoomId: string) {
+    // 쓰는 곳 못 찾음
+    async getRoom (infraRoomId: string) {
         const { token } = await this.login(this.adminId)
 
         const url = `api/postgrest/hubs?hub_sid=eq.${infraRoomId}`
@@ -292,12 +293,19 @@ export class ReticulumService {
     async getAdminToken(projectId: string): Promise<string> {
         const emailId = `admin@${projectId}`
 
+        Logger.log(`Admin email ID: ${emailId}`);
+
         const key = `reticulumToken:${emailId}`
 
+        // 캐시 삭제
+        await this.cacheService.delete(key)
+
         let savedToken = await this.cacheService.get(key)
+        
 
         if (!savedToken) {
             const { token } = await this.login(emailId)
+            Logger.log(`Get from XRCLOUD Admin Token: ${token}`);
 
             const expireTime = this.userTokenExpiration
 
@@ -313,13 +321,18 @@ export class ReticulumService {
 
     async getUserToken(projectId: string, userId: string): Promise<string> {
         const emailId = `${userId}@${projectId}`
-
+        
         const key = `reticulumToken:${emailId}`
+
+        Logger.log(`User email ID: ${emailId}`);
+        // 캐시 삭제
+       await this.cacheService.delete(key)
 
         let savedToken = await this.cacheService.get(key)
 
         if (!savedToken) {
             const { token } = await this.login(emailId)
+            Logger.log(`Get from XRCLOUD User Token: ${token}`);
 
             const expireTime = this.userTokenExpiration
 

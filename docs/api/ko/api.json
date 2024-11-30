@@ -47,6 +47,115 @@
         }
     ],
     "paths": {
+        "/api/projects": {
+            "get": {
+                "tags": [
+                    "project"
+                ],
+                "operationId": "GetProjectsByLabel",
+                "summary": "라벨로 프로젝트 가져오기",
+                "description": "라벨로 필터링하여 프로젝트를 가져옵니다. `label` 쿼리 파라미터를 사용하여 특정 라벨의 프로젝트를 필터링할 수 있습니다.",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "name": "label",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "필터링할 프로젝트의 라벨입니다. 제공되지 않으면 모든 프로젝트가 반환됩니다."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Project"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "project"
+                ],
+                "operationId": "CreateProject",
+                "summary": "프로젝트 생성",
+                "description": "다음과 같은 형식으로 프로젝트를 생성할 수 있습니다:\n\n```\nRES=$(curl -s -X POST \"$XRCLOUD_HOST/api/projects\" \\\n    -H \"Authorization: Bearer $ACCESS_TOKEN\" \\\n    -H \"Content-Type: multipart/form-data\" \\\n    -F \"favicon=@$FILE_DIR/favicon.ico\" \\\n    -F \"logo=@$FILE_DIR/logo.png\" \\\n    -F \"name=lms\" \\\n    -F \"label=lms\"\n)\n```\n\n이 API는 `multipart/form-data` 형식으로 프로젝트의 파비콘, 로고, 이름, 라벨을 포함하여 프로젝트를 생성합니다.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "favicon": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "프로젝트의 파비콘 파일."
+                                    },
+                                    "logo": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "프로젝트의 로고 파일."
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "description": "프로젝트의 이름."
+                                    },
+                                    "label": {
+                                        "type": "string",
+                                        "description": "프로젝트의 라벨."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "프로젝트가 성공적으로 생성되었습니다.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Project"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "상황에 따라 4XX 또는 5XX 오류가 발생할 수 있습니다",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}": {
             "get": {
                 "tags": [

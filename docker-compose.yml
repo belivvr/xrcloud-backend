@@ -16,6 +16,8 @@ services:
             POSTGRES_DB: ${TYPEORM_DATABASE}
             POSTGRES_USER: ${TYPEORM_USERNAME}
             POSTGRES_PASSWORD: ${TYPEORM_PASSWORD}
+        ports:
+            - ${TYPEORM_PORT:-5432}:5432
         volumes:
             - ${DB_VOLUME_DIR:-/app/xrcloud-backend/db}:/var/lib/postgresql/data
         logging: *default-logging
@@ -38,11 +40,13 @@ services:
         restart: always
         container_name: ${DOCKER_CONTAINER}
         environment:
-            - NODE_ENV=production
+            - NODE_ENV=${NODE_ENV}
+            - TYPEORM_PORT=5432
         volumes:
             - ${ENV}:/app/.env
+            - ${SRC_DIR:-./src}:/app/src
             - ${LOG_DIRECTORY:-./logs}:/app/logs
-            - ${STORAGE_DIR:-./app/xrcloud-backend/storage}:/app/xrcloud-backend/storage
+            - ${STORAGE_DIR:-./app/xrcloud-backend/storage}:/app/xrcloud-backend/storage            
         logging: *default-logging
         networks:
             - default

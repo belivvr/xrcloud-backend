@@ -14,36 +14,32 @@ import { ScenesService } from 'src/services/scenes/scenes.service'
 import { OptionsService } from '../options/options.service'
 import { OptionRole } from '../options/types'
 import { UsersService } from '../users/users.service'
-import {
-    CreateRoomAccessDto,
-    CreateRoomActivityDto,
-    CreateRoomDto,
-    OptionQueryDto,
-    RoomAccessQueryDto,
+import {    
+    OptionQueryDto,    
     RoomDto,
+    RoomLogsQueryDto,
     RoomsQueryDto,
-    UpdateRoomAccessDto,
-    UpdateRoomDto
 } from './dto'
-import { Room, RoomAccess } from './entities'
+import { Room } from './entities'
 import { RoomOption, RoomUrlData } from './interfaces'
-import { RoomAccessRepository } from './room-access.repository'
-import { RoomActivityRepository } from './room-activity.repository'
 import { RoomConfigService } from './room-config.service'
 import { RoomsRepository } from './rooms.repository'
 import { RoomEntryType } from './types'
-
+import { Logger } from '@nestjs/common'
+import { CreateRoomDto } from './dto/create-room.dto'
+import { UpdateRoomDto } from './dto/update-room.dto'
+import { RoomLogsRepository } from '../logs/room-logs.repository'
+import { LogCode } from '../logs/dto'
 @Injectable()
 export class RoomsService {
     constructor(
         private readonly roomsRepository: RoomsRepository,
-        private readonly roomAccessRepository: RoomAccessRepository,
-        private readonly roomActivityRepository: RoomActivityRepository,
         private readonly scenesService: ScenesService,
         private readonly optionsService: OptionsService,
         private readonly reticulumService: ReticulumService,
         private readonly cacheService: CacheService,
         private readonly usersService: UsersService,
+        private readonly roomLogsRepository: RoomLogsRepository,        
         private readonly configService: RoomConfigService
     ) {}
 
@@ -90,7 +86,7 @@ export class RoomsService {
         }
 
         const dtos = []
-
+        
         for (const room of rooms.items) {
             const roomUrlData: RoomUrlData = {
                 userId,
@@ -121,9 +117,10 @@ export class RoomsService {
 
         const thumbnailUrl = await this.reticulumService.getThumbnailUrl(scene.thumbnailId)
 
+        const user = await this.registerUser(room.projectId, roomUrlData?.userId)
+
         const roomUrl = await this.getRoomUrl(roomId, roomUrlData)
 
-        await this.registerUser(room.projectId, roomUrlData?.userId)
 
         const dto = new RoomDto(room)
         dto.roomUrl = roomUrl
@@ -262,7 +259,27 @@ export class RoomsService {
 
         const { projectId, faviconId, logoId } = await this.scenesService.getSceneResources(room.sceneId)
 
-        const token = await this.reticulumService.getAdminToken(projectId)
+        let token;
+        if (roomUrlData?.userId) {
+            // userId가 존재하는지 확인
+            Logger.log(`User ID exists: ${roomUrlData.userId}`);
+            token = await this.reticulumService.getUserToken(projectId, roomUrlData.userId);            
+
+            // token이 유효한지 확인
+            if (!token) {
+                Logger.error(`Failed to retrieve token for user ID: ${roomUrlData.userId}`);
+                throw new Error('Invalid token for user.');
+            }
+        } else {
+            token = await this.reticulumService.getAdminToken(projectId);
+            
+            // token이 유효한지 확인
+            if (!token) {
+                Logger.error(`Failed to retrieve admin token for project ID: ${projectId}`);
+                throw new Error('Invalid admin token.');
+            }
+        }
+        Logger.log(`User token exists: ${token}`);
 
         const url = this.reticulumService.generateRoomUrl(room.infraRoomId, room.slug)
 
@@ -300,7 +317,8 @@ export class RoomsService {
         const faviconUrl = `${FileStorage.getFileUrl(faviconId, FAVICON)}.ico`
         const logoUrl = `${FileStorage.getFileUrl(logoId, LOGO)}.jpg`
 
-
+        Logger.log(`User private token exists: ${token}`);
+        
         const roomOption = {
             token,
             faviconUrl,
@@ -351,81 +369,44 @@ export class RoomsService {
         }
     }
 
-    /*
-     * room-access
-     */
-    async createRoomAccess(createRoomAccessDto: CreateRoomAccessDto) {
-        return await this.roomAccessRepository.create(createRoomAccessDto)
-    }
-
-    async findRoomAccess(roomId: string, queryDto: RoomAccessQueryDto) {
-        const roomAccess = await this.roomAccessRepository.findByRoomId(roomId, queryDto)
-
-        return roomAccess
-    }
-
-    async getRoomAccess(roomAccessId: number) {
-        const roomAccess = await this.roomAccessRepository.findById(roomAccessId)
-
-        if (!roomAccess) {
-            throw new NotFoundException(`Room access with ID "${roomAccessId}" not found.`)
-        }
-
-        return roomAccess as RoomAccess
-    }
-
-    async findRoomAccessBySessionId(sessionId: string) {
-        const roomAccess = await this.roomAccessRepository.findBySessionId(sessionId)
-
-        return roomAccess
-    }
-
-    async updateRoomAccess(roomAccessId: number, updateRoomAccessDto: UpdateRoomAccessDto) {
-        const roomAccess = await this.getRoomAccess(roomAccessId)
-
-        const updateRoomAccess = {
-            ...updateRoomAccessDto
-        }
-
-        const updatedRoomAccess = updateIntersection(roomAccess, updateRoomAccess)
-
-        const savedRoomAccess = await this.roomAccessRepository.update(updatedRoomAccess)
-
-        Assert.deepEquals(
-            savedRoomAccess,
-            updatedRoomAccess,
-            'The result is different from the update request'
-        )
-
-        return savedRoomAccess
-    }
-
-    async countRoomAccesses() {
-        return await this.roomAccessRepository.count()
-    }
-
-    private async registerUser(projectId: string, userId?: string) {
+    
+   
+    async registerUser(projectId: string, userId?: string) {
         const infraUserId = userId ? userId : 'admin'
+        Logger.log(`Registering user - Project ID: ${projectId}, Infra User ID: ${infraUserId}`)
 
         const userExist = await this.usersService.findUserByProjectIdAndInfraUserId(projectId, infraUserId)
 
-        if (!userExist) {
-            const { reticulumId } = await this.reticulumService.getAccountId(projectId, userId)
-
-            const createUser = {
-                projectId: projectId,
-                infraUserId: infraUserId,
-                reticulumId
-            }
-
-            await this.usersService.createUser(createUser)
+        if (userExist) {
+            Logger.log(`User already exists - Infra User ID: ${infraUserId}`)
+            return userExist
         }
+
+        Logger.log(`User not found, creating new user - Infra User ID: ${infraUserId}`)
+
+        const { reticulumId } = await this.reticulumService.getAccountId(projectId, userId)
+        Logger.log(`Retrieved Reticulum ID: ${reticulumId} for Infra User ID: ${infraUserId}`)
+
+        const createUser = {
+            projectId: projectId,
+            infraUserId: infraUserId,
+            reticulumId
+        }
+
+        const newUser = await this.usersService.createUser(createUser)
+        Logger.log(`User created successfully - Infra User ID: ${infraUserId}, Reticulum ID: ${reticulumId}`)
+
+        return newUser
     }
 
-    /*
-     * room-activity
-     */
-    async createRoomActivity(createRoomActivityDto: CreateRoomActivityDto) {
-        return await this.roomActivityRepository.create(createRoomActivityDto)
+    async getRoomLogs(roomId: string, roomLogQuery: RoomLogsQueryDto ) {
+        if (roomLogQuery.userId) {
+            return await this.roomLogsRepository.findByInfraUserId(roomId, roomLogQuery.userId)  
+        }              
+        return await this.roomLogsRepository.findByRoomId(roomId)        
+    }
+
+    async countRoomAccesses() {
+        return await this.roomLogsRepository.findByCode(LogCode.ROOM_JOIN);
     }
 }

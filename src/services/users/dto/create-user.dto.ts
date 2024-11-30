@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator'
+import { IsNotEmpty, IsString, IsUUID, IsOptional } from 'class-validator'
 
 export class CreateUserDto {
     @IsNotEmpty()
@@ -6,10 +6,10 @@ export class CreateUserDto {
     projectId: string
 
     @IsNotEmpty()
-    @IsUUID()
-    infraUserId: string
-
-    @IsNotEmpty()
     @IsString()
-    reticulumId: string
+    reticulumId: string = ''
+
+    @IsOptional()
+    @IsString()
+    infraUserId: string | null
 }

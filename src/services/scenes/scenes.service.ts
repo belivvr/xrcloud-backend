@@ -2,7 +2,6 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { Assert, CacheService, convertTimeToSeconds, generateUUID, updateIntersection } from 'src/common'
 import { ReticulumService } from 'src/infra/reticulum/reticulum.service'
 import { ProjectsService } from 'src/services/projects/projects.service'
-import { AdminsService } from '../admins/admins.service'
 import { CreateSceneDto, GetSceneCreationUrlDto, SceneDto, ScenesQueryDto, UpdateSceneDto } from './dto'
 import { Scene } from './entities'
 import { SceneConfigService } from './scene-config.service'
@@ -16,7 +15,6 @@ export class ScenesService {
         private readonly cacheService: CacheService,
         private readonly configService: SceneConfigService,
         private readonly projectsService: ProjectsService,
-        private readonly adminsService: AdminsService
     ) {}
 
     async createScene(createSceneDto: CreateSceneDto) {
