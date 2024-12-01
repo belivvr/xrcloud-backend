@@ -9,6 +9,7 @@ desktop.ini
 # Logs
 logs
 *.log
+!/src/*
 
 # Coverage directory used by tools like istanbul
 coverage
