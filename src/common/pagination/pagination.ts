@@ -20,6 +20,10 @@ export const MAX_TAKE_SIZE = 100
 
 export class PaginationOptions {
     @IsOptional()
+    @IsString()
+    alias?: string
+    
+    @IsOptional()
     @IsInt()
     @Min(1)
     @Max(MAX_TAKE_SIZE)

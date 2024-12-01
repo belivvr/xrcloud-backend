@@ -4,7 +4,7 @@
         "title": "XRCLOUD API",
         "version": "1.0",
         "x-logo": {
-            "url": "https://kr.object.ncloudstorage.com/xrcloud-prod-backend/belivvr.png",
+            "url": "https://belivvr.github.io/files/images/xrcloud-logo-banner.webp",
             "href": "https://xrcloud.app"
         }
     },
@@ -12,22 +12,22 @@
         {
             "name": "authentication",
             "x-displayName": "Authentication",
-            "description": "All API calls in this document require an `ApiKey`. \n\n - `ApiKey` can be issued from My page in the upper right corner of the page after logging in to XRCLOUD page."
+            "description": "All API calls in this document require an `ApiKey`. \n\n - You can obtain the `ApiKey` from the My page in the upper right corner after logging into the XRCLOUD page."
         },
         {
             "name": "project",
             "x-displayName": "Project",
-            "description": "A Project in XRCLOUD can be a developer's project, a platform, or a third-party application. It is the unit that manages Scenes and Rooms, and multiple Scenes and Rooms belong to a specific Project. \n\n - `webhookUrl` can be set when creating a project or modifying information on the XRCLOUD page."
+            "description": "A Project in XRCLOUD can be a developer's project, platform, or a 3rd-party application. It is a unit that manages Scenes and Rooms, with multiple Scenes and Rooms belonging to a specific Project. \n\n - The `webhookUrl` can be set when creating or modifying a Project on the XRCLOUD page."
         },
         {
             "name": "scene",
             "x-displayName": "Scene",
-            "description": "This is the space required to create a Room, which is a webpage-based 3D virtual space. \n\n You can access 'sceneCreationUrl' among the fields obtained by calling [get-creation-url api](#operation/GetSceneCreationUrl) to access the editor (Spoke) and create a Scene through the Publish Scene button on the top right. You can also access 'sceneModificationUrl' among the fields obtained by calling [get-scene api](#operation/GetScene) to modify it. \n\n - The `optId` value is a callback value to confirm the creation and modification of the Scene in XRCLOUD. Using a variation of it may result in an error."
+            "description": "A space for creating web-based 3D virtual spaces, necessary for creating Rooms. \n\n By calling the [get-creation-url api](#operation/GetSceneCreationUrl), you can access the 'sceneCreationUrl' field to access the editor (Spoke) and create a Scene by clicking the Publish Scene button in the upper right corner. Additionally, by calling the [get-scene api](#operation/GetScene), you can access the 'sceneModificationUrl' field to make modifications. \n\n - The `optId` value is a callback value used to verify the creation and modification of a Scene in XRCLOUD. Modifying it may cause errors."
         },
         {
             "name": "room",
             "x-displayName": "Room",
-            "description": "A Room is a space organized by Scenes created through the Editor (Spoke). \n\n Each Room has a private room URL, which changes with each request for information, and a public room URL, which has a fixed address. These URLs are also separated into a host URL, which grants permissions to the host of the room, and a guest URL, which grants permissions to guests. \n\n The 'returnUrl' is the web address to return to when leaving the room, which can be set in the Rooms tab of XRCloud."
+            "description": "A Room is a space composed of a Scene created through the editor (Spoke). \n\n Each Room has a private room URL that changes with each information request and a public room URL with a fixed address. These URLs are also divided into a host URL that grants host permissions and a guest URL that grants guest permissions. \n\n The 'returnUrl' refers to the web address to return to when leaving the room, and it can be set in the Rooms tab of XRCloud."
         }
     ],
     "x-tagGroups": [
@@ -53,8 +53,8 @@
                     "project"
                 ],
                 "operationId": "GetProjectsByLabel",
-                "summary": "Get projects by label",
-                "description": "Retrieve projects optionally filtered by a label. Use the `label` query parameter to filter projects by their label.",
+                "summary": "Retrieve Projects by Label",
+                "description": "Fetch projects filtered by label. Use the `label` query parameter to filter projects by a specific label.",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
@@ -66,12 +66,12 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "The label of the project to filter by. If not provided, all projects will be returned."
+                        "description": "The label of the project to filter. If not provided, all projects will be returned."
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Success",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -84,7 +84,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -100,8 +100,8 @@
                     "project"
                 ],
                 "operationId": "CreateProject",
-                "summary": "Create project",
-                "description": "You can create a project using the following format:\n\n```\nRES=$(curl -s -X POST \"$XRCLOUD_HOST/api/projects\" \\\n    -H \"Authorization: Bearer $ACCESS_TOKEN\" \\\n    -H \"Content-Type: multipart/form-data\" \\\n    -F \"favicon=@$FILE_DIR/favicon.ico\" \\\n    -F \"logo=@$FILE_DIR/logo.png\" \\\n    -F \"name=lms\" \\\n    -F \"label=lms\"\n)\n```\n\nThis API creates a project with a favicon, logo, name, and label using `multipart/form-data` format.",
+                "summary": "Create a Project",
+                "description": "You can create a project using the following format:\n\n```\nRES=$(curl -s -X POST \"$XRCLOUD_HOST/api/projects\" \\\n    -H \"Authorization: Bearer $ACCESS_TOKEN\" \\\n    -H \"Content-Type: multipart/form-data\" \\\n    -F \"favicon=@$FILE_DIR/favicon.ico\" \\\n    -F \"logo=@$FILE_DIR/logo.png\" \\\n    -F \"name=lms\" \\\n    -F \"label=lms\"\n)\n```\n\nThis API uses `multipart/form-data` format to include the favicon, logo, name, and label of the project.",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -112,20 +112,20 @@
                                     "favicon": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "The favicon file for the project."
+                                        "description": "Favicon file for the project."
                                     },
                                     "logo": {
                                         "type": "string",
                                         "format": "binary",
-                                        "description": "The logo file for the project."
+                                        "description": "Logo file for the project."
                                     },
                                     "name": {
                                         "type": "string",
-                                        "description": "The name of the project."
+                                        "description": "Name of the project."
                                     },
                                     "label": {
                                         "type": "string",
-                                        "description": "The label of the project."
+                                        "description": "Label of the project."
                                     }
                                 }
                             }
@@ -134,7 +134,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Project created successfully.",
+                        "description": "The project was successfully created.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -144,7 +144,62 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/projects/{projectId}/getIdFromUserId/{accountId}": {
+            "get": {
+                "tags": [
+                    "project"
+                ],
+                "operationId": "GetXrcloudUserId",
+                "summary": "Retrieve or Generate XRCLOUD User ID",
+                "description": "Pass a user ID from your service to generate and retrieve a reticulumId (XRCLOUD's user ID) in XRCLOUD. This user ID is used in other APIs to identify specific user actions on the platform. Logging information will be reported using this reticulumId.",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/ApiKey"
+                    },
+                    {
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Unique ID of the project."
+                    },
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Account ID of the user."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved user ID.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -162,7 +217,7 @@
                     "project"
                 ],
                 "operationId": "GetProject",
-                "summary": "get project",
+                "summary": "Retrieve Project Information",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
@@ -170,7 +225,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Success",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -180,7 +235,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -198,7 +253,7 @@
                     "scene"
                 ],
                 "operationId": "GetScenes",
-                "summary": "get scenes",
+                "summary": "Retrieve Scene List Information",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
@@ -221,7 +276,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Success",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -231,7 +286,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -249,7 +304,7 @@
                     "scene"
                 ],
                 "operationId": "GetSceneCreationUrl",
-                "summary": "get creation url",
+                "summary": "Retrieve Scene Editor (Spoke) URL",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
@@ -266,7 +321,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Success",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -276,7 +331,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -294,7 +349,7 @@
                     "scene"
                 ],
                 "operationId": "GetScene",
-                "summary": "get scene",
+                "summary": "Retrieve Scene Information",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
@@ -302,7 +357,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Success",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -312,7 +367,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -328,7 +383,7 @@
                     "scene"
                 ],
                 "operationId": "RemoveScene",
-                "summary": "remove scene",
+                "summary": "Remove a Scene",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
@@ -336,10 +391,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Success"
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -357,7 +412,7 @@
                     "room"
                 ],
                 "operationId": "CreateRoom",
-                "summary": "create room",
+                "summary": "Create a Room",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
@@ -375,7 +430,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "OK",
+                        "description": "Success",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -385,7 +440,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -401,8 +456,8 @@
                     "room"
                 ],
                 "operationId": "GetRooms",
-                "summary": "get rooms",
-                "description": "That API must be called with either a projectId or a sceneId.",
+                "summary": "Retrieve Room List Information",
+                "description": "This API must include either projectId or sceneId.",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
@@ -434,7 +489,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Success",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -444,7 +499,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -462,7 +517,7 @@
                     "room"
                 ],
                 "operationId": "GetRoom",
-                "summary": "get room",
+                "summary": "Retrieve Room Information",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
@@ -479,7 +534,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Success",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -489,7 +544,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -505,7 +560,7 @@
                     "room"
                 ],
                 "operationId": "UpdateRoom",
-                "summary": "update room",
+                "summary": "Update Room Information",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
@@ -523,7 +578,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Success",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -533,7 +588,7 @@
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -549,7 +604,7 @@
                     "room"
                 ],
                 "operationId": "RemoveRoom",
-                "summary": "remove room",
+                "summary": "Remove a Room",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
@@ -557,10 +612,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Success"
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -578,7 +633,8 @@
                     "room"
                 ],
                 "operationId": "GetRoomLogs",
-                "summary": "get room logs",
+                "summary": "Retrieve Room Logs",
+                "description": "Retrieve the user's participation logs for a specific room. This log includes the time, IP address, device information, etc. of the user who joined the room. (As of 2024-12-01, the IP address and UserAgent are not being sent correctly.)",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/ApiKey"
@@ -586,17 +642,31 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Success",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/GetRoomLogsSuccessResponse"
-                                }
+                                },
+                                "example": [
+                                    {
+                                        "code": "room-join",
+                                        "roomId": "cfdd7716-4ed0-4db2-b7d6-93dc0ff72c2a",
+                                        "sessionId": "6dfbc23a-4193-4979-adde-e984f40fd80a",
+                                        "reticulumId": "1900346259722469400",
+                                        "logTime": "2024-11-29T08:54:27.000Z",
+                                        "action": "hubs join",
+                                        "ip": "0.0.0.0",
+                                        "userAgent": "",
+                                        "device": "unknown/pc",
+                                        "id": 17
+                                    }
+                                ]
                             }
                         }
                     },
                     "default": {
-                        "description": "This can be a 4XX or 5XX error depending on the situation.",
+                        "description": "Errors such as 4XX or 5XX may occur depending on the situation.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -618,25 +688,25 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "The header must contain the following `X-XRCLOUD-API-KEY: ${ApiKey}`."
+                "description": "You must include the `ApiKey` in the header in the following format: `X-XRCLOUD-API-KEY: ${ApiKey}`."
             },
             "PaginationTake": {
                 "required": false,
                 "name": "take",
                 "in": "query",
-                "description": "(pagination) number of rows to get.",
                 "schema": {
                     "type": "number"
-                }
+                },
+                "description": "(pagination) The number of items to retrieve."
             },
             "PaginationSkip": {
                 "required": false,
                 "name": "skip",
                 "in": "query",
-                "description": "(pagination) number of rows to skip.",
                 "schema": {
                     "type": "number"
-                }
+                },
+                "description": "(pagination) The number of items to skip."
             },
             "ProjectId": {
                 "required": true,
@@ -645,7 +715,7 @@
                 "schema": {
                     "type": "uuid"
                 },
-                "description": "The unique ID of the project."
+                "description": "Unique ID of the Project."
             },
             "SceneId": {
                 "required": true,
@@ -654,7 +724,7 @@
                 "schema": {
                     "type": "uuid"
                 },
-                "description": "The unique ID of the scene."
+                "description": "Unique ID of the Scene."
             },
             "RoomProjectId": {
                 "required": false,
@@ -663,7 +733,7 @@
                 "schema": {
                     "type": "uuid"
                 },
-                "description": "The unique ID of the project."
+                "description": "Unique ID of the Project."
             },
             "RoomSceneId": {
                 "required": false,
@@ -672,7 +742,7 @@
                 "schema": {
                     "type": "uuid"
                 },
-                "description": "The unique ID of the scene."
+                "description": "Unique ID of the Scene."
             },
             "Name": {
                 "required": false,
@@ -681,7 +751,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "(search) Search for Object(s) with that name."
+                "description": "(search) Retrieve objects with the specified name."
             },
             "Creator": {
                 "required": false,
@@ -690,7 +760,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "(search) Search for Object(s) with that creator."
+                "description": "(search) Retrieve objects created by a specific creator."
             },
             "SceneCreateCreator": {
                 "required": false,
@@ -699,7 +769,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "Allows you to specify the creator of the Scene. This is used to distinguish 'My Assets' within the authoring space, and if called to create without including this parameter, the scene will be created identically to the one created by 'Admin'."
+                "description": "You can specify the creator of the Scene. It is used to distinguish between 'My Assets' for each user. If you call without this parameter, it will be treated as if it was created by 'Admin'."
             },
             "SceneCreateCallback": {
                 "required": false,
@@ -708,7 +778,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "This is called when a specific behavior is required immediately after a Scene is created, including when a Room is created directly from that Scene. The call on the XRCloud side looks like this. \n\n { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sceneId }) }",
+                "description": "You can call this if you need a specific action after creating the Scene (such as creating a Room immediately after creating the Scene). The call from XRCloud will be as follows. \n\n { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sceneId }) }",
                 "example": "https://api.xrcloud.app/rooms"
             },
             "UserId": {
@@ -718,7 +788,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "The user of the project (app). Used to differentiate between users accessing room."
+                "description": "User of the Project (app). It is used to distinguish between users who enter the Room."
             },
             "AvatarUrl": {
                 "required": false,
@@ -727,7 +797,7 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "The path to the avatar file to use in Room.",
+                "description": "The path to the avatar file for the Room.",
                 "example": "https://storage.com/bucket/avatar-file.glb"
             },
             "LinkPayload": {
@@ -737,8 +807,8 @@
                 "schema": {
                     "type": "string"
                 },
-                "description": "Values to pass to the 'inline viewer', an element in the Scene. Each key maps to the name of the 'inline viewer' and is separated by a comma (,), and the key and value are separated by a colon (:).",
-                "example": "belivvr:eyJhbGciOiJIUzI1,test:NiIsInR5cCI6IkpXVCJ9,xrcloud:testValue"
+                "description": "The value to be passed to the 'InlineView' element of the Scene. It will be passed to the URL called by the InlineView in the hubsParam parameter.",
+                "example": "userName:Tom|UserGrade:10"
             }
         },
         "schemas": {
@@ -747,7 +817,7 @@
                 "properties": {
                     "statusCode": {
                         "type": "number",
-                        "description": "HTTP status code. Actual value will depend on the error.",
+                        "description": "HTTP status code. The actual value varies depending on the error.",
                         "example": 400
                     },
                     "method": {
@@ -757,12 +827,12 @@
                     },
                     "url": {
                         "type": "string",
-                        "description": "The endpoint that returned this error. This value will vary depending on the endpoint.",
+                        "description": "The endpoint that returned this error. This value varies depending on the endpoint.",
                         "example": "/example/endpoint"
                     },
                     "body": {
                         "type": "object",
-                        "description": "The original data sent in the body of the request that caused the error. The actual value will depend on the request.",
+                        "description": "The original data sent in the request body. The actual value varies depending on the request.",
                         "example": { "key": "value" }
                     },
                     "message": {
@@ -777,39 +847,39 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "(projectId) The unique ID of the project.",
+                        "description": "(projectId) Unique ID of the Project.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
                         "type": "string",
-                        "description": "The name of the project.",
+                        "description": "Name of the Project.",
                         "example": "example project name"
                     },
                     "webhookUrl": {
                         "type": "string",
-                        "description": "The endpoint of an external system to which event information is sent when a user enters or exits a room. This URL receives POST requests containing room entry/exit information.",
+                        "description": "The endpoint of the external system that sends event information when a user enters or exits the Room. The Room enter/exit information will be sent as a POST request to the URL. You can use this value to record the user's activity. \n  Note: As of 2024-12-01, the IP and UserAgent values are not being sent correctly. \n\n Example: \n\n ```json\n {\n   \"code\": \"room-join\",\n   \"resourceId\": \"c322b49b-6e12-47d9-b293-b5ab3727459c\",\n   \"sessionId\": \"4f7edfb6-b8a1-4f58-96ee-1deb4da98740\",\n   \"reticulumId\": \"0934212312120(XRCLOUD's user ID for getRoom, the userId will be created.)\",\n   \"logTime\": \"2023-12-12T09:27:41.600Z\",\n   \"action\": \"enter\",\n   \"ip\": \"123.0.0.1\",\n   \"userAgent\": \"Mozilla/5.0\",\n   \"device\": \"VR\"\n }\n ```",
                         "example": "https://api.xrcloud.app/events/webhook"
                     },
                     "createdAt": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "The date and time when the project was created.",
+                        "description": "Date and time when the Project was created.",
                         "example": "2023-07-12T09:27:41.600Z"
                     },
                     "updatedAt": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "The date and time when the project was last updated.",
+                        "description": "Date and time when the Project was last updated.",
                         "example": "2023-07-12T09:27:41.600Z"
                     },
                     "faviconUrl": {
                         "type": "string",
-                        "description": "The URL of the project's favicon.",
+                        "description": "URL of the favicon of the Project.",
                         "example": "https://kr.object.ncloudstorage.com/favicon/4a3/4a3e946e-2776-4182-afb7-204d982b727d.ico"
                     },
                     "logoUrl": {
                         "type": "string",
-                        "description": "The URL of the project's logo.",
+                        "description": "URL of the logo of the Project.",
                         "example": "https://kr.object.ncloudstorage.com/favicon/51d/51dc73cc-36db-4046-af8d-1e61e4b59c19.jpg"
                     }
                 }
@@ -819,35 +889,35 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "(sceneId) The unique ID of the scene.",
+                        "description": "(sceneId) Unique ID of the Scene.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
                         "type": "string",
-                        "description": "The name of the scene.",
+                        "description": "Name of the Scene.",
                         "example": "example scene name"
                     },
                     "createdAt": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "The date and time when the scene was created.",
+                        "description": "Date and time when the Scene was created.",
                         "example": "2023-07-12T09:27:41.600Z"
                     },
                     "updatedAt": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "The date and time when the scene was last updated.",
+                        "description": "Date and time when the Scene was last updated.",
                         "example": "2023-07-12T09:27:41.600Z"
                     },
                     "thumbnailUrl": {
                         "type": "string",
-                        "description": "The URL of the scene's thumbnail.",
+                        "description": "Thumbnail URL of the Scene.",
                         "example": "https://api.xrcloud.app/files/852a6f47-3978-4201-a637-9699d7845266.jpg"
                     },
                     "sceneModificationUrl": {
                         "type": "string",
-                        "description": "The URL of the space to modify the scene.",
-                        "example": "https://xrcloud.app:4000/spoke/projects/ASJCJK1?token=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
+                        "description": "URL of the space to modify the Scene.",
+                        "example": "https://room.xrcloud.app:4000/spoke/projects/ASJCJK1?optId=35e75895-9db7-4eee-bae3-87e20ee156dc"
                     }
                 }
             },
@@ -856,76 +926,76 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "(roomId) The unique ID of the room.",
+                        "description": "(roomId) Unique ID of the Room.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "name": {
                         "type": "string",
-                        "description": "The name of the room.",
+                        "description": "Name of the Room.",
                         "example": "example room name"
                     },
                     "size": {
                         "type": "number",
-                        "description": "Maximum number of people who can enter a room.",
+                        "description": "Maximum number of people that can enter the Room.",
                         "example": 10
                     },
                     "tags": {
                         "type": "array",
-                        "description": "(Before Use) Field to identify a specific Room.",
+                        "description": "(Before Use) Field to distinguish specific Rooms.",
                         "example": []
                     },
                     "sceneId": {
                         "type": "string",
-                        "description": "Id (uuid) of the XRCLOUD Scene.",
+                        "description": "ID of the Scene (uuid).",
                         "example": "c322b49b-6e12-47d9-b293-b5ab3727459c"
                     },
                     "createdAt": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "The date and time when the room was created.",
+                        "description": "Date and time when the Room was created.",
                         "example": "2023-07-12T09:27:41.600Z"
                     },
                     "updatedAt": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "The date and time when the room was last updated.",
+                        "description": "Date and time when the Room was last updated.",
                         "example": "2023-07-12T09:27:41.600Z"
                     },
                     "returnUrl": {
                         "type": "string",
-                        "description": "The URL to return to when leaving the Room.",
+                        "description": "URL to return to when leaving the Room.",
                         "example": "https://www.google.com/"
                     },
                     "roomUrl": {
                         "type": "object",
-                        "description": "The URL to enter the room.",
+                        "description": "Room entry URL.",
                         "properties": {
                             "public": {
-                                "description": "Unable to distinguish between users accessing a public URL whose value does not change.",
+                                "description": "Users cannot distinguish between URLs that do not change. Users cannot distinguish between URLs that do not change.",
                                 "properties": {
                                     "host": {
                                         "type": "string",
-                                        "description": "Host's room url.",
+                                        "description": "Room URL of the host.",
                                         "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=35e75895-9db7-4eee-bae3-87e20ee156dc"
                                     },
                                     "guest": {
                                         "type": "string",
-                                        "description": "Guest's room url.",
+                                        "description": "Room URL of the guest.",
                                         "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?public=a0166051-1eee-44bb-922a-c988d517a0e1"
                                     }
                                 }
                             },
                             "private": {
-                                "description": "Differentiate between users accessing a URL that changes every time they get a URL through 'Get Room'.",
+                                "description": "Users can distinguish between URLs that change with each request to get the URL. Users can distinguish between URLs that change with each request to get the URL.",
                                 "properties": {
                                     "host": {
                                         "type": "string",
-                                        "description": "Host's room url.",
+                                        "description": "Room URL of the host.",
                                         "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=fdc306b9-5129-4d83-86d5-52836afeee7e"
                                     },
                                     "guest": {
                                         "type": "string",
-                                        "description": "Guest's room url.",
+                                        "description": "Room URL of the guest.",
                                         "example": "https://room.xrcloud.app:4000/7UizZDL/example-room-name?private=72dde871-33d7-4aa3-a8a9-73b8b5f0458d"
                                     }
                                 }
@@ -934,7 +1004,7 @@
                     },
                     "thumbnailUrl": {
                         "type": "string",
-                        "description": "The URL of the room's thumbnail.",
+                        "description": "Thumbnail URL of the Room.",
                         "example": "https://api.xrcloud.app/files/852a6f47-3978-4201-a637-9699d7845266.jpg"
                     }
                 }
@@ -947,19 +1017,19 @@
                         "items": {
                             "$ref": "#/components/schemas/Scene"
                         },
-                        "description": "The list of scenes."
+                        "description": "List of Scenes."
                     },
                     "total": {
                         "type": "number",
-                        "description": "The total number of scenes."
+                        "description": "Total number of Scenes."
                     },
                     "skip": {
                         "type": "number",
-                        "description": "The number of skipped items for pagination."
+                        "description": "Number of items skipped for pagination."
                     },
                     "take": {
                         "type": "number",
-                        "description": "The number of items to take for pagination."
+                        "description": "Number of items retrieved for pagination."
                     }
                 }
             },
@@ -968,7 +1038,7 @@
                 "properties": {
                     "sceneCreationUrl": {
                         "type": "string",
-                        "description": "The URL of the space where you want to create the scene.",
+                        "description": "URL of the space to create the Scene.",
                         "example": "https://room.xrcloud.app:4000/spoke/projects/new?optId=35e75895-9db7-4eee-bae3-87e20ee156dc"
                     }
                 }
@@ -984,27 +1054,27 @@
                 "properties": {
                     "projectId": {
                         "type": "uuid",
-                        "description": "The unique ID of the project.",
+                        "description": "Unique ID of the Project.",
                         "example": "f24ee5ba-8f1f-4f7a-86ed-738f95ea1f8b"
                     },
                     "sceneId": {
                         "type": "uuid",
-                        "description": "The unique ID of the scene.",
+                        "description": "Unique ID of the Scene.",
                         "example": "1234e5ba-5678-4f7a-86ed-abcd95ea1efg"
                     },
                     "name": {
                         "type": "string",
-                        "description": "The name of the room.",
+                        "description": "Name of the Room.",
                         "example": "example room name"
                     },
                     "returnUrl": {
                         "type": "string",
-                        "description": "The URL to return to when leaving the Room.",
+                        "description": "URL to return to when leaving the Room.",
                         "example": "https://www.google.com/"
                     },
                     "size": {
                         "type": "number",
-                        "description": "Maximum number of people who can enter a room.",
+                        "description": "Maximum number of people that can enter the Room.",
                         "example": 10
                     }
                 }
@@ -1017,19 +1087,19 @@
                         "items": {
                             "$ref": "#/components/schemas/Room"
                         },
-                        "description": "The list of rooms."
+                        "description": "List of Rooms."
                     },
                     "total": {
                         "type": "number",
-                        "description": "The total number of rooms."
+                        "description": "Total number of Rooms."
                     },
                     "skip": {
                         "type": "number",
-                        "description": "The number of skipped items for pagination."
+                        "description": "Number of items skipped for pagination."
                     },
                     "take": {
                         "type": "number",
-                        "description": "The number of items to take for pagination."
+                        "description": "Number of items retrieved for pagination."
                     }
                 }
             },
@@ -1038,34 +1108,34 @@
                 "properties": {
                     "id": {
                         "type": "number",
-                        "description": "The unique ID of the room access log.",
+                        "description": "Unique ID of the entrance/exit log.",
                         "example": "77"
                     },
                     "infraUserId": {
                         "type": "uuid",
-                        "description": "The user id of the third party that accessed the room.",
+                        "description": "User ID of the 3rd-party application that entered the Room.",
                         "example": "user@domain.com"
                     },
                     "roomId": {
                         "type": "uuid",
-                        "description": "The unique ID of the room.",
+                        "description": "Unique ID of the Room.",
                         "example": "1234e5ba-5678-4f7a-86ed-abcd95ea1efg"
                     },
                     "sessionId": {
                         "type": "uuid",
-                        "description": "The unique ID of the session.",
+                        "description": "Unique ID of the Session.",
                         "example": "4f7edfb6-b8a1-4f58-96ee-1deb4da98740"
                     },
                     "joinedAt": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "The date and time when user enters a room.",
+                        "description": "Date and time when the user entered the Room.",
                         "example": "2023-12-12T09:27:41.600Z"
                     },
                     "exitedAt": {
                         "type": "string",
                         "format": "date-time",
-                        "description": "The date and time when user leaves a room.",
+                        "description": "Date and time when the user exited the Room.",
                         "example": "2023-12-12T09:30:41.600Z"
                     }
                 }
@@ -1075,17 +1145,17 @@
                 "properties": {
                     "name": {
                         "type": "string",
-                        "description": "The name of the room.",
+                        "description": "Name of the Room.",
                         "example": "example room name"
                     },
                     "size": {
                         "type": "number",
-                        "description": "Maximum number of people who can enter a room.",
+                        "description": "Maximum number of people that can enter the Room.",
                         "example": 10
                     },
                     "returnUrl": {
                         "type": "string",
-                        "description": "The URL to return to when leaving the Room.",
+                        "description": "URL to return to when leaving the Room.",
                         "example": "https://www.google.com/"
                     }
                 }
