@@ -9,6 +9,7 @@ import { ManageAssetModule } from 'src/services/manage-asset/manage-asset.module
 import { PaymentsModule } from 'src/services/payments/payments.module'
 import { ProjectsModule } from 'src/services/projects/projects.module'
 import { RegisterModule } from 'src/services/register/register.module'
+import { EventsModule } from 'src/services/events/events.module'
 import { RoomsModule } from 'src/services/rooms/rooms.module'
 import { ScenesModule } from 'src/services/scenes/scenes.module'
 import { SubscriptionsModule } from 'src/services/subscriptions/subscriptions.module'
@@ -26,6 +27,7 @@ import { SubscriptionsController } from './subscriptions.controller'
 import { NotificationsModule } from 'src/services/notifications/notifications.module'
 import { NotificationsController } from './notifications.controller'
 import { UsersModule } from 'src/services/users/users.module'
+import { EventsController } from './events.controller'
 
 const imports = [
     AuthModule,
@@ -43,7 +45,8 @@ const imports = [
     RegisterModule,
     AssetsModule,
     NotificationsModule,
-    UsersModule
+    UsersModule,
+    EventsModule
 ]
 
 const controllers = [
@@ -57,7 +60,8 @@ const controllers = [
     PaymentsController,
     SubscriptionsController,
     AssetsController,
-    NotificationsController
+    NotificationsController,
+    EventsController
 ]
 
 @Module({
