@@ -8,6 +8,5 @@ export class AdminConfigService {
 
     constructor(config: SafeConfigService) {
         this.findPasswordCodeExpiration = config.getString('FIND_PASSWORD_CODE_EXPIRATION')
-        this.findPasswordTemplateId = config.getString('FIND_PASSWORD_TEMPLATE_ID')
     }
 }
