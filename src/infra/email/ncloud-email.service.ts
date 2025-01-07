@@ -1,54 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { createHmac } from 'crypto'
 import fetch from 'node-fetch'
-import { EmailConfigService } from './email-config.service'
+import { NCloudEmailConfigService } from './ncloud-email-config.service'
+
+// this code is used for NCloud Mailer, default setting is azureMailer, this code is not used (2025-01-06)
 
 @Injectable()
-export class EmailService {
+export class NCloudEmailService {
     private readonly accessKeyId: string
     private readonly secretAccessKey: string
     private readonly endpoint: string
-    private readonly sender: string
 
-    constructor(private readonly configService: EmailConfigService) {
+    constructor(private readonly configService: NCloudEmailConfigService) {
         this.accessKeyId = this.configService.accessKeyId
         this.secretAccessKey = this.configService.secretAccessKey
         this.endpoint = this.configService.endpoint
-        this.sender = this.configService.sender
     }
 
-    async sendEmailWithTemplate(to: string, templateId: string, parameters: object) {
-        const recipient = {
-            address: to,
-            type: 'R'
-        }
-
-        const data = {
-            templateSid: templateId,
-            parameters: parameters,
-            recipients: [recipient]
-        }
-
-        await this.sendEmail(data)
-    }
-
-    async sendEmailWithoutTemplate(to: string, title: string, sendEmailData: object) {
-        const recipient = {
-            address: to,
-            type: 'R'
-        }
-
-        const data = {
-            senderAddress: this.sender,
-            title: title,
-            body: JSON.stringify(sendEmailData),
-            recipients: [recipient]
-        }
-
-        await this.sendEmail(data)
-    }
-
-    private async sendEmail(sendMailData: object) {
+    async sendEmail(to: string, templateId: string, parameters: object) {
         const timestamp = Date.now().toString()
 
         const signature = this.makeSignature('POST', '/api/v1/mails', timestamp)
@@ -60,11 +29,22 @@ export class EmailService {
             'x-ncp-apigw-signature-v2': signature
         }
 
+        const recipient = {
+            address: to,
+            type: 'R'
+        }
+
+        const data = {
+            templateSid: templateId,
+            parameters: parameters,
+            recipients: [recipient]
+        }
+
         try {
             const response = await fetch(`${this.endpoint}/mails`, {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify(sendMailData)
+                body: JSON.stringify(data)
             })
 
             if (!response.ok) {
@@ -74,8 +54,6 @@ export class EmailService {
 
                 throw new Error(`Failed with status ${response.status}`)
             }
-
-            return response.json()
         } catch (error) {
             throw error
         }

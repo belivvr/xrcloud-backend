@@ -10,6 +10,7 @@ export class FileStorageConfigService {
     public readonly region: string
     public readonly bucket: string
 
+    // Currently not using ncloud(s3), so the settings have been removed from .env. Kept for future use if bucket usage is needed (2025-01-05)
     constructor(config: SafeConfigService) {
         this.cdnPath = config.getString('CDN_PATH')
         this.accessKeyId = config.getString('NCLOUD_ACCESS_KEY_ID')

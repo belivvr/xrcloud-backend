@@ -875,12 +875,12 @@
                     "faviconUrl": {
                         "type": "string",
                         "description": "URL of the favicon of the Project.",
-                        "example": "https://kr.object.ncloudstorage.com/favicon/4a3/4a3e946e-2776-4182-afb7-204d982b727d.ico"
+                        "example": "https://api.xrcloud.app/storage/favicon/4a3/4a3e946e-2776-4182-afb7-204d982b727d.ico"
                     },
                     "logoUrl": {
                         "type": "string",
                         "description": "URL of the logo of the Project.",
-                        "example": "https://kr.object.ncloudstorage.com/favicon/51d/51dc73cc-36db-4046-af8d-1e61e4b59c19.jpg"
+                        "example": "https://api.xrcloud.app/storage/favicon/51d/51dc73cc-36db-4046-af8d-1e61e4b59c19.jpg"
                     }
                 }
             },

@@ -87,12 +87,12 @@ const consoleLogFormat = winstonFormat.combine(
         const formattedLevel = colorLevels(level)
         const formattedTimestamp = chalk.gray(timestamp)
 
-        if (info[0] === 'HTTP') {
-            return formatHttpLog(formattedMessage, formattedLevel, formattedTimestamp, etc[1] ?? {})
-        } else if (info[0] === 'ORM') {
-            return formatOrmLog(formattedMessage, formattedLevel, formattedTimestamp, etc[1] ?? {})
+        if (info[0] === 'HTTP' && isHttpLogInfo(etc)) {
+            return formatHttpLog(formattedMessage, formattedLevel, formattedTimestamp, etc)
+        } else if (info[0] === 'ORM' && isOrmLogInfo(etc)) {
+            return formatOrmLog(formattedMessage, formattedLevel, formattedTimestamp, etc)
         } else {
-            return formatGenericLog(formattedMessage, formattedLevel, formattedTimestamp, etc ?? {})
+            return formatGenericLog(formattedMessage, formattedLevel, formattedTimestamp, etc)
         }
     })
 )
@@ -168,4 +168,22 @@ const formatGenericLog = (
     const formattedEtc = chalk.green(JSON.stringify(etc))
 
     return `${formattedTimestamp} ${formattedLevel} ${formattedMessage} ${formattedEtc}`
+}
+
+function isHttpLogInfo(obj: any): obj is HttpLogInfo {
+    return (
+        typeof obj.method === 'string' &&
+        typeof obj.statusCode === 'string' &&
+        typeof obj.url === 'string' &&
+        typeof obj.body !== 'undefined' &&
+        typeof obj.runningTime === 'string'
+    )
+}
+
+function isOrmLogInfo(obj: any): obj is OrmLogInfo {
+    return (
+        typeof obj.query === 'string' &&
+        typeof obj.parameters === 'string' &&
+        typeof obj.runningTime === 'string'
+    )
 }

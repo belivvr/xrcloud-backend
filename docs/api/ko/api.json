@@ -875,12 +875,12 @@
                     "faviconUrl": {
                         "type": "string",
                         "description": "Project의 파비콘 URL.",
-                        "example": "https://kr.object.ncloudstorage.com/favicon/4a3/4a3e946e-2776-4182-afb7-204d982b727d.ico"
+                        "example": "https://api.xrcloud.app/favicon/4a3/4a3e946e-2776-4182-afb7-204d982b727d.ico"
                     },
                     "logoUrl": {
                         "type": "string",
                         "description": "Project의 로고의 URL.",
-                        "example": "https://kr.object.ncloudstorage.com/favicon/51d/51dc73cc-36db-4046-af8d-1e61e4b59c19.jpg"
+                        "example": "https://api.xrcloud.app/favicon/51d/51dc73cc-36db-4046-af8d-1e61e4b59c19.jpg"
                     }
                 }
             },

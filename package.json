@@ -21,6 +21,7 @@
         "jest": "sqlite(memory)는 상관없으나 postgresql은 jest 테스트가 동시에 실행되면 서로 데이터를 덮어써서 오류가 발생한다. --runInBand 옵션은 Jest가 모든 테스트를 동시에 실행하지 않도록 한다."
     },
     "dependencies": {
+        "@azure/communication-email": "^1.0.0",
         "@nestjs/cache-manager": "^2.0.0",
         "@nestjs/common": "^10.0.2",
         "@nestjs/config": "^3.0.0",

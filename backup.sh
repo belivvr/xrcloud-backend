@@ -56,7 +56,7 @@ backup_dir() {
 }
 
 # Set home directory (홈 디렉토리 설정)
-BACKUP_DIR="//mnt/xrcloud-prod-ko/beckup"
+BACKUP_DIR="/mnt/xrcloud-prod-ko/backup"
 mkdir -p "$BACKUP_DIR"
 # backup
 mkdir -p "$BACKUP_DIR/haio-db"

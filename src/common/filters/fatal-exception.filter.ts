@@ -1,12 +1,12 @@
 import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common'
 import { Request, Response } from 'express'
-import { EmailService } from 'src/infra/email/email.service'
+import { AzureEmailService } from 'src/infra/email/azure-email.service'
 import { FatalException } from '../exceptions'
 import { getServerDate } from '../utils'
 
 @Catch(FatalException)
 export class FatalExceptionFilter implements ExceptionFilter {
-    constructor(private readonly emailService: EmailService) {}
+    constructor(private readonly emailService: AzureEmailService) {}
 
     async catch(error: FatalException, host: ArgumentsHost) {
         const ctx = host.switchToHttp()
@@ -91,7 +91,7 @@ export class FatalExceptionFilter implements ExceptionFilter {
 
         // email notification
         const to = 'dev_team@belivvr.com'
-        const templateId = process.env.FATAL_EXCEPTION_TEMPLATE_ID || '11780'
+        const templateId = AzureEmailService.Template.FATAL_EXCEPTION
 
         const sendEmailData = {
             date: getServerDate(),
@@ -101,7 +101,7 @@ export class FatalExceptionFilter implements ExceptionFilter {
         }
 
         try {
-            await this.emailService.sendEmailWithTemplate(to, templateId, sendEmailData)
+            await this.emailService.sendEmailWithAzure(to, templateId, sendEmailData)
         } catch (error) {
             Logger.error('Failed to send Google Mail', error.message)
         }

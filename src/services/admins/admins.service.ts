@@ -14,7 +14,7 @@ import {
     updateIntersection,
     validatePassword
 } from 'src/common'
-import { EmailService } from 'src/infra/email/email.service'
+import { AzureEmailService } from 'src/infra/email/azure-email.service'
 import { AdminConfigService } from './admin-config.service'
 import { AdminsRepository } from './admins.repository'
 import {
@@ -32,7 +32,7 @@ export class AdminsService {
     constructor(
         private readonly adminsRepository: AdminsRepository,
         private readonly configService: AdminConfigService,
-        private readonly emailService: EmailService,
+        private readonly emailService: AzureEmailService,
         private readonly cacheService: CacheService
     ) {}
 
@@ -116,9 +116,9 @@ export class AdminsService {
 
         const createEmailData = { code }
 
-        await this.emailService.sendEmailWithTemplate(
+        await this.emailService.sendEmailWithAzure(
             email,
-            this.configService.findPasswordTemplateId,
+            AzureEmailService.Template.FIND_PASSWORD,
             createEmailData
         )
     }
