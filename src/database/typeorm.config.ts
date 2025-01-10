@@ -117,7 +117,7 @@ const getPoolSize = () => {
 }
 
 const devModeOptions = () => {
-    const allowSchemaReset = Path.isExistsSync('config/@DEV_ALLOW_SCHEMA_RESET')
+    const allowSchemaReset = process.env.DEV_ALLOW_SCHEMA_RESET === 'true'
 
     if (allowSchemaReset) {
         if (isProduction()) {
@@ -126,14 +126,9 @@ const devModeOptions = () => {
             )
         }
 
-        // return {
-        //     dropSchema: true,
-        //     synchronize: true
-        // }
-
         return {
-            dropSchema: false,
-            synchronize: false
+            dropSchema: true,
+            synchronize: true
         }
     } else if (isDevelopment()) {
         throw new ConfigException(

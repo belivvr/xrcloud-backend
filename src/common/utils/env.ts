@@ -1,4 +1,7 @@
 export function isProduction(): boolean {
+    if (isDevelopment()) {
+        return false
+    }
     return process.env.NODE_ENV === 'production'
 }
 
