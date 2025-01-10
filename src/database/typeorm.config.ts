@@ -130,11 +130,7 @@ const devModeOptions = () => {
             dropSchema: true,
             synchronize: true
         }
-    } else if (isDevelopment()) {
-        throw new ConfigException(
-            'The @DEV_ALLOW_SCHEMA_RESET option should be set to true in a development environment.'
-        )
-    }
+    } 
 
     return {}
 }
