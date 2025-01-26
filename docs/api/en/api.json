@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "XRCLOUD API",
-        "version": "1.0",
+        "version": "1.1",
         "x-logo": {
             "url": "https://belivvr.github.io/files/images/xrcloud-logo-banner.webp",
             "href": "https://xrcloud.app"
@@ -12,29 +12,35 @@
         {
             "name": "authentication",
             "x-displayName": "Authentication",
-            "description": "All API calls in this document require an `ApiKey`. \n\n - You can obtain the `ApiKey` from the My page in the upper right corner after logging into the XRCLOUD page."
+            "description": "All API calls in this document require an `ApiKey`. \n\n - You can obtain the `ApiKey` from My page in the upper right corner after logging into the XRCLOUD page."
         },
         {
             "name": "project",
             "x-displayName": "Project",
-            "description": "A Project in XRCLOUD can be a developer's project, platform, or a 3rd-party application. It is a unit that manages Scenes and Rooms, with multiple Scenes and Rooms belonging to a specific Project. \n\n - The `webhookUrl` can be set when creating or modifying a Project on the XRCLOUD page."
+            "description": "A Project in XRCLOUD can be a developer's project, platform, or 3rd-party application. It serves as a management unit for Scenes and Rooms, where multiple Scenes and Rooms can belong to a specific Project."
         },
         {
             "name": "scene",
             "x-displayName": "Scene",
-            "description": "A space for creating web-based 3D virtual spaces, necessary for creating Rooms. \n\n By calling the [get-creation-url api](#operation/GetSceneCreationUrl), you can access the 'sceneCreationUrl' field to access the editor (Spoke) and create a Scene by clicking the Publish Scene button in the upper right corner. Additionally, by calling the [get-scene api](#operation/GetScene), you can access the 'sceneModificationUrl' field to make modifications. \n\n - The `optId` value is a callback value used to verify the creation and modification of a Scene in XRCLOUD. Modifying it may cause errors."
+            "description": "A space for creating web-based 3D virtual environments that are required for Room creation. \n\n To create a Scene, call the [get-creation-url api](#operation/GetSceneCreationUrl) to obtain the 'sceneCreationUrl', access the editor (Spoke), and click the Publish Scene button in the upper right corner. You can also modify existing Scenes by accessing the 'sceneModificationUrl' field obtained from the [get-scene api](#operation/GetScene). \n\n - The `optId` value is a callback value used by XRCLOUD to verify Scene creation and modification. Modifying it may cause errors."
         },
         {
             "name": "room",
             "x-displayName": "Room",
-            "description": "A Room is a space composed of a Scene created through the editor (Spoke). \n\n Each Room has a private room URL that changes with each information request and a public room URL with a fixed address. These URLs are also divided into a host URL that grants host permissions and a guest URL that grants guest permissions. \n\n The 'returnUrl' refers to the web address to return to when leaving the room, and it can be set in the Rooms tab of XRCloud."
+            "description": "A Room is a virtual space based on a Scene created through the editor (Spoke). \n\n Each Room provides two types of URLs: a private room URL that changes with each request and a public room URL with a fixed address. These URLs are further divided into host URLs that grant host permissions and guest URLs that grant guest permissions. \n\n The 'returnUrl' specifies the web address to return to when leaving the room, which can be configured in the Rooms tab of XRCloud."
+        },
+        {
+            "name": "webhook",
+            "x-displayName": "Webhook",
+            "description": "XRCLOUD delivers event logs to the configured webhook URL whenever specific Room and Scene events occur.\n\n**Room Events**\n- room-join: User enters a Room\n- room-exit: User exits a Room\n- room-video-click-event: Video click event in Room\n\n**Scene Events**\n- scene-created: Scene creation\n- scene-updated: Scene modification\n\n**Webhook Request Information**\n- Method: POST\n- Headers:\n  - Content-Type: application/json\n  - X-Forwarded-For: User IP\n\n**Request Data Format**\n```json\n{\n  \"code\": \"room-join\",              // Type of event that occurred\n  \"resourceId\": \"uuid\",            // Room/Scene ID\n  \"sessionId\": \"uuid\",             // Session ID\n  \"reticulumId\": \"string\",         // XRCLOUD(Hubs) user ID\n  \"logTime\": \"2024-01-01T00:00:00Z\", // Timestamp when the event occurred\n  \"action\": \"string\",              // Specific action performed (e.g., \"enter\", \"exit\")\n  \"ip\": \"string\",                  // User IP (extracted from X-Forwarded-For header)\n  \"userAgent\": \"string\",           // User browser information\n  \"device\": \"string\"               // User's device type (pc/mobile/vr)\n}```\n\n**Note**: \n- The webhook URL can be set when creating or modifying a Project.\n- Currently, ip and userAgent values may not be transmitted correctly.\n- If the webhook request response returns a status code of 300 or higher, it will be treated as an error."
         }
     ],
     "x-tagGroups": [
         {
             "name": "General",
             "tags": [
-                "authentication"
+                "authentication",
+                "webhook"
             ]
         },
         {
